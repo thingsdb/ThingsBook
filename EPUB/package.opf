@@ -45,6 +45,9 @@
 		<item id="id-python" href="python.xhtml" media-type="application/xhtml+xml"/>
 		<item id="id-prompt" href="prompt.xhtml" media-type="application/xhtml+xml"/>
 		<item id="id-getting-started" href="getting-started.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch01" href="ch01.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch01quiz" href="ch01quiz.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch01answers" href="ch01answers.xhtml" media-type="application/xhtml+xml"/>
 		<item id="lightbulb" href="images/lightbulb.png" media-type="image/png"/>
 		<item id="epub.embedded.font.1" href="fonts/Oswald-Bold.ttf" media-type="application/vnd.ms-opentype"/>
 		<item id="epub.embedded.font.2" href="fonts/RobotoMono-VariableFont_wght.ttf" media-type="application/vnd.ms-opentype"/>
@@ -64,5 +67,8 @@
 		<itemref idref="id-python"/>
 		<itemref idref="id-prompt"/>
 		<itemref idref="id-getting-started"/>
+		<itemref idref="id-ch01"/>
+		<itemref idref="id-ch01quiz"/>
+		<itemref idref="id-ch01answers"/>
 	</spine>
 </package>

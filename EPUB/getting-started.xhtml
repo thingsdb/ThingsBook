@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en"
     lang="en">
     <head>
-        <title>Installation</title>
+        <title>Getting Started - Initial Setup</title>
         <link rel="stylesheet" type="text/css" href="css/epub.css" />
     </head>
     <body>
@@ -51,14 +51,14 @@
             </div>
             <p>Okay, lets connect to the ThingsDB interpreter:</p>
             <pre><code class="prompt">$</code> <code class="user">things-prompt -u admin -p pass -s //stuff</code>
-<code class="prompt">127.0.0.1:9200 (//stuff)></code></pre>
+<code class="prompt">127.0.0.1:9200 (//stuff)&gt;</code></pre>
             <p>To use the command we must specify a username with the <code class="inline">-u</code>
                 argument. Optionally, we can also provide a password using the <code class="inline">-p</code>
                 argument (if not given, the prompt will ask for the password). We can also provide a scope
                 with the <code class="inline">-s</code> argument and choose the <code class="inline">//stuff</code>
-                scope which represents the “stuff” collection. A <em>collection</em> in ThingsDB is a
+                scope which represents the "stuff" collection. A <em>collection</em> in ThingsDB is a
                 place where things can be stored. You are free to add as many collections as you want.
-                When you start ThingsDB for the first time, a single collection “stuff” is created
+                When you start ThingsDB for the first time, a single collection "stuff" is created
                 which is used in this first example.</p>
             <p>The prompt shows the IP address (or hostname) of the ThingsDB <em>node</em> you are connected to.
                 It also includes the port number and the scope where the queries will run in.</p>

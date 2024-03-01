@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
+<head>
+<title>Chapter 1 - Introduction to ThingsDB</title>
+<link rel="stylesheet" type="text/css" href="css/epub.css" />
+</head>
+<body>
+<section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch01_h" id="_ch01">
+    <h2 id="ch01_h" class="title">Chapter 1 - Introduction to ThingsDB</h2>
+    <p>While ThingsDB is technically a programming language, it breaks the mold by not being
+        primarily designed for writing traditional programs. Instead, it is geared towards
+        providing developers with an intuitive and flexible approach to storing and
+        retrieving data. This might seem more akin to SQL, another language primarily
+        focused on data management. However, ThingsDB's syntax and structure closely
+        resemble programming languages like JavaScript and Python, making it accessible to
+        developers familiar with those paradigms.</p>
+    <p>ThingsDB shines as the connecting force within your application, integrating various
+        components seamlessly. Unlike managing separate relational databases and message
+        brokers, ThingsDB offers a unified solution. It provides relational data storage for
+        structured information, a built-in pub/sub system for real-time event handling, and
+        scheduled task automation. This simplifies your architecture and eliminates the need
+        for multiple tools.</p>
+    <p>ThingsDB excels at scaling to ensure high availability, keeping your application
+        running smoothly even under load. However, for specialized data like large logs or
+        time-series data, dedicated databases might be more suitable. In such cases,
+        ThingsDB's strength lies in its modular connectivity. You can connect to various
+        external databases using pre-built or custom modules, giving you fine-grained
+        control over data storage and retrieval, ensuring the right tool for the
+        right job.</p>
+    <div class="note">
+        <img class="note" src="images/lightbulb.png" alt="Note" />
+        <div class="content">
+            <p>As a compelling example of its versatility, ThingsDB is employed by
+                InfraSonar (<a href="https://infrasonar.com">https://infrasonar.com</a>),
+                a comprehensive monitoring solution designed to handle complex and expansive
+                infrastructures. In this context, ThingsDB functions as a robust back-end
+                solution, where critical business logic resides alongside relational data.
+                Additionally, it serves as a pivotal communication hub, orchestrating
+                interactions between microservices and handling the timely dissemination of
+                notifications and messages.</p>
+        </div>
+    </div>
+    <p>In contrast to languages like C/C++, Go, and Rust, which require compilation before
+        execution, ThingsDB utilizes an interpreter much like, for example, Python. However,
+        ThingsDB distinguishes itself from other interpreted languages by maintaining state
+        persistence, ensuring uninterrupted data access and manipulation even after script
+        termination.</p>
+    <p>To better grasp this concept, consider what transpires when Python is launched.</p>
+    <pre><code class="prompt">$</code> <code class="user">python</code>
+<code class="response">…</code>
+<code class="prompt">&gt;&gt;&gt;</code> <code class="user">value = 'Remember me'</code></pre>
+    <p>Upon assigning the string <code class="inline">"Remember me"</code> to the variable
+        <code class="inline">value</code>, Python retains this
+        value as long as the interpreter remains open. To verify this, you can execute the
+        following code snippet:</p>
+    <pre><code class="prompt">&gt;&gt;&gt;</code> <code class="user">print(value)</code>
+<code class="response">Remember me</code></pre>
+    <p>However, if we terminate the interpreter and relaunch Python, our
+        <code class="inline">value</code> variable will be permanently lost:</p>
+    <pre><code class="prompt">&gt;&gt;&gt;</code> <code class="user">exit()</code>
+<code class="response"></code>
+<code class="prompt">$</code> <code class="user">python</code>
+<code class="response">…</code>
+<code class="prompt">&gt;&gt;&gt;</code> <code class="user">print(value)</code>
+<code class="response">Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+NameError: name value is not defined</code></pre>
+    <p>We encounter an error message indicating that the variable <code class="inline">value</code> is undefined. To
+        retain this value, a programming language like Python must resort to external
+        mechanisms such as writing the value to a file and reading from a file or
+        utilizing a database connection.</p>
+    <p>This is where ThingsDB emerges as a solution. Similar to Python, ThingsDB is a
+        programming language with a rich feature set encompassing task scheduling, type
+        definitions, procedures, pub/sub system, and much more. Before delving into the
+        technical details, let's examine how the aforementioned example would be
+        implemented using ThingsDB.</p>
+    <p>The following code shows how to assign and store a variable:</p>
+    <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">.value = 'Remember me';</code>
+<code class="response">"Remember me"</code></pre>
+    <p>Notice the dot (<code class="inline">.</code>) in front of <code class="inline">.value</code>,
+        this dot is important because it tells
+        ThingsDB to create a property to our collection object. The property in this
+        example is <code class="inline">value</code> and the actual value of the property is a
+        string <code class="inline">"Remember me"</code>. It is important to understand that
+        without the dot (<code class="inline">.</code>) in front of value, we
+        would have created a variable, just like we did in Python.</p>
+    <p>We also finished our statement with a semicolon (<code class="inline">;</code>).
+        Although ThingsDB can be forgiving when you forget the semicolon at the end
+        (in fact, the code above would yield the same result when omitting the semicolon)
+        you should <em>always</em> end your statements with a semicolon to prevent unwanted behavior.</p>
+    <p>In the example we also used a single space before and after the equal
+        sign (<code class="inline">=</code>). This white space is ignored by ThingsDB and could
+        be left out, or multiple spaces or even tabs and newlines would not make any difference.
+        The code below, for example, doesn't look very appealing, but is just as valid as the
+        example above.</p>
+    <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">.  value
+    =
+  'Remember me'
+;</code>
+<code class="response">"Remember me"</code></pre>
+    <div class="note">
+        <img class="note" src="images/lightbulb.png" alt="Note" />
+        <div class="content">
+            <p>If you need to insert newlines within your command, you can use the CTRL+n keyboard shortcut.</p>
+        </div>
+    </div>
+    <p>Now that we have assigned the property value to the root of the collection,
+        exit the prompt by pressing <span class="user">CTRL+d</span>.</p>
+    <p>Stop ThingsDB <em>(Choose the method that matches your setup)</em>:</p>
+    <ul>
+        <li><strong>Without Docker:</strong> Press <span class="user">CTRL+c</span> in the terminal where ThingsDB is running.</li>
+        <li><strong>With Docker Compose:</strong> Navigate to the directory containing your <code class="inline">docker-compose.yml</code> file and run <code class="inline">docker compose stop</code>.</li>
+    </ul>
+    <p>Now start ThingsDB again and also start the prompt again.</p>
+    <div class="note">
+        <img class="note" src="images/lightbulb.png" alt="Note" />
+        <div class="content">
+            <p>You don't need the <code class="inline">--init</code> argument anymore although this argument
+                will be ignored when ThingsDB is already initialized. If you really want to re-initialize
+                ThingsDB then you could also add the <code class="inline">--force</code> argument.
+                This would remove all ThingsDB data and start a clean node</p>
+        </div>
+    </div>
+    <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">.value;</code>
+<code class="response">"Remember me"</code></pre>
+    <p>As you can see, ThingsDB still knows about the property <code class="inline">value</code>.
+        You might also notice that however this example is very simple, the syntax is more
+        comparable with programming languages than it is with something like SQL.</p>
+    <p>You might also wonder how the client is able to perform the query. The protocol for
+        communication with ThingsDB is done with MessagePack. ThingsDB follows the same
+        rules as MessagePack. Strings are assumed to be UTF8. This, however, is not guaranteed
+        by ThingsDB but depends on if the MessagePack protocol is correctly followed. Usually,
+        when working with a trusted client, this is the case. If you are not sure about this,
+        ThingsDB has a function <code class="inline">is_utf8()</code> to test if a string
+        really is UTF8. It also can define this on a type but we shall explore types later.
+        Besides MessagePack, ThingsDB has support for JSON but this is strictly used for
+        the HTTP API.</p>
+    <p>In the code sample below we verify that <code class="inline">.value</code> contains a
+        string with valid UTF-8 encoding:</p>
+    <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">is_utf8(.value);</code>
+<code class="response">true</code></pre>
+    <p>If we want to know which type <code class="inline">.value</code> was, we could use
+        the <code class="inline">type()</code> function.
+        This function always returns a string with type information.</p>
+    <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">type(.value);</code>
+<code class="response">"str"</code></pre>
+    <p>In ThingsDB it is allowed to use statements as arguments. The code below shows that
+        the <code class="inline">is_utf8()</code> function returns with a boolean value:</p>
+    <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">type(is_utf8(.value));</code>
+<code class="response">"bool"</code></pre>
+    <p>Where is the property "value" stored?</p>
+    <section class="sect1">
+        <h3 id="ch01_1_h" class="title">1.1 Things and Why ThingsDB</h3>
+        <p>As we mentioned earlier, the <code class="inline">value</code> has been assigned to the
+            root object. We refer to these objects as <em>"things"</em>, which explains the name ThingsDB.
+            Every collection has a root which is a regular thing. It is not possible to remove the root,
+            unless you choose to remove the complete collection. Every stored thing also receives a
+            unique ID from ThingsDB. To see which ID our collection has, you can use the
+            <code class="inline">id()</code> method.</p>
+        <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">.id();</code>
+<code class="response">1</code></pre>
+        <p>The initial <em>stuff</em> collection most likely has ID 1, but it might be different on your computer
+            depending on the version of ThingsDB used when the collection was created. We also start the
+            method <code class="inline">id()</code> with a dot (<code class="inline">.</code>) in front of it.
+            That is because <code class="inline">id()</code> is a method of a thing object.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch01_2_h" class="title">1.2 Code Blocks</h3>
+        <p>ThingsDB enables the placement of code within code blocks, which are enclosed by curly braces
+            <code class="inline">{}</code> and must contain at least one statement. It is crucial to note
+            that code blocks themselves are interpreted as statements, and, consequently, must be terminated
+            with a semicolon.</p>
+        <pre><code class="prompt">(//stuff)&gt;</code>
+<code class="user">{
+  .value = 'Remember me';
+};</code>  <code class="comment">// this semicolon ends the "block" statement</code>
+<code class="response">"Remember me"</code></pre>
+        <p>Code blocks enable the grouping of statements, which can be particularly beneficial when employed
+            in conjunction with conditional statements (<code class="inline">if</code>-statements), iteration
+            constructs (<code class="inline">for</code>-loops), or closures, all of which are detailed in
+            subsequent chapters.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch01_3_h" class="title">1.3 Variables and Properties</h3>
+        <p>Just as we did in Python, we can also assign a value to a variable.</p>
+        <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">value = "I'm a variable";</code>
+<code class="response">"I'm a variable"</code></pre>
+        <p>Without the dot, this is just a variable. Variables only exist within a single query.
+            Therefore we cannot ask for <code class="inline">value</code> in the next query. If we did,
+            ThingsDB would return with a LookupError.</p>
+        <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">value;</code>
+<code class="response">LookupError: variable `value` is undefined</code></pre>
+        <p>In this example we used value as the name of our variable. Note that this can be named as you wish,
+            for example, <code class="inline">x</code>, <code class="inline">y</code>, <code class="inline">Foo</code>,
+            <code class="inline">myValue</code> and <code class="inline">my_value</code> are all good examples of
+            variable names. Variables, like almost everything in ThingsDB, are case sensitive. This means
+            that <code class="inline">VALUE</code> is not the same as <code class="inline">value</code> and they
+            both can exist as different variables. A variable must start with a charter of a-z (or capital A-Z) or
+            an underscore (_) and may be followed by the same or a number. The variable is not allowed to start
+            with a number.</p>
+        <p>Here are some examples:</p>
+        <pre><code class="user">dog = nil;</code>        <code class="comment">// valid</code>
+<code class="user">Dog = nil;</code>        <code class="comment">// valid</code>
+<code class="user">_dog = nil;</code>       <code class="comment">// valid</code>
+<code class="user">cat-or-dog = nil;</code> <code class="comment">// invalid – no hyphen (-) allowed in a variable name</code>
+<code class="user">catOrDog = nil;</code>   <code class="comment">// valid</code>
+<code class="user">cat_or_dog = nil;</code> <code class="comment">// valid</code>
+<code class="user">2dogs = nil;</code>      <code class="comment">// invalid – a variable name must not start with a number</code>
+</pre>
+        <p>The code above also includes comments, which are denoted by the <code class="inline">//</code> prefix.
+            Everything behind the <code class="inline">//</code> on a line will be disregarded by ThingsDB.
+            An alternative comment syntax using <code class="inline">/*</code> and <code class="inline">*/</code>
+            allows for comments spanning multiple lines. However, in this book, we'll primarily utilize
+            the <code class="inline">//</code> syntax, as it is less prone to errors and avoids the risk of
+            forgetting to close the comment section.</p>
+        <p>Properties, on the other hand, have different naming rules. Almost anything is possible except for a
+            few reserved single character names. For example, we can't use <code class="inline">#</code> as this
+            is a reserved property name and is being used by ThingsDB to expose the ID. Keep in mind that it is
+            possible to create a property which starts with a reserved character. For example, the
+            property <code class="inline">"# 007"</code> is valid and can be used but if we wanted to assign this
+            property, we can't just write it like before as this syntax is invalid.</p>
+        <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">.# 007 = "James Bond";</code>
+<code class="response">SyntaxError: error at line 1, position 1, unexpected character `#`</code></pre>
+        <p>Instead, we can use the method <code class="inline">set(key, value)</code> which is available on every
+            object of type thing.</p>
+        <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">.set("# 007", "James Bond");</code>
+<code class="response">"James Bond"</code></pre>
+        <p>If we need to read the property, we require the <code class="inline">get(key)</code> method.</p>
+        <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">.get("# 007");</code>
+<code class="response">"James Bond"</code></pre>
+        <p>The <code class="inline">get()</code> method is also useful for when you are not sure a property exists.
+            By default, the return value is <code class="inline">nil</code> for when a property is not found.</p>
+        <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">.get("I do not exist");</code>
+<code class="response">null</code></pre>
+        <p>Did you notice I mentioned <code class="inline">nil</code>? Well, the output shows <code class="inline">null</code>,
+            so let's clarify the situation. The reason for seeing <code class="inline">null</code> is that our prompt is
+            written in Python, where "nil" is called "None". However, when the output is converted to JSON format for
+            display in the console, JSON uses <code class="inline">null</code> to represent the <code class="inline">None</code>
+            type. Be mindful of this when translating between different programming languages.</p>
+        <p>If we wanted an alternative value we could provide the <code class="inline">get()</code> method with an
+            alternative value.</p>
+        <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">.get("I do not exist", "but I do");</code>
+<code class="response">"but I do"</code></pre>
+    </section>
+    <section class="sect1">
+        <h3 id="ch01_4_h" class="title">1.4 Lazy Arguments Evaluation</h3>
+        <p>Arguments to build-in methods and functions in ThingsDB are lazy evaluated. Lazy arguments evaluation
+            means that the code which is used as the argument is not executed in case the argument is not being used.
+            In case of the <code class="inline">get()</code> method this means that we are allowed to raise an error
+            as the second argument which will only be executed in case the property is not found.</p>
+        <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">.get("foo", raise(lookup_err()));</code>
+<code class="response">LookupError: requested resource not found</code></pre>
+        <p>The error is raised because the property <code class="inline">"foo"</code> does not exist. If we would use
+            the same code with a property which does exist, no exception would be raised. </p>
+        <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">.get("# 007", raise(lookup_err()));</code>
+<code class="response">"James Bond"</code></pre>
+        <p>We don't go into detail for the code to raise an error. For now it is enough to see lazy evaluation of method
+            and function arguments at work.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch01_5_h" class="title">1.5 Query Response</h3>
+        <p>Up to this point, the code snippets presented for each query involved single statements, and the response
+            reflected the output of that statement. However, query code in ThingsDB can encompass as many statements
+            as needed. The query response always encapsulates the outcome of the final executed statement. Typically,
+            this refers to the last statement in the provided code, unless an exception is triggered or
+            the <code class="inline">return</code> keyword is explicitly utilized.</p>
+        <p>Consider these examples:</p>
+        <pre><code class="prompt">(//stuff)&gt;</code>  <code class="comment">// press CTRL+n for a new line</code>
+<code class="user">1 / 0;</code>
+<code class="user">"Hello!";</code>
+<code class="response">ZeroDivisionError: division or modulo by zero</code></pre>
+        <p>In this instance, the division by zero raises an exception, and the subsequent
+            statement, <code class="inline">"Hello!"</code>, is not executed. The response, therefore, reflects the
+            error message generated by the exception.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>Technically, an error response in ThingsDB is not merely a message but a distinct protocol type.
+                    This distinction enables clients to discern error responses and handle them appropriately,
+                    separate from valid data responses.</p>
+            </div>
+        </div>
+        <p>On the other hand, if the <code class="inline">return</code> keyword is explicitly used to terminate
+            the query, the response will be the value specified by the return statement:</p>
+        <pre><code class="prompt">(//stuff)&gt;</code>
+<code class="user">return 123;</code>
+<code class="user">"Hi!";</code>
+<code class="response">123</code></pre>
+        <p>Here, the <code class="inline">return</code> statement halts the execution of the query and delivers the
+            value <code class="inline">123</code> as the response, effectively skipping the subsequent
+            statement, <code class="inline">"Hi!"</code>.</p>
+        <p>In summary, the response of a ThingsDB query mirrors the outcome of the final executed statement,
+            unless an exception arises or the <code class="inline">return</code> keyword is explicitly employed.
+            This flexibility allows for more complex and versatile query operations.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch01_6_h" class="title">1.6 Scopes</h3>
+        <p>Before we dive deeper into the ThingsDB language, we must first explain more about scopes. The example
+            above uses the "stuff" collection, which is automatically created on a new ThingsDB initialization.
+            As mentioned before, a collection is the place where data is stored. If you like to compare with SQL
+            then you can think of a collection like a database. In SQL, you may have multiple databases running
+            on a single SQL instance and in ThingsDB you can have multiple collections.</p>
+        <p>ThingsDB creates a unique scope for each collection. The full scope name for the "stuff" collection
+            is <code class="inline">/collection/stuff</code>. You can shorten the prefix "collection" or even omit
+            it altogether, so <code class="inline">/c/stuff</code> and <code class="inline">//stuff</code> are considered
+            equivalent scopes. Additionally, you can use the "@" symbol to represent a scope. This syntax replaces
+            the first "/" with "@" and the second with a semicolon, resulting in <code class="inline">@collection:stuff</code>
+            or <code class="inline">@:stuff</code> for short.</p>
+        <p>Management of collections happens within the <code class="inline">/thingsdb</code> scope. ThingsDB allows
+            you to abbreviate this scope name as much as you like, so you might commonly see the shortened
+            version <code class="inline">/t</code> being used. Similarly to the collection scope example, you can
+            also use the "@" symbol. So, <code class="inline">/thingsdb</code>, <code class="inline">@thingsdb</code>,
+            <code class="inline">/t</code>, and <code class="inline">@t</code> all refer to the same scope.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>In the early days of ThingsDB, only full scope names using the <code class="inline">@</code> syntax
+                    were permitted. The <code class="inline">@</code> symbol was chosen because it is an unused character
+                    in the ThingsDB language, leaving open the possibility of implementing it as a native scope definition
+                    within the language. With the introduction of the HTTP API, however, the
+                    slash (<code class="inline">/</code>) syntax became more prevalent, as it aligns more closely with
+                    standard URL conventions. Recognizing the inconvenience of typing out lengthy scope names repeatedly,
+                    the developers decided to allow abbreviated scope names to enhance the user experience.</p>
+            </div>
+        </div>
+        <p>For switching within the prompt, we must use the @ syntax since otherwise the prompt does not understand that
+            we want to switch from scope. This is because the “@” character is not part of the ThingsDB language and thus
+            can be recognized by the prompt as a different action.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>In addition to collection scopes and the <code class="inline">/thingsdb</code> scope, ThingsDB provides
+                    a third type of scope specifically designed for retrieving node information. These node scopes can also
+                    be employed to execute certain node-specific tasks, such as creating backups or dynamically adjusting
+                    the logging level for a node.</p>
+                <p>Let’s switch the prompt to the <code class="inline">@thingsdb</code> scope:</p>
+            </div>
+        </div>
+        <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">@t</code>
+<code class="prompt">(@t)&gt;</code></pre>
+        <p>We see that we switched to another scope. The <code class="inline">@thingsdb</code> scope is not able to store
+            regular data as it contains no root object (thing) to attach properties to.</p>
+        <pre><code class="prompt">(@t)&gt;</code> <code class="user">.cat = 'Leo';</code>
+<code class="response">LookupError: the `root` of the `@thingsdb` scope is inaccessible; you might want to query a `@collection` scope?</code></pre>
+        <p>Instead, we use the <code class="inline">@thingsdb</code> scope to manage users, access rights, collections,
+            modules, nodes and more.</p>
+        <p>For now we don't go into details but we create a new empty collection using
+            the <code class="inline">new_collection()</code> function which is available in
+            the <code class="inline">@thingsdb</code> scope.</p>
+        <pre><code class="prompt">(@t)&gt;</code> <code class="user">new_collection('chapter2');</code>
+<code class="response">"chapter2"</code></pre>
+        <p>The return value is the name for the newly created collection. While internally ThingsDB assigns a unique ID to
+            the collection for communication purposes, it is the name that you will use for interactions with the collection.
+            In the next chapter we shall use the collection we have just created.</p>
+    </section>
+</section>
+</body>
+</html>
