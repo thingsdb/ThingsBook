@@ -9,7 +9,46 @@
 	<body>
 		<section class="intallation" epub:type="installation" role="doc-installation" aria-labelledby="installation_linux_h" id="_installation_linux">
 			<h4 id="installation_linux_h" class="title">Linux</h4>
-			<p></p>
+			<p>While building ThingsDB from source is possible on various Linux distributions,
+				this documentation details the process for Ubuntu due to its popularity.
+				We recognize other distributions might work, but they are outside the scope
+				of this guide.</p>
+				<p><strong>Step 1: Update and Install Packages:</strong></p>
+				<p>Start with updating the packages list:</p>
+			<pre><code class="prompt">$</code> <code class="user">sudo apt update</code>
+<code class="response">…</code></pre>
+			<p>Then, install the required packages:</p>
+			<pre><code class="prompt">$</code> <code class="user">sudo apt-get install -y \
+	libuv1-dev \
+	libpcre2-dev \
+	libyajl-dev \
+	libcurl4-nss-dev \
+	build-essential \
+	git</code>
+<code class="response">…</code></pre>
+			<p><strong>Step 3: Clone and Build ThingsDB</strong></p>
+			<p>Clone the ThingsDB repository:</p>
+			<pre><code class="prompt">$</code> <code class="user">git clone https://github.com/thingsdb/ThingsDB.git</code>
+<code class="response">…</code></pre>
+			<p>Navigate to the <code class="inline">ThingsDB/Release</code> directory and build ThingsDB:</p>
+			<pre><code class="prompt">$</code> <code class="user">cd ThingsDB/Release</code>
+<code class="prompt">~/ThingsDB/Release$</code> <code class="user">make clean && make</code>
+<code class="response">…</code></pre>
+			<p><strong>Step 4: Create a Symlink (Optional)</strong></p>
+			<p>To easily start ThingsDB from any directory, create a symlink:</p>
+			<pre><code class="prompt">~/ThingsDB/Release$</code> <code class="user">sudo ln -sr ./thingsdb /usr/bin/thingsdb</code></pre>
+			<p><strong>Step 5: Verify Installation</strong></p>
+			<p>Check if ThingsDB is installed correctly:</p>
+			<pre><code class="prompt">$</code> <code class="user">thingsdb --version</code>
+<code class="response">_____ _   _             ____  _____
+_   _| |_|_|___ ___ ___|    \| __  |
+ | | |   | |   | . |_ -|  |  | __ -|
+ |_| |_|_|_|_|_|_  |___|____/|_____|   version: 1.5.1
+			|___|
+ThingsDB Node 1.5.1
+Maintainer: Jeroen van der Heijden <jeroen@cesbit.com>
+Home-page: https://thingsdb.io</code></pre>
+			<p>You've successfully built ThingsDB from source. Let's move on to <a href="python.xhtml">installing Python</a>.</p>
 		</section>
 	</body>
 </html>
