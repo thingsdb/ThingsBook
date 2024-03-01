@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en"
-	lang="en">
-	<head>
-		<title>Installation</title>
-		<link rel="stylesheet" type="text/css" href="css/epub.css" />
-	</head>
-	<body>
-		<section class="intallation" epub:type="installation" role="doc-installation" aria-labelledby="docker_h" id="_docker">
-			<h4 id="docker_h" class="title">Docker</h4>
-			<p>This guide will walk you through installing and running ThingsDB using Docker Compose,
+    lang="en">
+    <head>
+        <title>Installation</title>
+        <link rel="stylesheet" type="text/css" href="css/epub.css" />
+    </head>
+    <body>
+        <section class="intallation" epub:type="installation" role="doc-installation" aria-labelledby="docker_h" id="_docker">
+            <h4 id="docker_h" class="title">Docker</h4>
+            <p>This guide will walk you through installing and running ThingsDB using Docker Compose,
                 a convenient tool for managing Docker configurations.</p>
             <div class="note">
                 <img class="note" src="images/lightbulb.png" alt="Note" />
-                <div class="note-content">
+                <div class="content">
                     <p><strong>Prefer manual installation?</strong> Skip this section and proceed to the guide for
                         installing ThingsDB from source code on your specific operating system
                         <a href="linux.xhtml">Linux</a>, <a href="mac.xhtml">Mac</a>, or <a href="windows.xhtml">Windows (WSL)</a>.
@@ -23,17 +23,17 @@
             <p>If you do not already have Docker installed, you can download it from
                 here: <a href="https://docs.docker.com/get-docker/">https://docs.docker.com/get-docker/</a></p>
             <p>Check your docker version: <em>(version 23 or higher is required)</em></p>
-			<pre><code class="prompt">$</code> <code class="user">docker -v</code>
+            <pre><code class="prompt">$</code> <code class="user">docker -v</code>
 <code class="response">Docker version 25.0.3, build 4debf41</code></pre>
             <p>Create a project directory and navigate to that directory:</p>
-			<pre><code class="prompt">$</code> <code class="user">mkdir thingsdb_book</code>
+            <pre><code class="prompt">$</code> <code class="user">mkdir thingsdb_book</code>
 <code class="prompt">$</code> <code class="user">cd thingsdb_book</code>
 <code class="prompt">~/thingsdb_book$</code></pre>
             <p>Paste the following content into a new file named <code class="inline">docker-compose.yml</code>
                 in your project directory: (or download the file from here:
                 <a href="https://docs.thingsdb.io/v1/book/docker-compose.yml">https://docs.thingsdb.io/v1/book/docker-compose.yml</a>)
             </p>
-			<pre><code class="prompt">x-ti-template: &amp;ti
+            <pre><code class="prompt">x-ti-template: &amp;ti
   image: ghcr.io/thingsdb/node
   restart: unless-stopped
   environment:
@@ -81,13 +81,13 @@ services:
 <code class="response">✔ Container node0  Started</code></pre>
             <div class="note">
                 <img class="note" src="images/lightbulb.png" alt="Note" />
-                <div class="note-content">
+                <div class="content">
                     <p>You'll see output indicating that the container is starting.
                         Don't worry if only one node is initially active;
                         you can learn about scaling to multiple nodes in <a href="ch15.xhtml">Chapter 15</a>.</p>
                 </div>
             </div>
             <p>You've successfully set up Docker. Let's move on to <a href="python.xhtml">installing Python</a>.</p>
-		</section>
-	</body>
+        </section>
+    </body>
 </html>

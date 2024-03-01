@@ -1,15 +1,45 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en"
-	lang="en">
-	<head>
-		<title>Installation</title>
-		<link rel="stylesheet" type="text/css" href="css/epub.css" />
-	</head>
-	<body>
-		<section class="intallation" epub:type="installation" role="doc-installation" aria-labelledby="installation_python_h" id="_installation_python">
-			<h3 id="installation_python_h" class="title">Installation - Python</h3>
-			<p></p>
-		</section>
-	</body>
+    lang="en">
+    <head>
+        <title>Installation</title>
+        <link rel="stylesheet" type="text/css" href="css/epub.css" />
+    </head>
+    <body>
+        <section class="intallation" epub:type="installation" role="doc-installation" aria-labelledby="installation_python_h" id="_installation_python">
+            <h3 id="installation_python_h" class="title">Installation - Python</h3>
+            <p>While the code examples in this book are compatible with Python
+                versions as old as 3.7, it is recommended to use version 3.8 or
+                higher to ensure optimal performance and stability. We won't
+                cover the complete Python installation process in this guide, as
+                there is plenty of documentation available online. You should
+                also check if Python is already installed on your system as it
+                is often pre-installed.</p>
+            <p>After installing Python, install PIP as well. PIP is the package
+                manager for Python and is the simplest way to install the
+                ThingsDB Python module. You can install the module using the
+                following command:</p>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>On macOS, use <code class="inline">pip3</code> and <code class="inline">python3</code>
+                        to manage Python packages instead of <code class="inline">pip</code> and
+                        <code class="inline">python</code>. This is because macOS
+                        comes with an older version of Python pre-installed, and
+                        these commands ensure you're working with the latest
+                        version (Python 3).</p>
+                </div>
+            </div>
+            <pre><code class="prompt">$</code> <code class="user">pip install python-thingsdb</code>
+<code class="response">…</code>
+<code class="response">Successfully installed deprecation-2.1.0 msgpack-1.0.7 python-thingsdb-1.0.7</code></pre>
+            <p>To verify that the installation was successful, open Python and try
+                to import the Client from the thingsdb module.</p>
+            <pre><code class="prompt">$</code> <code class="user">python</code>
+<code class="prompt">&gt;&gt;&gt;</code> <code class="user">from thingsdb.client import Client</code>
+<code class="prompt">&gt;&gt;&gt;</code></pre>
+            <p>If this command runs without errors, the installation was successful.</p>
+        </section>
+    </body>
 </html>

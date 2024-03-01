@@ -1,15 +1,47 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en"
-	lang="en">
-	<head>
-		<title>Installation</title>
-		<link rel="stylesheet" type="text/css" href="css/epub.css" />
-	</head>
-	<body>
-		<section class="intallation" epub:type="installation" role="doc-installation" aria-labelledby="installation_prompt_h" id="_installation_prompt">
-			<h3 id="installation_prompt_h" class="title">Installation - ThingsDB Prompt</h3>
-			<p></p>
-		</section>
-	</body>
+    lang="en">
+    <head>
+        <title>Installation</title>
+        <link rel="stylesheet" type="text/css" href="css/epub.css" />
+    </head>
+    <body>
+        <section class="intallation" epub:type="installation" role="doc-installation" aria-labelledby="installation_prompt_h" id="_installation_prompt">
+            <h3 id="installation_prompt_h" class="title">Installation - ThingsDB Prompt</h3>
+            <p>Just like installing the ThingsDB Client module, you can install ThingsDB Prompt using PIP,
+                Python's package manager.</p>
+            <pre><code class="prompt">$</code> <code class="user">pip install thingsprompt</code>
+<code class="response">…</code>
+<code class="response">Successfully installed install-1.3.5 setproctitle-1.3.3 thingsprompt-1.0.9</code></pre>
+            <p>Once the installation is complete, ThingsDB Prompt will be installed in your
+                system's PATH. You should now be able to run it directly from your terminal.
+                To verify the installation, run the following command:</p>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>For users encountering issues executing the <code class="inline">things-prompt</code> command due to the
+                        script directory not being included in their system's PATH environment variable,
+                        an alternative invocation method exists. Users can bypass the PATH requirement
+                        by directly invoking the module via <code class="inline">python -m thingsprompt</code> (note the lack of hyphen).
+                        This approach is particularly advantageous in scenarios where multiple Python
+                        environments host ThingsDB Prompt installations, and precise environment selection is crucial.</p>
+                </div>
+            </div>
+            <pre><code class="prompt">$</code> <code class="user">things-prompt --version</code>
+<code class="response">1.0.9</code></pre>
+            <p>If the version is displayed, the installation was successful.</p>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>There is also a ThingsGUI application for communicating with ThingsDB.
+                        This application is more user-friendly and visually appealing than the
+                        ThingsDB Prompt. However, we won't explicitly use or document the
+                        ThingsGUI in this book's examples, simply because we prefer to demonstrate
+                        code examples. Nonetheless, keep in mind that this tool is available if
+                        you prefer a graphical and easy to use interface.</p>
+                </div>
+            </div>
+        </section>
+    </body>
 </html>

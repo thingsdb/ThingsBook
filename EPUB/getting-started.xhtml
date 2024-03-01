@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en"
+    lang="en">
+    <head>
+        <title>Installation</title>
+        <link rel="stylesheet" type="text/css" href="css/epub.css" />
+    </head>
+    <body>
+        <section class="getting_started" epub:type="installation" role="doc-installation" aria-labelledby="getting_started_h" id="_getting_started">
+            <h2 id="getting_started_h" class="title">Getting Started - Initial Setup</h2>
+            <p>If you have not launched ThingsDB before, you will need to invoke
+                the <code class="inline">--init</code> argument to initiate the creation
+                of necessary files within a designated data directory, serving as the
+                repository for all ThingsDB entities.</p>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>If you are using Docker Compose as described in the <a href="docker.xhtml">Docker</a>
+                        installation section, navigate to your <code class="inline">docker-compose.yml</code>
+                        directory and run: <code class="inline">docker compose up -d</code></p>
+                    <p>This starts ThingsDB in the background, automatically initializing it with the
+                        <code class="inline">--init</code> argument, ensuring it's ready for use.</p>
+                </div>
+            </div>
+            <pre><code class="prompt">$</code> <code class="user">thingsdb --init</code>
+<code class="response">   _____ _   _             ____  _____
+  |_   _| |_|_|___ ___ ___|    \| __  |
+    | | |   | |   | . |_ -|  |  | __ -|
+    |_| |_|_|_|_|_|_  |___|____/|_____|   version: 1.5.1
+                  |___|</code></pre>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>This book is written based on ThingsDB version 1.5.1, and some examples
+                        may not work with older versions. It is always best to use the latest
+                        version of ThingsDB to ensure compatibility and avoid potential issues.</p>
+                </div>
+            </div>
+            <p>In a separate shell, we can establish a connection to ThingsDB using the <em>things-prompt</em>
+                tool. We'll utilize this tool for some straightforward exercises in this book.
+                The <em>things-prompt</em> is one of several methods for interacting with the interpreter.</p>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>For more intricate (and real-world) examples, we'll employ Python code
+                        examples due to their ease of comprehension. If you wish to follow the code
+                        examples in this book, it is advisable to <a href="python.xhtml">install Python</a>
+                        and the ThingsDB client (python-thingsdb) library. However, you are free to utilize any programming language you prefer, as the focus will be on the ThingsDB code itself, not the specific Python code.</p>
+                </div>
+            </div>
+            <p>Okay, lets connect to the ThingsDB interpreter:</p>
+            <pre><code class="prompt">$</code> <code class="user">things-prompt -u admin -p pass -s //stuff</code>
+<code class="prompt">127.0.0.1:9200 (//stuff)></code></pre>
+            <p>To use the command we must specify a username with the <code class="inline">-u</code>
+                argument. Optionally, we can also provide a password using the <code class="inline">-p</code>
+                argument (if not given, the prompt will ask for the password). We can also provide a scope
+                with the <code class="inline">-s</code> argument and choose the <code class="inline">//stuff</code>
+                scope which represents the “stuff” collection. A <em>collection</em> in ThingsDB is a
+                place where things can be stored. You are free to add as many collections as you want.
+                When you start ThingsDB for the first time, a single collection “stuff” is created
+                which is used in this first example.</p>
+            <p>The prompt shows the IP address (or hostname) of the ThingsDB <em>node</em> you are connected to.
+                It also includes the port number and the scope where the queries will run in.</p>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>In many cases, it is unnecessary to display connection information in the
+                        prompt. Therefore, ThingsDB Prompt provides an optional argument,
+                        <code class="inline">--hide-connection-info</code>, which suppresses the display of the connection address and port. In this book, we'll utilize this argument for cleaner code examples.</p>
+                </div>
+            </div>
+            <p>If you start using ThingsDB in a production environment, you should start with more
+                than one node, preferably three or more. ThingsDB is designed from the start to run
+                on multiple nodes and utilizes multiple nodes to perform, for example, garbage
+                collection without blocking! Garbage collection is a problem for languages like
+                Python, Go and JavaScript. Although it is usually fast, it might result in shortly
+                blocking applications, especially when the application requires a lot of memory due
+                to the initialization of many objects. ThingsDB has solved this problem by ensuring
+                garbage collection will never run on more than one node at the same time. Queries
+                which are received by the node who is busy with garbage collection will forward the
+                query to another node so your client will not notice anything. The same technique is
+                used for creating backups as well.</p>
+            <p>Congratulations! You're now equipped to embark on your ThingsDB journey. With this
+                book as your guide, you'll gain a comprehensive understanding of this powerful data
+                management solution and its capabilities. So, dive in, explore the concepts, and let
+                ThingsDB unleash your creativity and innovation.</p>
+        </section>
+    </body>
+</html>

@@ -1,71 +1,71 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en"
-	lang="en">
-	<head>
-		<title>Installation</title>
-		<link rel="stylesheet" type="text/css" href="css/epub.css" />
-	</head>
-	<body>
-		<section class="intallation" epub:type="installation" role="doc-installation" aria-labelledby="installation_windows_h" id="_installation_windows">
-			<h4 id="installation_windows_h" class="title">Windows (WSL)</h4>
-			<p>While ThingsDB doesn't run natively on Windows, you can leverage
-				WSL (Windows Subsystem for Linux) to create a Linux environment
-				and enjoy all its functionalities! Here's how:</p>
-			<p><strong>Prerequisites:</strong></p>
-			<ul>
-				<li><strong>Windows 10 version 1903 or later (with WSL 2 enabled):</strong>
-					Check your version and enable WSL if needed:
-					<a href="https://learn.microsoft.com/en-us/windows/wsl/">https://learn.microsoft.com/en-us/windows/wsl/</a>
-				</li>
-				<li><strong>An active Internet connection</strong></li>
-			</ul>
-			<p><strong>Step 1: Install Ubuntu</strong></p>
-			<p>Open a PowerShell window and run:</p>
-			<pre><code class="prompt">PS C:\Users\admin></code> <code class="user">wsl --install -d Ubuntu</code>
+    lang="en">
+    <head>
+        <title>Installation</title>
+        <link rel="stylesheet" type="text/css" href="css/epub.css" />
+    </head>
+    <body>
+        <section class="intallation" epub:type="installation" role="doc-installation" aria-labelledby="installation_windows_h" id="_installation_windows">
+            <h4 id="installation_windows_h" class="title">Windows (WSL)</h4>
+            <p>While ThingsDB doesn't run natively on Windows, you can leverage
+                WSL (Windows Subsystem for Linux) to create a Linux environment
+                and enjoy all its functionalities! Here's how:</p>
+            <p><strong>Prerequisites:</strong></p>
+            <ul>
+                <li><strong>Windows 10 version 1903 or later (with WSL 2 enabled):</strong>
+                    Check your version and enable WSL if needed:
+                    <a href="https://learn.microsoft.com/en-us/windows/wsl/">https://learn.microsoft.com/en-us/windows/wsl/</a>
+                </li>
+                <li><strong>An active Internet connection</strong></li>
+            </ul>
+            <p><strong>Step 1: Install Ubuntu</strong></p>
+            <p>Open a PowerShell window and run:</p>
+            <pre><code class="prompt">PS C:\Users\admin></code> <code class="user">wsl --install -d Ubuntu</code>
 <code class="response">Installing: Ubuntu</code>
 <code class="response">…</code></pre>
-			<p>Follow the on-screen instructions to provide a username and password for your Ubuntu environment.</p>
-			<p><strong>Step 2: Update and Install Packages</strong></p>
-			<p>Once Ubuntu is installed, open a WSL terminal
-				(start menu &rarr; search for "Ubuntu") and update the package lists:</p>
-			<pre><code class="prompt">ti@LAPTOP:~$</code> <code class="user">sudo apt update</code>
+            <p>Follow the on-screen instructions to provide a username and password for your Ubuntu environment.</p>
+            <p><strong>Step 2: Update and Install Packages</strong></p>
+            <p>Once Ubuntu is installed, open a WSL terminal
+                (start menu &gt; search for "Ubuntu") and update the package lists:</p>
+            <pre><code class="prompt">ti@LAPTOP:~$</code> <code class="user">sudo apt update</code>
 <code class="response">…</code></pre>
-			<p>Then, install necessary packages:</p>
-			<pre><code class="prompt">ti@LAPTOP:~$</code> <code class="user">sudo apt-get install -y \
+            <p>Then, install necessary packages:</p>
+            <pre><code class="prompt">ti@LAPTOP:~$</code> <code class="user">sudo apt-get install -y \
     libuv1-dev \
     libpcre2-dev \
     libyajl-dev \
     libcurl4-nss-dev \
     build-essential</code>
 <code class="response">…</code></pre>
-			<p><strong>Step 3: Clone and Build ThingsDB</strong></p>
-			<p>Clone the ThingsDB repository:</p>
-			<pre><code class="prompt">ti@LAPTOP:~$</code> <code class="user">git clone https://github.com/thingsdb/ThingsDB.git</code>
+            <p><strong>Step 3: Clone and Build ThingsDB</strong></p>
+            <p>Clone the ThingsDB repository:</p>
+            <pre><code class="prompt">ti@LAPTOP:~$</code> <code class="user">git clone https://github.com/thingsdb/ThingsDB.git</code>
 <code class="response">…</code></pre>
-			<p>Navigate to the <code class="inline">ThingsDB/Release</code> directory and build ThingsDB:</p>
-			<pre><code class="prompt">ti@LAPTOP:~$</code> <code class="user">cd ThingsDB/Release</code>
-<code class="prompt">ti@LAPTOP:~/ThingsDB/Release$</code> <code class="user">make clean && make</code>
+            <p>Navigate to the <code class="inline">ThingsDB/Release</code> directory and build ThingsDB:</p>
+            <pre><code class="prompt">ti@LAPTOP:~$</code> <code class="user">cd ThingsDB/Release</code>
+<code class="prompt">ti@LAPTOP:~/ThingsDB/Release$</code> <code class="user">make clean &amp;&amp; make</code>
 <code class="response">…</code></pre>
-			<p><strong>Step 4: Create a Symlink (Optional)</strong></p>
-			<p>To easily start ThingsDB from any directory, create a symlink:</p>
-			<pre><code class="prompt">ti@LAPTOP:~/ThingsDB/Release$</code> <code class="user">sudo ln -sr ./thingsdb /usr/bin/thingsdb</code></pre>
-			<p><strong>Step 5: Verify Installation</strong></p>
-			<p>Check if ThingsDB is installed correctly:</p>
+            <p><strong>Step 4: Create a Symlink (Optional)</strong></p>
+            <p>To easily start ThingsDB from any directory, create a symlink:</p>
+            <pre><code class="prompt">ti@LAPTOP:~/ThingsDB/Release$</code> <code class="user">sudo ln -sr ./thingsdb /usr/bin/thingsdb</code></pre>
+            <p><strong>Step 5: Verify Installation</strong></p>
+            <p>Check if ThingsDB is installed correctly:</p>
 <pre><code class="prompt">ti@LAPTOP:~$</code> <code class="user">thingsdb --version</code>
-<code class="response">_____ _   _             ____  _____
-_   _| |_|_|___ ___ ___|    \| __  |
- | | |   | |   | . |_ -|  |  | __ -|
- |_| |_|_|_|_|_|_  |___|____/|_____|   version: 1.5.1
-			|___|
+<code class="response">   _____ _   _             ____  _____
+  |_   _| |_|_|___ ___ ___|    \| __  |
+    | | |   | |   | . |_ -|  |  | __ -|
+    |_| |_|_|_|_|_|_  |___|____/|_____|   version: 1.5.1
+                  |___|
 ThingsDB Node 1.5.1
-Maintainer: Jeroen van der Heijden <jeroen@cesbit.com>
+Maintainer: Jeroen van der Heijden &lt;jeroen@cesbit.com&gt;
 Home-page: https://thingsdb.io</code></pre>
-			<p><strong>Next Steps:</strong></p>
-			<p>Now you can start ThingsDB by typing <code class="inline">thingsdb</code> in your
-				WSL terminal.
-				Remember to open a WSL terminal (e.g., Ubuntu)
-				every time you want to use ThingsDB.</p>
-		</section>
-	</body>
+            <p><strong>Next Steps:</strong></p>
+            <p>Now you can start ThingsDB by typing <code class="inline">thingsdb</code> in your
+                WSL terminal.
+                Remember to open a WSL terminal (e.g., Ubuntu)
+                every time you want to use ThingsDB.</p>
+        </section>
+    </body>
 </html>
