@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<package xmlns="http://www.idpf.org/2007/opf" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:dcterms="http://purl.org/dc/terms/" version="3.0" xml:lang="en"
+	unique-identifier="pub-identifier">
+	<metadata>
+		<dc:identifier id="pub-identifier">urn:isbn:9783533169842</dc:identifier>
+		<dc:title id="pub-title">Data as Code - The ThingsDB Book</dc:title>
+		<dc:language id="pub-language">en</dc:language>
+		<dc:date>2024-03-06</dc:date>
+		<meta property="dcterms:modified">2024-03-01T15:30:00Z</meta>
+		<dc:creator id="pub-creator">Jeroen van der Heijden</dc:creator>
+		<dc:contributor>Anja Bruls</dc:contributor>
+		<dc:contributor>Sasha Tychkovska</dc:contributor>
+		<dc:contributor>Rik Lempens</dc:contributor>
+		<dc:contributor>Koos Joosten</dc:contributor>
+		<dc:publisher>Jeroen van der Heijden</dc:publisher>
+		<dc:rights>Copyright © 2024</dc:rights>
+		<meta property="schema:accessMode">textual</meta>
+		<meta property="schema:accessMode">visual</meta>
+		<meta property="schema:accessModeSufficient">textual,visual</meta>
+		<meta property="schema:accessModeSufficient">textual</meta>
+		<meta property="schema:accessibilityHazard">none</meta>
+		<meta property="schema:accessibilityFeature">tableOfContents</meta>
+		<meta property="schema:accessibilityFeature">readingOrder</meta>
+		<meta property="schema:accessibilityFeature">alternativeText</meta>
+		<meta property="schema:accessibilitySummary">This EPUB Publication meets the requirements of the EPUB Accessibility specification with conformance to WCAG 2.0 Level AA. The publication is screen reader friendly.</meta>
+		<link rel="dcterms:conformsTo" href="http://www.idpf.org/epub/a11y/accessibility-20170105.html#wcag-aa"/>
+		<meta property="a11y:certifiedBy">Jeroen van der Heijden</meta>
+	</metadata>
+	<manifest>
+		<item id="htmltoc" properties="nav" media-type="application/xhtml+xml" href="bk01-toc.xhtml"/>
+		<item media-type="text/css" id="epub-css" href="css/epub.css"/>
+		<item media-type="text/css" id="epub-tss-css" href="css/synth.css"/>
+		<item id="cover" href="cover.xhtml" media-type="application/xhtml+xml"/>
+		<item id="cover-image" properties="cover-image" href="covers/cover.jpg" media-type="image/jpeg"/>
+		<item id="id-index" href="index.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-dedication" href="dedication.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-preface" href="preface.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-installation" href="installation.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-node" href="node.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-docker" href="docker.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-linux" href="linux.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-mac" href="mac.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-windows" href="windows.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-python" href="python.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-prompt" href="prompt.xhtml" media-type="application/xhtml+xml"/>
+		<item id="lightbulb" href="images/lightbulb.png" media-type="image/png"/>
+		<item id="epub.embedded.font.1" href="fonts/Oswald-Bold.ttf" media-type="application/vnd.ms-opentype"/>
+		<item id="epub.embedded.font.2" href="fonts/RobotoMono-VariableFont_wght.ttf" media-type="application/vnd.ms-opentype"/>
+	</manifest>
+	<spine>
+		<itemref idref="cover" linear="no"/>
+		<itemref idref="id-index"/>
+		<itemref idref="id-dedication"/>
+		<itemref idref="htmltoc" linear="yes"/>
+		<itemref idref="id-preface"/>
+		<itemref idref="id-installation"/>
+		<itemref idref="id-node"/>
+		<itemref idref="id-docker"/>
+		<itemref idref="id-linux"/>
+		<itemref idref="id-mac"/>
+		<itemref idref="id-windows"/>
+		<itemref idref="id-python"/>
+		<itemref idref="id-prompt"/>
+	</spine>
+</package>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en"
+	lang="en">
+	<head>
+		<title>Installation</title>
+		<link rel="stylesheet" type="text/css" href="css/epub.css" />
+	</head>
+	<body>
+		<section class="intallation" epub:type="installation" role="doc-installation" aria-labelledby="docker_h" id="_docker">
+			<h4 id="docker_h" class="title">Docker</h4>
+			<p>This guide will walk you through installing and running ThingsDB using Docker Compose,
+                a convenient tool for managing Docker configurations.</p>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="note-content">
+                    <p><strong>Prefer manual installation?</strong> Skip this section and proceed to the guide for
+                        installing ThingsDB from source code on your specific operating system
+                        <a href="linux.xhtml">Linux</a>, <a href="mac.xhtml">Mac</a>, or <a href="windows.xhtml">Windows (WSL)</a>.
+                        Choose the instructions that match your system.</p>
+                </div>
+            </div>
+            <p>If you do not already have Docker installed, you can download it from
+                here: <a href="https://docs.docker.com/get-docker/">https://docs.docker.com/get-docker/</a></p>
+            <p>Check your docker version: <em>(version 23 or higher is required)</em></p>
+			<pre><code class="prompt">$</code> <code class="user">docker -v</code>
+<code class="response">Docker version 25.0.3, build 4debf41</code></pre>
+            <p>Create a project directory and navigate to that directory:</p>
+			<pre><code class="prompt">$</code> <code class="user">mkdir thingsdb_book</code>
+<code class="prompt">$</code> <code class="user">cd thingsdb_book</code>
+<code class="prompt">~/thingsdb_book$</code></pre>
+            <p>Paste the following content into a new file named <code class="inline">docker-compose.yml</code>
+                in your project directory: (or download the file from here:
+                <a href="https://docs.thingsdb.io/v1/book/docker-compose.yml">https://docs.thingsdb.io/v1/book/docker-compose.yml</a>)
+            </p>
+			<pre><code class="prompt">x-ti-template: &amp;ti
+  image: ghcr.io/thingsdb/node
+  restart: unless-stopped
+  environment:
+    - THINGSDB_BIND_CLIENT_ADDR = '::'
+    - THINGSDB_BIND_NODE_ADDR = '::'
+    - THINGSDB_HTTP_API_PORT = 9220
+    - THINGSDB_HTTP_STATUS_PORT = 8080
+    - THINGSDB_MODULES_PATH = /modules/
+    - THINGSDB_STORAGE_PATH = /data/
+services:
+  node0:
+    &lt;&lt; : *ti
+    hostname: node0
+    container_name: node0
+    command: "--init"
+    ports:
+      - 9200:9200
+      - 9220:9220
+      - 8080:8080
+    volumes:
+      - ./node0/data:/data/
+      - ./node0/modules:/modules/
+      - ./node0/dump:/dump/</code>
+<code class="comment">
+## Uncomment the following sections to add more nodes (optional)
+# node1:
+#   &lt;&lt; : *ti
+#   hostname: node1
+#   container_name: node1
+#   command: "--secret pass"
+#   ports:
+#     - 8081:8080
+#   volumes:
+#     - ./node1/data:/data/
+#     - ./node1/modules:/modules/
+#     - ./node1/dump:/dump/</code></pre>
+            <p>Make sure you are in the directory where your
+                <code class="inline">docker-compose.yml</code> file is located
+                and run the following command to pull the image:</p>
+            <pre><code class="prompt">~/thingsdb_book$</code> <code class="user">docker compose pull</code>
+<code class="response">…</code></pre>
+            <p>Use this command to launch ThingsDB as a persistent background service:</p>
+            <pre><code class="prompt">~/thingsdb_book$</code> <code class="user">docker compose up -d</code>
+<code class="response">[+] Running 1/1</code>
+<code class="response">✔ Container node0  Started</code></pre>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="note-content">
+                    <p>You'll see output indicating that the container is starting.
+                        Don't worry if only one node is initially active;
+                        you can learn about scaling to multiple nodes in <a href="ch15.xhtml">Chapter 15</a>.</p>
+                </div>
+            </div>
+            <p>You've successfully set up Docker. Let's move on to <a href="python.xhtml">installing Python</a>.</p>
+		</section>
+	</body>
+</html>
