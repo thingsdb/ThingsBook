@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
+<head>
+<title>Chapter 2 - Integers, Floating Points, Booleans, Strings and Nil</title>
+<link rel="stylesheet" type="text/css" href="css/epub.css" />
+</head>
+<body>
+<section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch02_h" id="_ch02">
+    <h2 id="ch02_h" class="title">Chapter 2 - Integers, Floating Points, Booleans, Strings and Nil</h2>
+    <p>For this chapter we switch to the newly created collection <em>(see the previous chapter on how to create the collection)</em>.</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">@ //chapter2</code>
+<code class="prompt">(//chapter2)&gt;</code></pre>
+    <div class="note">
+        <img class="note" src="images/lightbulb.png" alt="Note" />
+        <div class="content">
+            <p>The @ command tells the prompt you want to switch to another scope. In this example we used the forward-slash notation to switch to the "chapter2" collection.</p>
+
+        </div>
+    </div>
+    <section class="sect1">
+        <h3 id="ch02_1_h" class="title">2.1 Integers</h3>
+        <p>In ThingsDB integers, strings, boolean and floating point values are all immutable. That is, you cannot change an
+            immutable value once it is created. An integer is a number without a fractional component. Examples
+            are <code class="inline">1</code>, <code class="inline">2</code>, <code class="inline">415</code> but
+            also <code class="inline">0</code> and negative integers like <code class="inline">-15</code>. As we explained,
+            integer values are immutable which means that we cannot change the value once assigned.</p>
+        <p>For example, if we assign the integer to the variable <code class="inline">x</code>, we cannot change the value.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">x = 42;</code>  <code class="comment">// x will be immutable</code>
+<code class="response">42</code></pre>
+        <p>We cannot change the value as <code class="inline">x</code> is immutable, but we can assign a <em>new</em> value to <code class="inline">x</code>.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="comment">// press CTRL+n for a new line</code>
+<code class="user">x = 2;</code>
+<code class="user">x = x + 1;</code>  <code class="comment">// overwrite x with a new integer value</code>
+<code class="response">3</code></pre>
+        <p>The return value is indeed the last assignment.</p>
+        <p>Aside from the basic assignment operator (<code class="inline">=</code>), ThingsDB supports other assignment
+            operations that allow you to modify values in more complex ways. For instance, you can use the addition
+            assignment operator (<code class="inline">+=</code>) to add a value to another and assign the result to a variable.
+            For example:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="comment">// press CTRL+n for a new line</code>
+<code class="user">x = 2;</code>
+<code class="user">x += 1;</code>  <code class="comment">// read as: x = x + 1</code>
+<code class="response">3</code></pre>
+        <div class="table">
+            <h2 id="ta02_1"></h2>
+            <p class="title">Table 2.1 - Assignment operators</p>
+            <table>
+                <tr><th>Operator</th><th>Description</th></tr>
+                <tr><td><code class="inline">=</code></td><td>Assignment operator</td></tr>
+                <tr><td><code class="inline">*=</code></td><td>Multiplication assignment</td></tr>
+                <tr><td><code class="inline">/=</code></td><td>Float division assignment</td></tr>
+                <tr><td><code class="inline">%=</code></td><td>Modulo assignment</td></tr>
+                <tr><td><code class="inline">+=</code></td><td>Addition assignment</td></tr>
+                <tr><td><code class="inline">-=</code></td><td>Subtraction assignment</td></tr>
+                <tr><td><code class="inline">&amp;=</code></td><td>Bitwise AND assignment</td></tr>
+                <tr><td><code class="inline">^=</code></td><td>Bitwise XOR assignment</td></tr>
+                <tr><td><code class="inline">|=</code></td><td>Bitwise OR assignment</td></tr>
+            </table>
+        </div>
+        <p>The range of integers is limited to a minimum and maximum value. You can ask this minimum and maximum value
+            with the keywords <code class="inline">INT_MIN</code> and <code class="inline">INT_MAX</code>.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">INT_MIN;</code>
+<code class="response">-9223372036854775808</code>
+<code class="prompt">(//chapter2)&gt;</code> <code class="user">INT_MAX;</code>
+<code class="response">9223372036854775807</code></pre>
+        <p>When you try to create an integer value outside this range, an Overflow error is raised as ThingsDB
+            cannot store this value.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">INT_MAX + 1;</code>  <code class="comment">// this will error</code>
+<code class="response">OverflowError: integer overflow</code></pre>
+        <p>In addition to the familiar base-10 notation, integers can also be represented using hexadecimal
+            (hex), octal (oct), and binary notation. Each of these notations has its own unique set of symbols
+            and prefixes that distinguish it from the others.</p>
+        <p>Hexadecimal notation (hex) uses the digits 0-9 and the letters A-F to represent values from 0 to 15.
+            Hex numbers are prefixed with the identifier "0x" to indicate their hexadecimal nature. For instance,
+            the number <code class="inline">0xFF</code> represents the decimal value <code class="inline">255</code>.</p>
+        <p>Octal notation (oct) employs the digits 0-7 to represent values from 0 to 7. Octal numbers are prefixed with
+            the identifier "0o" to distinguish them. For example, the
+            number <code class="inline">0o77</code> stands for the decimal value <code class="inline">63</code>.</p>
+        <p>Binary notation (bin) utilizes only the digits 0 and 1 to represent values from 0 to 1. Binary numbers are
+            prefixed with the identifier "0b". For example, the
+            number <code class="inline">0b1010</code> equals the decimal value <code class="inline">10</code>.</p>
+        <p>Here are a few examples:</p>
+    </section>
+</section>
+</body>
+</html>

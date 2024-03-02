@@ -8,6 +8,17 @@
 <body>
 <section class="sect2">
     <h4 id="ch01_7_1_h" class="title">1.7.1 Quiz - Answers</h4>
+    <ol class="quiz">
+        <li><p>ThingsDB is different in that it uses a distributed interpreter which preserves its state making it a programming language with database capabilities.</p></li>
+        <li><p>The <code class="inline">--init</code> argument is essential when initiating ThingsDB for the first time. It establishes the data path and creates a foundational collection. Subsequent invocations of ThingsDB with the <code class="inline">--init</code> argument will be disregarded unless accompanied by the <code class="inline">--force</code> argument to override existing configurations.</p></li>
+        <li><p>While the code block is not strictly necessary, it is missing a crucial semicolon to terminate the code block statement. As a result, running this code would generate an error message: <code class="inline">..unexpected character `b`, expecting: ; or end_of_statement</code>. To rectify the issue, either add a semicolon after the code block or remove the code block entirely.</p></li>
+        <li><p>Answer "d" is correct. In this code snippet, <code class="inline">a</code> is a variable, and <code class="inline">.b</code> is a property of the collection root. The equivalent code would be <code class="inline">root().b;</code>, which explicitly references the root collection and then accesses its b property.</p></li>
+        <li><p>The variable names "b", "d" and "e" are valid. A variable name cannot start with a number making <code class="inline">4you</code> invalid. A variable name may only consist of the letters a-z, A-Z, underscores (_) and digits 0-9 <em>(except for the first character which is not allowed to be a digit)</em>. Therefore, <code class="inline">my-hobby</code> is invalid as it contains the “-” character.</p></li>
+        <li><p>The value of property <code class="inline">x</code> is 1. The <code class="inline">get()</code> method effectively retrieves the value of property <code class="inline">x</code>, which is 1. It optionally takes a second argument to provide a fallback value in case the property does not exist. In this instance, since the property <code class="inline">x</code> is found, the second argument is never evaluated, demonstrating the concept of <em>"lazy evaluation"</em> in action.</p></li>
+        <li><p>The response of a query encapsulates the outcome of the final statement executed within the query. Typically, this refers to the last statement within the provided code, unless an exception arises or the return keyword is explicitly employed.</p></li>
+        <li><p>No. The <code class="inline">@thingsdb</code> scope is specifically designed for managing your ThingsDB cluster, not for storing data. It allows you to handle administrative tasks such as user access control, collection creation, node management, and more. While you can create procedures within the <code class="inline">@thingsdb</code> scope, it does not provide a root thing to store properties. Therefore, you must use a collection scope to store data.</p></li>
+        <li><p>Both "a" and "d" are correct. New collections can be created in the <code class="inline">@thingsdb</code> scope and both <code class="inline">/t</code> and <code class="inline">@thing</code> are valid abbreviations. Both "b" and "c" are collection scopes and "e" is an example of a node scope.</p></li>
+    </ol>
 </section>
 </body>
 </html>
