@@ -311,6 +311,70 @@ are multiline!!";</code>
             <p>As before, the response is presented as JSON format, and therefore the newline characters are
                 displayed as <code class="inline">\n</code>.</p>
         </section>
+        <section class="sect2">
+            <h4 id="ch02_5_3_h" class="title">2.5.3 Concatenation and t-strings</h4>
+            <p>String concatenation can be accomplished using the <code class="inline">+</code> operator.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">"My " + .b + " is black";</code>
+<code class="response">"My bike is black"</code></pre>
+            <p>Take note that this does not work with other data types unless we explicitly convert them to strings:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="comment">// CTRL-n for a new line</code>
+<code class="user">.n = 3;</code>  <code class="comment">// Assign integer 3 to property "n"</code>
+<code class="user">"I've " + .n + “ apples";</code>
+<code class="response">TypeError: `+` not supported between `str` and `int`</code></pre>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>Remember that even though the code above resulted in an exception, the
+                        property "n" is still preserved..</p>
+                </div>
+            </div>
+            <p>To rectify the example above, we can utilize the <code class="inline">str()</code> method to convert
+                the integer to a string:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">"I've " + str(.n) + “ apples";</code>
+<code class="response">"I've 3 apples"</code></pre>
+            <p>In practice, it is advisable to avoid string concatenation. Instead, opting for t-strings is a
+                superior choice. A t-string starts and ends with a backtick (<code class="inline">`</code>) and
+                enables us to embed variables or even entire expressions within curly braces.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">`I've {.n} apples`;</code>
+<code class="response">"I've 3 apples"</code></pre>
+            <p>This approach does not only enhance readability but also eliminates the risk of forgetting to convert
+                to a string, as the conversion is done automatically when using the t-string syntax.</p>
+            <p>If you need to include curly braces or backticks within a t-string, you can follow the same escaping
+                method used for single and double-quoted strings. To escape a curly brace, use two consecutive curly
+                braces, and for a backtick, use another backtick.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">`Sentence with ``Backticks`` and {{Curlies}}.`;</code>
+<code class="response">"Sentence with `Backticks` and {Curlies}."</code></pre>
+            <p>This approach ensures that the braces and backticks are interpreted as part of the string and not as
+                special characters.</p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch02_6_h" class="title">2.6 Nil</h3>
+        <p>Before delving into the quiz for this chapter, let's explore the <code class="inline">nil</code> data type. We've encountered
+            <code class="inline">nil</code> before as the return value of functions, methods or statements that don't produce
+            any meaningful output. This concept extends to queries where we don't expect a substantial response.</p>
+        <p>Consider the following:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">.quote = "'So many books, so little time.' -- Frank Zappa";</code>
+<code class="response">"'So many books, so little time.' -- Frank Zappa"</code></pre>
+        <p>This query assigns a quote but also sends the quote back to the client, consuming unnecessary network bandwidth.
+            Since we have already stored the quote, we do not need it echoed back in the response. In such cases,
+            it is considered a best practice to terminate the code with the <code class="inline">nil</code> type to prevent this unnecessary response:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">.quote = "'So many books, so little time.' -- Frank Zappa";</code>
+<code class="user">nil;</code>
+<code class="response">null</code></pre>
+        <p>By appending <code class="inline">nil</code>, we avoid sending the quote back to the client, minimizing network
+            overhead. Explicitly ending a query with <code class="inline">nil</code> also enhances the code's readability and intent. It clearly
+            indicates that the query does not expect a response, making the code more self-explanatory and easier to follow.</p>
+        <section class="sect2">
+            <h4 id="ch02_6_1_h" class="title">2.6.1 Avoiding Ambiguity with Nil as a Placeholder</h4>
+            <p>The <code class="inline">nil</code> data type often serves as a placeholder for empty values. While this
+                can be convenient, it is crucial to avoid relying solely on the fact that <code class="inline">nil</code>
+                evaluates to <code class="inline">false</code>. This is because other data types, such as an integer
+                value of <code class="inline">0</code> or an empty string, also evaluate to <code class="inline">false</code>.
+                To accurately identify <code class="inline">nil</code>, use the dedicated <code class="inline">is_nil()</code>
+                function. This ensures that you are explicitly checking for the absence of a value rather than relying on
+                potentially misleading behavior.</p>
+        </section>
     </section>
 </section>
 </body>

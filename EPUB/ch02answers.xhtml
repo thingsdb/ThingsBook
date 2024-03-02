@@ -9,7 +9,16 @@
 <section class="sect2">
     <h4 id="ch02_7_1_h" class="title">2.7.1 Quiz - Answers</h4>
     <ol class="quiz">
-
+        <li><p>The result will be a float. When one operand is a float, the other operand is internally promoted to a float and the result will also be a float.</p></li>
+        <li><p>The exclamation mark before the value <code class="inline">0.0</code> converts the value to a boolean (<code class="inline">false</code>) and then flips the value (<code class="inline">true</code>). The second exclamation mark inverts the result again, so the final result is <code class="inline">false</code>.</p></li>
+        <li><p>The result of evaluating the expression <code class="inline">sqrt(25);</code> is <code class="inline">5.0</code>. While you might initially think of the answer as simply <code class="inline">5</code>, remember that the <code class="inline">sqrt()</code> function always returns a float, even when the input is an integer.</p></li>
+        <li><p>No, strings in ThingsDB are immutable, meaning they cannot be changed after they are created. You can create a <em>new</em> string with uppercase characters by using the <code class="inline">upper()</code> method.</p></li>
+        <li><p>The correct answer is “c”, strings are internally represented as sequences of bytes. A string should be encoded in UTF-8 but this is not guaranteed. Strings can be defined across multiple lines and an empty string evaluates to false when converted to bool, but is still a valid string.</p></li>
+        <li><p>The string <code class="inline">"ici"</code>. Indexing starts at zero, so index 2 corresponds to the third character. The slicing operation results in a substring consisting of the characters from index 2 <em>(inclusive)</em> to index 5 <em>(exclusive)</em>.</p></li>
+        <li><p>The resulting string is <code class="inline">"green green grass, blue blue sky"</code>. The <code class="inline">replace()</code> method can be employed to replace a specified sequence of characters within a string with another string. Optionally, you can specify the number of instances to be replaced. Had the optional argument not been set to <code class="inline">2</code>, the result would have been <code class="inline">"green green grass, green green sky"</code>.</p>
+            <p><em>(The replace() method offers more capabilities than described here. Consult the documentation for a comprehensive overview of its power: <a href="https://docs.thingsdb.io/v1/data-types/str/replace/">https://docs.thingsdb.io/v1/data-types/str/replace/</a>).</em></p>
+        </li>
+        <li><p>When you execute a query that does not produce a meaningful response. It prevents unnecessary transmission of data back to the client and improves clarity and readability as it clearly indicates that the query does not expect a response.</p></li>
     </ol>
 </section>
 </body>
