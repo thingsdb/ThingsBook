@@ -14,8 +14,8 @@
     <div class="note">
         <img class="note" src="images/lightbulb.png" alt="Note" />
         <div class="content">
-            <p>The @ command tells the prompt you want to switch to another scope. In this example we used the forward-slash notation to switch to the "chapter2" collection.</p>
-
+            <p>The @ command tells the prompt you want to switch to another scope. In this example we used the
+                forward-slash notation to switch to the "chapter2" collection.</p>
         </div>
     </div>
     <section class="sect1">
@@ -81,6 +81,236 @@
             prefixed with the identifier "0b". For example, the
             number <code class="inline">0b1010</code> equals the decimal value <code class="inline">10</code>.</p>
         <p>Here are a few examples:</p>
+<pre><code class="user">0xff;</code>    <code class="comment">// hex notation (255)</code>
+<code class="user">0x1F;</code>    <code class="comment">// hex notation (31) - capital letters are allowed</code>
+<code class="user">0X10;</code>    <code class="comment">// !! error !! - the “x” must be lowercase</code>
+<code class="user">123;</code>     <code class="comment">// decimal notation</code>
+<code class="user">0o77;</code>    <code class="comment">// octal notation (63) - the “o” must be lowercase</code>
+<code class="user">0b1010;</code>  <code class="comment">// binary notation (10) - the “b” must be lowercase</code></pre>
+        <p>Assignments work from right to left. The example below first assigns <code class="inline">30</code> to
+            <code class="inline">apples</code>, then <code class="inline">apples</code> is assigned to <code class="inline">grapes</code>
+            and finally <code class="inline">grapes</code> is assigned to <code class="inline">lemons</code>.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">lemons = grapes = apples = 30;</code>
+<code class="response">30</code></pre>
+    </section>
+    <section class="sect1">
+        <h3 id="ch02_2_h" class="title">2.2 Floating Points</h3>
+        <p>Floating-point numbers are used to represent numbers with decimal parts, such as <code class="inline">0.5</code>
+            and <code class="inline">3.14159</code>. ThingsDB supports two notations for representing floating-point
+            numbers: standard decimal point notation and scientific notation (E notation).</p>
+        <p>Standard decimal point notation is commonly used for representing everyday numbers, such as <code class="inline">1.0</code>,
+            <code class="inline">56.0</code>, and <code class="inline">0.5</code>. The E notation is more compact and is
+            typically used for representing very large or very small numbers. For example, the number <code class="inline">1.5e+3</code>,
+            written in E notation, represents the same value as <code class="inline">1.5 * 1000</code>. Similarly,
+            <code class="inline">1.2e-4</code>, written in E notation, represents the same value as <code class="inline">1.2 * 0.0001</code>.</p>
+        <p>ThingsDB adheres to strict rules for writing E notation. The "e" must always be lowercase, and the sign (+ or -) is
+            required to indicate whether to multiply by 10 to the positive or negative power.</p>
+        <p>Due to the limited precision of 64-bit floating-point numbers in ThingsDB, some decimal values may not be
+            represented accurately. For instance, the result of dividing <code class="inline">10.0</code> by
+            <code class="inline">3.0</code> is displayed as <code class="inline">3.3333333333333335</code>, even though the
+            actual decimal representation extends infinitely. This is because the 64-bit format can only store a finite number
+            of decimal digits.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">10.0 / 3.0;</code>  <code class="comment">// the single / means division</code>
+<code class="response">3.3333333333333335</code></pre>
+        <p>ThingsDB follows the standard floating-point behavior when performing arithmetic operations. If either operand is
+            a float, the result will also be a float. However, if both operands are integers, the result will be an integer
+            and will be rounded towards the nearest integer towards zero. For example, <code class="inline">10 / 3</code> will
+            be <code class="inline">3</code>, and <code class="inline">10 / -3</code> will be <code class="inline">-3</code>.
+            This is because integer division in ThingsDB truncates the fractional part, discarding any decimal places.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>The decision of whether to use integer or float values depends on the specific context and the desired
+                    precision. Integers have a slight advantage in terms of storage size, as they can be compressed using
+                    the MessagePack protocol to occupy only 1 byte up to max 9 bytes whereas floating point values always
+                    are serialized using 9 bytes.</p>
+            </div>
+        </div>
+        <p>Two special floating-point values exist in ThingsDB: <code class="inline">inf</code> (infinity) and <code class="inline">nan</code>
+            (NaN, not a number). Infinity represents an infinitely large number, while NaN represents a value that cannot be
+            represented accurately. In other programming languages, <code class="inline">nan</code> may be the result of operations
+            like <code class="inline">0/0</code>, but in ThingsDB, such operations will throw a division by zero error.</p>
+        <p>In ThingsDB, you will encounter <code class="inline">nan</code> only when a value is explicitly set to <code class="inline">nan</code>
+            or when incoming arguments contain <code class="inline">nan</code>. One important distinction to remember is that
+            comparing <code class="inline">nan</code> values to other values will always yield false results. Instead, use
+            the <code class="inline">is_nan()</code> function to explicitly check whether a value is <code class="inline">nan</code>.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">nan == nan;</code>  <code class="comment">// this is false!!</code>
+<code class="response">false</code>
+<code class="prompt">(//chapter2)&gt;</code> <code class="user">is_nan(nan);</code>  <code class="comment">// use is_nan() to test for NaN</code>
+<code class="response">true</code></pre>
+    </section>
+    <section class="sect1">
+        <h3 id="ch02_3_h" class="title">2.3 Numeric Tools</h3>
+        <p>In addition to the arithmetic operators, ThingsDB provides a set of handy mathematical functions for performing
+            calculations on numbers. These functions typically accept either a float or integer as input and return the
+            calculated result. As an example, the <code class="inline">sqrt()</code> function calculates the square root
+            of a given number. Here are a few examples:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">sqrt(9);</code>  <code class="comment">// Square root of 9</code>
+<code class="response">3.0</code>
+<code class="prompt">(//chapter2)&gt;</code> <code class="user">pow(5, 3);</code>  <code class="comment">// 5 raised to the power of 3</code>
+<code class="response">125.0</code>
+<code class="prompt">(//chapter2)&gt;</code> <code class="user">round(loge(5.12), 3);</code>  <code class="comment">// Combine round() and loge()</code>
+<code class="response">1.633</code>
+<code class="prompt">(//chapter2)&gt;</code> <code class="user">ceil(6.1034);</code>  <code class="comment">// Ceil of a given number</code>
+<code class="response">7</code></pre>
+        <p>For a comprehensive list of all available mathematical functions, refer to the official
+            ThingsDB documentation: <a href="https://docs.thingsdb.io/v1/collection-api/math/">https://docs.thingsdb.io/v1/collection-api/math/</a></p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch02_4_h" class="title">2.4 Boolean</h3>
+        <p>The bool type, named after George Boole, is used to represent truth values. ThingsDB automatically converts bool
+            values to integers when needed. This conversion follows the standard convention of representing
+            <code class="inline">true</code> as <code class="inline">1</code> and <code class="inline">false</code> as <code class="inline">0</code>.
+            For instance, adding two <code class="inline">true</code> values would result in <code class="inline">2</code>.
+            Similarly, subtracting two <code class="inline">false</code> values would result in <code class="inline">0</code>.
+            Consider this example:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">true + true;</code>
+<code class="response">2</code></pre>
+        <p>In this example, the expression <code class="inline">true + true</code> is evaluated to <code class="inline">2</code>,
+            even though both operands are bool values.</p>
+        <p>In ThingsDB, you can also convert other data types to the bool type. For example, an integer value
+            of <code class="inline">0</code> converts to <code class="inline">false</code>, and any other integer value
+            converts to <code class="inline">true</code>. This applies to other data types as well, such as floats and
+            strings. An empty string converts to <code class="inline">false</code>, while a string with any content, even
+            whitespace, converts to <code class="inline">true</code>.</p>
+        <p>Here is an example demonstrating this:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">bool(0.0);</code>  <code class="comment">// float 0.0 (false)</code>
+<code class="response">false</code>
+<code class="prompt">(//chapter2)&gt;</code> <code class="user">bool("");</code>  <code class="comment">// empty string (false)</code>
+<code class="response">false</code>
+<code class="prompt">(//chapter2)&gt;</code> <code class="user">bool(-4.13);</code>  <code class="comment">// non-zero float (true)</code>
+<code class="response">true</code>
+<code class="prompt">(//chapter2)&gt;</code> <code class="user">bool("Hello");</code>  <code class="comment">// non-empty string (true)</code>
+<code class="response">true</code></pre>
+        <p>The conversion rules for other data types are described later in this book, but the important thing to remember
+            is that <em>any</em> type can be converted to the bool type.</p>
+        <p>Occasionally, you might encounter code that employs two exclamation marks (<code class="inline">!!</code>)
+            instead of the <code class="inline">bool()</code> function. The single exclamation mark serves as the "not"
+            operator, which first converts the value following it to a boolean and then flips that value.
+             When a second exclamation mark is used, the inverted value is inverted once more.
+             As you can see, this ultimately yields the same result as using the <code class="inline">bool()</code> function.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">!!"Cool";</code>  <code class="comment">// non-empty string (true)</code>
+<code class="response">true</code></pre>
+        <p>This usage serves as a concise alternative to explicitly calling the <code class="inline">bool()</code> function.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch02_5_h" class="title">2.5 Strings</h3>
+        <p>Strings are used to store textual data and are typically encoded using UTF-8. Whether the encoding is indeed UTF-8
+            depends on whether the MessagePack protocol is followed during communication with ThingsDB. Strings are sequences
+            of characters and can be indexed, meaning they have a defined length.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">.b = "bike";</code>
+<code class="response">"bike"</code>
+<code class="prompt">(//chapter2)&gt;</code> <code class="user">.b.len();</code>  <code class="comment">// len() is a method of type "str"</code>
+<code class="response">4</code></pre>
+        <p>As demonstrated, strings are objects with associated methods. The <code class="inline">len()</code> method is an example
+            that can be used to determine the length of a string.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">.b[0];</code>  <code class="comment">// the first byte is at index 0</code>
+<code class="response">"b"</code></pre>
+        <p>Indexing for strings begins at position 0. Negative indexing is also supported.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">.b[-1];</code>  <code class="comment">// last byte, read as: .b[.b.len()-1]</code>
+<code class="response">"e"</code>
+<code class="prompt">(//chapter2)&gt;</code> <code class="user">.b[.b.len() - 1];</code>  <code class="comment">// last byte, the hard way</code>
+<code class="response">"e"</code></pre>
+        <p>Notice that any expression can be used for indexing strings. ThingsDB supports this level of flexibility.</p>
+        <p>Besides indexing, strings <em>(and other sequences)</em> support slicing, which allows you to extract a specific
+            segment from the sequence. Slicing involves specifying a starting position <em>(inclusive)</em>, an ending
+            position <em>(exclusive)</em>, and an optional step size.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">.b[1:3];</code>  <code class="comment">// slice from position 1 up to,</code>
+                        <code class="comment">// but not including, position 3</code>
+<code class="response">"ik"</code></pre>
+        <p>Slicing operations create a new string, leaving the original string unchanged. This is because strings in
+            ThingsDB are immutable, meaning they cannot be directly modified.</p>
+        <p>The general format for a slice is <code class="inline">[start:end:step]</code>, where <code class="inline">start</code>
+            defaults to <code class="inline">0</code>, <code class="inline">end</code> defaults to the length of the string,
+            and <code class="inline">step</code> defaults to <code class="inline">1</code>.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">.b[1:];</code>  <code class="comment">// equivalent to .b[1:.b.len()]</code>
+<code class="response">"ike"</code>
+<code class="prompt">(//chapter2)&gt;</code> <code class="user">.b[:-2];</code> <code class="comment">// equivalent to .b[0:.b.len()-2]</code>
+<code class="response">"bi"</code>
+<code class="prompt">(//chapter2)&gt;</code> <code class="user">.b[:];</code>   <code class="comment">// equivalent to .b[0:.b.len()]</code>
+<code class="response">"bike"</code></pre>
+        <p>The step parameter enables you to select specific elements of the sequence by skipping over certain values.
+            Negative step values can also be used to begin from the end of the sequence.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">.b[::2];</code>  <code class="comment">// slice with an even step size,</code>
+                        <code class="comment">// extracting only even-indexed bytes</code>
+<code class="response">"bk"</code>
+<code class="prompt">(//chapter2)&gt;</code> <code class="user">.b[::-1];</code> <code class="comment">// slice in reverse order</code>
+<code class="response">"ekib"</code></pre>
+        <p>In prior discussions, we have often used the term "bytes" instead of "characters" when referring to strings.
+            This is because the length of a string in ThingsDB is measured in bytes, not characters. This can be important
+            to keep in mind, especially when dealing with UTF-8 encoded strings, which can use multiple bytes to represent
+            a single character.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">.u = "Hi! 😁";</code>  <code class="comment">// UTF-8 string with smiley</code>
+<code class="response">"Hi! \ud83d\ude01"</code>
+<code class="prompt">(//chapter2)&gt;</code> <code class="user">.u.len();</code>  <code class="comment">// Length of the string in bytes</code>
+<code class="response">8</code>
+<code class="prompt">(//chapter2)&gt;</code> <code class="user">is_utf8(.u);</code>  <code class="comment">// Check if UTF-8 encoded</code>
+<code class="response">true</code></pre>
+        <p>In this example, the string <code class="inline">"Hi! 😁"</code> has a length of 8 bytes, even though it contains
+            only 5 characters. This is because the Unicode character for the smiley face, 😁, requires 4 bytes to represent.
+            When working with strings in ThingsDB, it is crucial to remember that strings are internally treated as sequences
+            of bytes, not characters.</p>
+        <p>To further illustrate the distinction between bytes and characters, consider this example:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">.u[-3:];</code>  <code class="comment">// don't try this</code>
+<code class="response">(!! your client will likely crash or at least display an unpacking error)</code></pre>
+        <p>This code attempts to index the string <code class="inline">.u</code> starting from the third-last character.
+            However, since UTF-8 encoded characters can span multiple bytes, attempting to index directly by character
+            position can lead to unexpected behavior, as demonstrated by the potential client error.</p>
+        <p>On the other hand, ThingsDB internally handles strings as sequences of bytes. Therefore, while this specific
+            indexing operation might cause issues on the client-side, ThingsDB itself can still process the string correctly.
+            This is evident from the following command:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">is_utf8(.u[-3:]);</code>  <code class="comment">// No problem for ThingsDB</code>
+<code class="response">false</code></pre>
+        <p>This command confirms that ThingsDB can still determine that the extracted substring is not valid UTF-8 even
+            though it is accessed using an invalid character index. This demonstrates that ThingsDB handles strings
+            consistently as sequences of bytes, regardless of the specific indexing operations performed.</p>
+        <section class="sect2">
+            <h4 id="ch02_5_1_h" class="title">2.5.1 String Methods</h4>
+            <p>We have already explored the <code class="inline">len()</code> method for determining the length of a string.
+                However, ThingsDB offers a wealth of additional methods for string manipulation like, for example,
+                the <code class="inline">upper()</code> method.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">.b.upper();</code>  <code class="comment">// Produces a new string in uppercase</code>
+<code class="response">"BIKE"</code></pre>
+            <p>The <code class="inline">upper()</code> method generates a new string with all characters converted to
+                uppercase and exemplifies the various methods available for the string type. Other methods, such
+                as <code class="inline">starts_with()</code>, accept arguments and can be used to determine if a given
+                string begins with another string.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">"this is a test".starts_with("this is");</code>
+<code class="response">true</code>
+<code class="prompt">(//chapter2)&gt;</code> <code class="user">"another test".starts_with("Ano");</code>
+<code class="response">false</code></pre>
+            <p>To explore a comprehensive list of all the methods available for the string type,
+                including <code class="inline">upper()</code> and <code class="inline">starts_with()</code>,
+                refer to the official ThingsDB documentation here:
+                <a href="https://docs.thingsdb.io/v1/data-types/str/">https://docs.thingsdb.io/v1/data-types/str/</a></p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch02_5_2_h" class="title">2.5.2 Escaping and Multi-line Strings</h4>
+            <p>Until now, we have primarily employed double quotes to delimit strings. However, what if we want to include
+                double quotes within the string itself? In this situation, we have two options. The simplest approach is
+                to enclose the string in single quotes, which ThingsDB also supports:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">'"This is an example", she said';</code>
+<code class="response">"\"This is an example\", she said"</code></pre>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>Notice that the response is rendered in JSON format. In JSON format, we observe that double quotes
+                        are escaped with a backslash (<code class="inline">\</code>).</p>
+                </div>
+            </div>
+            <p>Alternatively, we can escape double quotes by placing another double quote directly before them:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">"""This is as well"", he said";</code>
+<code class="response">"\"This is as well\", he said"</code></pre>
+            <p>This escaping technique also applies to single quotes within single-quoted strings.</p>
+            <p>In ThingsDB, all strings are inherently multiline. Simply utilize newline characters to introduce line
+                breaks within a string.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">"All
+strings in ThingsDB
+are multiline!!";</code>
+<code class="response">"All\nstrings in ThingsDB\nare multiline!!"</code></pre>
+            <p>As before, the response is presented as JSON format, and therefore the newline characters are
+                displayed as <code class="inline">\n</code>.</p>
+        </section>
     </section>
 </section>
 </body>

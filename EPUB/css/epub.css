@@ -84,7 +84,7 @@ h3 {
   font-size: 1.6em;
   font-weight: normal;
   font-family: "Arial", sans-serif;
-  margin: 10px 0 8px 0 !important;
+  margin: 25px 0 0 0 !important;
 }
 
 h4 {
@@ -92,7 +92,7 @@ h4 {
   font-weight: normal;
   font-family: "Arial", sans-serif;
   color: #666;
-  margin: 9px 0 !important;
+  margin: 25px 0 0 0 !important;
 }
 
 /* Appropriate heading hyphenation suppression for different ereaders */
