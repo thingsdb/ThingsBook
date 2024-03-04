@@ -9,6 +9,15 @@
 <section class="sect2">
     <h4 id="ch03_6_1_h" class="title">3.6.1 Quiz - Answers</h4>
     <ol class="quiz">
+        <li><p>Answer “a” is correct. When assigning a list to a property, a copy is created, resulting in a maintained list. Changes to the original list will not reflect in the maintained list.</p></li>
+        <li><p>A copy of list <code class="inline">A</code> will be created as a tuple. Since the nested tuple is immutable, you cannot modify its contents after creation.</p></li>
+        <li><p>Answer “d” is correct. The code does not contain a maintained list as only variables are used and nothing is assigned to a thing. Nested lists are always converted to tuples and are accessed by reference when assigned to a variable.</p></li>
+        <li><p>The correct answer is “f”. ThingsDB supports all the listed techniques for iterating over lists and tuples. Each method serves a distinct purpose, and the <code class="inline">for</code>-loop proves particularly valuable when you need to utilize the <code class="inline">break</code> keyword to prematurely terminate the iteration.</p></li>
+        <li><p>The result is 21. The function call <code class="inline">range(2, 5)</code> produces the list <code class="inline">[2, 3, 4]</code> and the reduce method uses a closure which adds the index multiplied by the number to a total with a start value of 10. The result is <code class="inline">10 + 0*2 + 1*3 + 2*4 = 10 + 0 + 3 + 8 = 21</code>.</p></li>
+        <li><p>While you could use a <code class="inline">for</code>-loop or the <code class="inline">reduce()</code> method to achieve this, ThingsDB provides a dedicated method called <code class="inline">flat()</code> that simplifies this process:</p>
+            <p class="quizcode"><code class="inline">input.flat();</code></p>
+            <p><em>(see <a href="https://docs.thingsdb.io/v1/data-types/list/flat/">https://docs.thingsdb.io/v1/data-types/list/flat/</a>)</em></p>
+        </li>
     </ol>
 </section>
 </body>

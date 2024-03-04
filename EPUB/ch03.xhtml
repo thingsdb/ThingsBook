@@ -82,9 +82,239 @@
 <code class="response">LookupError: index out of range</code>
 <code class="prompt">(//chapter3)&gt;</code> <code class="user">.L[99] = 1;</code>
 <code class="response">LookupError: index out of range</code></pre>
-            <p>Instead of silently expanding the list, ThingsDB raises a LookupError. To extend a list, utilize methods like push or slice assignments,
+            <p>Instead of silently expanding the list, ThingsDB raises a <code class="inline">lookup_err</code>. To extend a list, utilize methods like push or slice assignments,
                 which were previously demonstrated.</p>
         </section>
+        <section class="sect2">
+            <h4 id="ch03_1_2_h" class="title">3.1.2 Reference and Maintained Lists</h4>
+            <p>While ThingsDB adheres to conventional list behavior in most cases, it employs a unique approach when
+                lists are embedded within a thing.</p>
+            <p>When lists are assigned to variables, ThingsDB maintains a single reference to the underlying data structure.
+                This means that modifying the list through one reference will also affect any other references to the same list.</p>
+<pre><code class="prompt">(//chapter3)&gt;</code>
+<code class="user">A = ["Alice", "Bob"];</code>  <code class="comment">// Assign a list to variable "A"</code>
+<code class="user">B = A;</code>                 <code class="comment">// Assign "A" to "B"</code>
+<code class="user">B.push("Charlie");</code>     <code class="comment">// Append "Charlie" to the list</code>
+<code class="user">A;</code>                     <code class="comment">// Return with the list using “A”</code>
+<code class="response">[
+    "Alice",
+    "Bob",
+    "Charlie"
+]</code></pre>
+            <p>As we can observe, assigning <code class="inline">A</code> to <code class="inline">B</code> establishes
+                a reference to the same underlying list data structure. This is evident from the fact that
+                appending <code class="inline">"Charlie"</code> to <code class="inline">B</code> also modifies the list
+                accessed through <code class="inline">A</code>. Both variables <code class="inline">A</code> and
+                <code class="inline">B</code> effectively point to the same list entity.</p>
+            <p>However, when a list is assigned to a property, ThingsDB creates a distinct copy of the list. We refer
+                to this type of list as a <em>maintained list</em> because it is stored and managed within a ThingsDB
+                collection.</p>
+<pre><code class="prompt">(//chapter3)&gt;</code>
+<code class="user">a = ["Alice", "Bob"];</code>  <code class="comment">// Assign a list to variable “a”</code>
+<code class="user">.b = a;</code>                <code class="comment">// Assign variable “a” to property “.b”</code>
+<code class="user">.b.push("Charlie");</code>    <code class="comment">// Append “Charlie” to the list on “b”</code>
+<code class="user">a;</code>                     <code class="comment">// Return the list assigned to variable “a”</code>
+<code class="response">[
+    "Alice",
+    "Bob"
+]</code></pre>
+            <p>In summary, ThingsDB creates references when assigning lists to variables and copies them when lists are
+                assigned to properties of a thing. We refer to the latter lists as <em>maintained lists</em> to
+                differentiate them from the referenced lists used in variables.</p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch03_2_h" class="title">3.2 Nesting and tuples</h3>
+        <p>ThingsDB allows you to store and retrieve multidimensional data using arrays. However, when you nest arrays
+            within an array, the nested arrays are converted to tuples. Tuples are immutable, meaning they cannot be
+            changed after they are created. This is because ThingsDB cannot track and synchronize changes to
+            nested lists.</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">.m = [
+    [1, 2, 3],
+    [4, 5, 6],
+];</code>
+<code class="response">[[1, 2, 3], [4, 5, 6]]</code></pre>
+        <p>This code creates a multidimensional array <code class="inline">.m</code> with two nested arrays.
+            You can verify that <code class="inline">.m</code> is a list using the <code class="inline">type()</code>
+            function:</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">type(.m);</code>
+<code class="response">"list"</code></pre>
+        <p>You can also extend the list by appending another array to it:</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">.m.push([7, 8, 9]);</code>
+<code class="response">3</code></pre>
+        <p>However, when you append a nested list to another list, the nested list is converted to a tuple.
+            This means that you cannot modify the nested list after appending it to the outer list.</p>
+        <p>For example, the following code attempts to append an element to the last nested array:</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">.m.last().push(10);</code>
+<code class="response">LookupError: type `tuple` has no function `push`</code></pre>
+        <p>Similarly, you cannot modify the elements of a nested tuple using index assignments:</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">.m.last()[0] = 10;</code>
+<code class="response">TypeError: type `tuple` does not support index assignments</code></pre>
+        <p>Tuples have a subset of the methods available to lists. Only methods that do not manipulate
+            the data structure are available for both tuples and lists.</p>
+        <p>If you assign a tuple to a variable, the variable holds a reference to the tuple. However,
+            if you assign a tuple to a thing, it will be converted to a maintained list. This means that
+            you can modify the elements of the new list after it has been assigned to a thing. For example,
+            the following code assigns the first nested array from <code class="inline">.m</code> to a
+            variable <code class="inline">a</code>:</p>
+<pre><code class="prompt">(//chapter3)&gt;</code>
+<code class="user">a = .m.first();</code>  <code class="comment">// Get the first item which is tuple [1, 2, 3]</code>
+<code class="user">type(a);</code>         <code class="comment">// Verify that this is still a tuple</code>
+<code class="response">"tuple"</code></pre>
+        <p>However, if you assign the tuple to a property on a thing, for example to <code class="inline">.o</code>, it will be converted
+            to a maintained list:</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">.o = .m.first();</code>
+<code class="response">[1, 2, 3]</code></pre>
+        <p>The variable <code class="inline">.o</code> is now a list, and you can modify its elements:</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">.o[0] = 10;</code>  <code class="comment">// This works!!</code>
+<code class="response">10</code></pre>
+        <div class="table">
+            <h2 id="ta03_2"></h2>
+            <p class="title">Table 3.2 - Summary of when ThingsDB employs copying or reference assignment for a list </p>
+            <table>
+                <tr><th>Operator</th><th>Description</th></tr>
+                <tr><td><code class="inline">a = b</code></td><td>By reference (<code class="inline">b</code> is a list)</td></tr>
+                <tr><td><code class="inline">a = .b</code></td><td>By reference (<code class="inline">.b</code> is a maintained list)</td></tr>
+                <tr><td><code class="inline">a = t</code></td><td>By reference (<code class="inline">t</code> is a tuple)</td></tr>
+                <tr><td><code class="inline">.a = b</code></td><td>Copy to new maintained list (<code class="inline">b</code> is a list)</td></tr>
+                <tr><td><code class="inline">.a = .b</code></td><td>Copy to new maintained list (<code class="inline">.b</code> is a maintained list)</td></tr>
+                <tr><td><code class="inline">.a = t</code></td><td>Copy to new maintained list (<code class="inline">t</code> is a tuple)</td></tr>
+                <tr><td><code class="inline">a.push([])</code></td><td>Copy to new tuple (<code class="inline">a</code> is a list)</td></tr>
+            </table>
+        </div>
+    </section>
+    <section class="sect1">
+        <h3 id="ch03_3_h" class="title">3.3 Looping Over a List or Tuple</h3>
+        <p>Prior lessons have covered accessing a list item using its index. However, we have yet to explore iterating
+            through all list elements. To illustrate this concept, let's create a list:</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">.numbers = [3, 8, 9, 0, 2];</code>
+<code class="response">[3, 8, 9, 0, 2]</code></pre>
+        <p>Here is one approach to iterating through the list:</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">odd = [];</code>
+<code class="user">for (n in .numbers) {</code>
+<code class="user">  if (n % 2) {</code>
+<code class="user">    odd.push(n);</code>  <code class="comment">// If n is odd, append it to the list</code>
+<code class="user">  };</code>
+<code class="user">};</code>    <code class="comment">// Do not forget this semicolon!!</code>
+<code class="user">odd;</code>  <code class="comment">// Return the list</code>
+<code class="response">[3, 9]</code></pre>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>In this example, we utilize a trick to check the modulo 2 result, which returns
+                    <code class="inline">0</code> for even numbers and <code class="inline">1</code> for odd numbers.
+                    Since <code class="inline">0</code> converts to <code class="inline">false</code> and
+                    <code class="inline">1</code> to <code class="inline">true</code>, we can employ this to
+                    identify odd numbers.</p>
+            </div>
+        </div>
+        <p>The <code class="inline">for</code>-loop approach offers more flexibility. In addition to the value,
+            they also provide the index of the value. A <code class="inline">for</code>-loop also supports two
+            keywords: <code class="inline">continue</code>, which skips all code after <code class="inline">continue</code> and commences
+            the next iteration of the loop, and <code class="inline">break</code>, which halts iteration.</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">even = [];</code>
+<code class="user">for (n, i in .numbers) {</code>
+<code class="user">  if (n % 2) {</code>
+<code class="user">    continue;</code>  <code class="comment">// Skip to the next iteration for odd numbers</code>
+<code class="user">  };</code>
+<code class="user">  even.push(`{n} at index {i}`);</code>  <code class="comment">// Append a t-string to the list</code>
+<code class="user">  if (i == 3) {</code>
+<code class="user">    break;</code>    <code class="comment">// If the index is 3, terminate the loop </code>
+<code class="user">  };</code>
+<code class="user">};</code>
+<code class="user">even;</code>  <code class="comment">// Return the list</code>
+<code class="response">[
+    "8 at index 1",
+    "0 at index 3"
+]</code></pre>
+        <p>While <code class="inline">for</code>-loops offer the most flexibility, for many use cases, methods
+            like <code class="inline">filter()</code>, <code class="inline">map()</code>, <code class="inline">each()</code>
+            and <code class="inline">reduce()</code> provide a more concise and elegant approach to iterating over and
+            manipulating data structures. Let's examine the <code class="inline">filter()</code> method to replace
+            the first <code class="inline">for</code>-loop:</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">.numbers.filter(|n| n % 2);</code>
+<code class="response">[3, 9]</code></pre>
+        <p>The <code class="inline">filter()</code> method takes a closure as its first argument, which is essentially
+            an unnamed function. The <code class="inline">filter()</code> method iterates over the list and executes the
+            closure for each item. The arguments that the closure accepts are specified between the two pipe
+            characters (<code class="inline">||</code>), and in the case of a list or tuple, the filter method provides
+            both the value and index of the item to the callback function. You are not required to use both arguments,
+            as demonstrated in our example.</p>
+        <p>As you can see, the <code class="inline">filter()</code> method with a closure provides a more concise and
+            readable way to filter a list compared to a <code class="inline">for</code>-loop. It is a common pattern in
+            functional programming, and it can significantly improve the readability and maintainability of your code.</p>
+        <p>The second <code class="inline">for</code>-loop, which utilized the <code class="inline">continue</code> and
+            <code class="inline">break</code> keywords, seems more complex to replace by list methods. While the
+            <code class="inline">map()</code> method can be helpful, it is not the ideal solution in this context.
+            The <code class="inline">map()</code> method produces a new list of the same length as the original list,
+            but each value in the list is generated by the callback function. In our example, we want to create a list
+            of even numbers with an index smaller than 4. Combining the <code class="inline">filter()</code> and
+            <code class="inline">map()</code> methods seems like a viable approach, but it introduces a new issue:</p>
+<pre><code class="prompt">(//chapter3)&gt;</code>
+<code class="user">.numbers</code>
+<code class="user">  .filter(|n, i| n % 2 == 0 &amp;&amp; i &lt; 4)</code>
+<code class="user">  .map(|n, i| `{n} at index {i}`);</code>
+<code class="response">[
+    "8 at index 0",
+    "0 at index 1"
+]</code></pre>
+        <p>As you can observe, the index values are not as expected. This is because the <code class="inline">filter()</code>
+            method creates a new list, and the <code class="inline">map()</code> method operates on this new list instead
+            of the original list. Consequently, the index values are no longer preserved.</p>
+        <p>To address this challenge, we can employ the <code class="inline">reduce()</code> method, which offers a
+            functional approach to iterating over and manipulating data structures. The <code class="inline">reduce()</code>
+            method takes a closure and an initial value as arguments. The closure is executed for each item in the list,
+            and the initial value is the first argument in the callback function. For subsequent iterations, the argument
+            passed to the callback function is the accumulated value from the previous iteration, and the result of the last
+            iteration will be the result for the reduce method.</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">.numbers.reduce(|o, n, i| {
+    if (n % 2 == 0 &amp;&amp; i &lt; 4) {
+        o.push(`{n} at index {i}`);
+    }; o;
+}, []);</code>
+<code class="response">[
+    "8 at index 1",
+    "0 at index 3"
+]</code></pre>
+        <p>Admittedly, this solution is more complex than the <code class="inline">for</code>-loop. However, it demonstrates
+            the power and versatility of functional programming techniques.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch03_4_h" class="title">3.4 Specialized Methods</h3>
+        <p>Most challenges related to lists can be addressed by combining looping methods with methods for modifying lists.
+            However, ThingsDB provides convenient shortcuts for handling common tasks. Here are a few examples:</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">.numbers.sum();</code>  <code class="comment">// Calculates the sum of all values</code>
+                               <code class="comment">// in the list</code>
+<code class="response">22</code>
+<code class="prompt">(//chapter3)&gt;</code> <code class="user">.numbers.sort();</code> <code class="comment">// Sorts the list in ascending order</code>
+                               <code class="comment">// and returns a new list</code>
+<code class="response">[0, 2, 3, 8, 9]</code>
+<code class="prompt">(//chapter3)&gt;</code> <code class="user">.numbers.is_unique();</code> <code class="comment">// Checks whether all values in</code>
+                                    <code class="comment">// the list are unique</code>
+<code class="response">true</code>
+<code class="prompt">(//chapter3)&gt;</code> <code class="user">.numbers.index_of(9);</code> <code class="comment">// Finds the index of the first</code>
+                                    <code class="comment">// occurrence of the value 9 in</code>
+                                    <code class="comment">// the list</code>
+<code class="response">2</code></pre>
+        <p>For a complete list of available methods, refer to the official documentation:
+            <a href="https://docs.thingsdb.io/v1/data-types/list/">https://docs.thingsdb.io/v1/data-types/list/</a></p>
+        <p>As ThingsDB evolves, new methods are added. Therefore, when encountering a problem, it is advisable to first
+            consult the documentation to see if there is an existing method that can assist you. If you have a specific
+            requirement, you can submit a pull request with your proposed method, and one of the ThingsDB developers may
+            consider implementing it for future releases.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch03_5_h" class="title">3.5 Lists for Multi-Value Returns</h3>
+        <p>Within ThingsDB, <em>"lists"</em> offer a powerful way to retrieve multiple values from a single query.</p>
+        <p>Imagine you want to fetch both a status code and a corresponding message from your query. Using lists,
+            you can achieve this elegantly by simply returning a list containing both desired values.</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">status = 0; message = "success";</code>
+<code class="user">[status, message];</code>  <code class="comment">// List containing both status code and message</code>
+<code class="response">[
+    0,
+    "success"
+]</code></pre>
+        <p>By embracing lists for multi-value returns, you unlock a flexible and efficient approach to retrieving data in ThingsDB.</p>
     </section>
 </section>
 </body>

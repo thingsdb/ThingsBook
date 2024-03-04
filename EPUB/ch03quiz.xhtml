@@ -9,6 +9,48 @@
 <section class="sect1">
     <h3 id="ch03_6_h" class="title">3.6 Quiz - Challenge Your Understanding</h3>
     <ol class="quiz">
+        <li><p>If we execute the following code:</p>
+            <p class="quizcode"><code class="inline">a = [1, 2, 3];</code></p>
+            <p class="quizcode"><code class="inline">.b = a;</code></p>
+            <p>What will happen?</p>
+            <ol>
+                <li>Property <code class="inline">.b</code> contains a copy of <code class="inline">a</code></li>
+                <li>Both variable <code class="inline">a</code> and property <code class="inline">.b</code> reference the same list</li>
+                <li>This code will fail because you cannot assign a list to a property</li>
+            </ol>
+        </li>
+        <li><p>What will happen if we add a list <code class="inline">A</code> as a value into another list <code class="inline">B</code>?</p></li>
+        <li><p>Consider the following code:</p>
+            <p class="quizcode"><code class="inline">a = [["foo", "bar"]];</code></p>
+            <p class="quizcode"><code class="inline">b = a[0];</code></p>
+            <p class="quizcode"><code class="inline">c = a;</code></p>
+            <p>Which answer is correct?</p>
+            <ol>
+                <li><code class="inline">a</code> is a tuple, <code class="inline">b</code> is a reference to a list and <code class="inline">c</code> is a maintained list</li>
+                <li><code class="inline">a</code>, <code class="inline">b</code> and <code class="inline">c</code> are all lists</li>
+                <li><code class="inline">a</code> is a list, <code class="inline">b</code> is a reference to a tuple and <code class="inline">c</code> is a maintained list</li>
+                <li><code class="inline">a</code> and <code class="inline">c</code> are the same list and <code class="inline">b</code> is a reference to a tuple</li>
+            </ol>
+        </li>
+        <li><p>Can you tell which technique ThingsDB supports for looping over a list or tuple?</p>
+            <ol>
+                <li><code class="inline">each()</code> method</li>
+                <li><code class="inline">map()</code> method</li>
+                <li><code class="inline">reduce()</code> method</li>
+                <li><code class="inline">filter()</code> method</li>
+                <li><code class="inline">for</code>-loop</li>
+                <li>all of the above</li>
+            </ol>
+        </li>
+        <li><p>What is the final result of the following code snippet?</p>
+            <p class="quizcode"><code class="inline">range(2, 5).reduce(|t, n, i| t += i * n, 10);</code></p>
+            <p><em>(Try to answer without executing the code. For reference, the range() documentation is available
+                at: <a href="https://docs.thingsdb.net/v1/collection-api/range/">https://docs.thingsdb.net/v1/collection-api/range/</a>)</em></p>
+        </li>
+        <li><p>Suppose we have the following input:</p>
+            <p class="quizcode"><code class="inline">input = [[1, 2], [3, 4]];</code></p>
+            <p>Can you write code which returns with <code class="inline">[1, 2, 3, 4]</code> from that given input?</p>
+        </li>
     </ol>
 </section>
 </body>

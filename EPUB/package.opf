@@ -54,6 +54,9 @@
 		<item id="id-ch03" href="ch03.xhtml" media-type="application/xhtml+xml"/>
 		<item id="id-ch03quiz" href="ch03quiz.xhtml" media-type="application/xhtml+xml"/>
 		<item id="id-ch03answers" href="ch03answers.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch04" href="ch04.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch04quiz" href="ch04quiz.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch04answers" href="ch04answers.xhtml" media-type="application/xhtml+xml"/>
 		<item id="lightbulb" href="images/lightbulb.png" media-type="image/png"/>
 		<item id="epub.embedded.font.1" href="fonts/Oswald-Bold.ttf" media-type="application/vnd.ms-opentype"/>
 		<item id="epub.embedded.font.2" href="fonts/RobotoMono-VariableFont_wght.ttf" media-type="application/vnd.ms-opentype"/>
@@ -82,5 +85,8 @@
 		<itemref idref="id-ch03"/>
 		<itemref idref="id-ch03quiz"/>
 		<itemref idref="id-ch03answers"/>
+		<itemref idref="id-ch04"/>
+		<itemref idref="id-ch04quiz"/>
+		<itemref idref="id-ch04answers"/>
 	</spine>
 </package>
