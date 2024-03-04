@@ -115,6 +115,7 @@ pre {
   padding: 5px;
   font-family: "Roboto Mono", monospace;
   font-size: 0.9em;
+  page-break-inside: avoid;
 }
 
 code {

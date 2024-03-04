@@ -2,12 +2,12 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
 <head>
-<title>2.7 Quiz - Challenge Your Understanding</title>
+<title>2.8 Quiz - Challenge Your Understanding</title>
 <link rel="stylesheet" type="text/css" href="css/epub.css" />
 </head>
 <body>
 <section class="sect1">
-    <h3 id="ch02_7_h" class="title">2.7 Quiz - Challenge Your Understanding</h3>
+    <h3 id="ch02_8_h" class="title">2.8 Quiz - Challenge Your Understanding</h3>
     <ol class="quiz">
         <li><p>What data type will be the result of adding an integer to a float?</p></li>
         <li><p>If you have a value of <code class="inline">0.0</code>, what will be the result of putting two exclamation marks in front of it?</p></li>
@@ -31,6 +31,15 @@
             <p><em>(Hint: consult the online documentation for the replace method)</em></p>
         </li>
         <li><p>When and why is it considered a good practice to end a query with <code class="inline">nil</code>?</p></li>
+        <li><p>What happens when executing the following statement in ThingsDB?</p>
+            <p class="quizcode"><code class="inline">try({2 / 0; .A = true;}); .B = true;</code></p>
+            <ol>
+                <li>Neither <code class="inline">.A</code> nor <code class="inline">.B</code> will be set because the division by zero raises an error</li>
+                <li>Only <code class="inline">.A</code> will be set because the assignment happens within the <code class="inline">try()</code> block</li>
+                <li>Only <code class="inline">.B</code> will be set because <code class="inline">try()</code> catches the error and execution continues</li>
+                <li>Both <code class="inline">.A</code> and <code class="inline">.B</code> will be set to <code class="inline">true</code></li>
+            </ol>
+        </li>
     </ol>
 </section>
 </body>

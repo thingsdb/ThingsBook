@@ -376,6 +376,73 @@ are multiline!!";</code>
                 potentially misleading behavior.</p>
         </section>
     </section>
+    <section class="sect1">
+        <h3 id="ch02_7_h" class="title">2.7 Errors</h3>
+        <p>Throughout this chapter, we have encountered a few errors in our queries. While errors themselves are normal
+            types in ThingsDB, raising an error interrupts the query execution and triggers the dedicated error handling
+            protocol.</p>
+        <p>Consider the <code class="inline">zero_div_err</code>, which represents the error raised when attempting to
+            divide by zero. We can create an instance of this error type and access its properties:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">zero_div_err().msg();</code>
+<code class="response">"division or modulo by zero"</code>
+<code class="prompt">(//chapter2)&gt;</code> <code class="user">zero_div_err().code();</code>
+<code class="response">-58</code></pre>
+            <p>In this example, we only returned the error information without raising it. However, we can explicitly
+                raise an error using the <code class="inline">raise()</code> function:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">raise(zero_div_err());</code>
+<code class="response">ZeroDivisionError: division or modulo by zero</code></pre>
+            <p>The client, in this case the ThingsDB Prompt, recognizes the error and returns a corresponding exception:
+                <code class="inline">ZeroDivisionError</code>.</p>
+            <p>The default message can be overwritten. Here is an example of the <code class="inline">zero_div_err</code>
+                error with a customized message:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">zero_div_err("division by zero is not allowed");</code>
+<code class="response">"division by zero is not allowed"</code></pre>
+            <p>As you can see, the default message is now replaced with your custom message. Importantly, when an error
+                is returned (without being raised), it is sent to the client as a string containing the message
+                (equal to explicitly calling the <code class="inline">msg()</code> method).</p>
+            <p>ThingsDB also allows you to define custom error codes. These codes must fall within a specific
+                range: -127 to -50.</p>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>To avoid conflicts with existing ThingsDB error codes (like <code class="inline">zero_div_err</code>
+                        which ranges from -99 to -50), it's recommended to keep your custom error codes within the range
+                        of -127 to -100. For a comprehensive list of error codes, refer to the official
+                        documentation: <a href="https://docs.thingsdb.io/v1/errors/">https://docs.thingsdb.io/v1/errors/</a></p>
+                </div>
+            </div>
+            <p>Here is an example of raising a custom error with a code:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">raise(err(-100, "My Custom Error"));</code>
+<code class="response">CustomError: My Custom Error</code></pre>
+            <p>It is worth noting that <code class="inline">-100</code> is the default code for custom errors. You can
+                achieve the same result by raising the message directly:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">raise("My Custom Error");</code>
+<code class="response">CustomError: My Custom Error</code></pre>
+        <section class="sect2">
+            <h4 id="ch02_7_1_h" class="title">2.7.1 Capture Errors</h4>
+            <p>Unlike traditional try-catch blocks found in many languages, ThingsDB utilizes a <code class="inline">try()</code>
+                function for error handling. This function requires at least one argument, which is the code you want to execute.
+                If an error arises within the code, <code class="inline">try()</code> returns with the error, preventing
+                disruption of the entire query execution.</p>
+            <p>Let's see this in action:</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">a = 7.0; b = 0.0;</code>
+<code class="user">x = try(a / b);</code>  <code class="comment">// try dividing a with b</code>
+<code class="user">`{a} / {b} = {is_err(x) ? 'NaN' : x}`;</code>
+<code class="response">"7 / 0 = NaN"</code></pre>
+            <p>Dividing by zero triggers an error, which is captured by the <code class="inline">try()</code> function.
+                Use the <code class="inline">is_err()</code> function to check if the returned value from <code class="inline">try()</code>
+                contains an error.</p>
+            <p>While <code class="inline">try()</code> captures all errors by default, you can refine its behavior to
+                handle only specific errors. To achieve this, provide the desired error types as additional arguments to
+                the <code class="inline">try()</code> function.</p>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">try(1 / 0, zero_div_err()); "OK";</code>
+<code class="response">"OK"</code></pre>
+            <p>This code only captures the <code class="inline">zero_div_err error</code>, any other errors would
+                still be raised.</p>
+            <p>This chapter covered some fundamental types of ThingsDB, including the concept of error handling.
+                Test your understanding with the quiz and join us in the next chapter where we delve into lists and tuples.</p>
+        </section>
+    </section>
 </section>
 </body>
 </html>

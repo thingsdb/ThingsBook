@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
+<head>
+<title>Chapter 3 - Lists and Tuples</title>
+<link rel="stylesheet" type="text/css" href="css/epub.css" />
+</head>
+<body>
+<section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch03_h" id="_ch03">
+    <h2 id="ch03_h" class="title">Chapter 3 - Lists and Tuples</h2>
+    <p>Before we proceed, let's create a new collection named "chapter3" and switch to its scope.
+        If you need a refresher on creating new collections, refer back to section <a href="ch01.xhtml#ch01_6_h">1.6 Scopes</a>.</p>
+    <p>This chapter delves into the realm of lists and tuples, exploring their nature as array-like data
+        structures with a crucial distinction: lists are mutable, allowing their contents to be modified,
+        while tuples are immutable, preserving their values once created. Additionally, we'll uncover the
+        concept of closures, unnamed functions that capture their surrounding scope, and examine their role
+        when used as arguments.</p>
+    <section class="sect1">
+        <h3 id="ch03_1_h" class="title">3.1 Lists</h3>
+        <p>Lists are positionally ordered collections of arbitrarily typed objects, and they have no fixed
+            size. They are also mutable, unlike strings, lists can be modified in-place by assignment to
+            offsets and by a variety of list method calls.</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">.L = [true, "Eggs", 0.1];</code>
+<code class="response">[
+    true,
+    "Eggs",
+    0.1
+]</code></pre>
+        <p>Similar to strings, you can get the length of a list and use indexing and slicing:</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">.L.len();</code>  <code class="comment">// Length of the list</code>
+<code class="response">3</code>
+<code class="prompt">(//chapter3)&gt;</code> <code class="user">.L[1];</code>     <code class="comment">// Access the second item at index 1</code>
+<code class="response">"Eggs"</code>
+<code class="prompt">(//chapter3)&gt;</code> <code class="user">.L[-2:];</code>   <code class="comment">// Get the last 2 items</code>
+<code class="response">[
+    "Eggs",
+    0.1
+]</code></pre>
+        <p>Since lists are mutable, you can modify their contents directly:</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">.L[0] = false;</code>          <code class="comment">// Set the first item to false</code>
+<code class="response">false</code>
+<code class="prompt">(//chapter3)&gt;</code> <code class="user">.L[1:1] = ["Ham", "&amp;"];</code> <code class="comment">// Insert "Ham" and "&amp;" at index 1</code>
+<code class="response">null</code>
+<code class="prompt">(//chapter3)&gt;</code> <code class="user">.L;</code>
+<code class="response">[
+    false,
+    "Ham",
+    "&amp;",
+    "Eggs",
+    0.1
+]</code></pre>
+        <p>More common is to use one of the list methods to update the list.</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">.L.shift();</code> <code class="comment">// Remove the first item</code>
+<code class="response">false</code>
+<code class="prompt">(//chapter3)&gt;</code> <code class="user">.L.pop();</code> <code class="comment">// Remove the last item</code>
+<code class="response">0.1</code>
+<code class="prompt">(//chapter3)&gt;</code> <code class="user">.L.unshift("The", "best");</code> <code class="comment">// Insert "The" and "Best" at the</code>
+                                         <code class="comment">// beginning</code>
+<code class="response">5</code>
+<code class="prompt">(//chapter3)&gt;</code> <code class="user">.L.push("recipes");</code> <code class="comment">// Append "recipes" to the end</code>
+<code class="response">6</code>
+<code class="prompt">(//chapter3)&gt;</code> <code class="user">.L.extend(["big", "world"]);</code> <code class="comment">// Append another list</code>
+<code class="response">8</code>
+<code class="prompt">(//chapter3)&gt;</code> <code class="user">.L.splice(6, 1, "in", "the");</code> <code class="comment">// Remove 1 item at index 6 and</code>
+                                            <code class="comment">// replace it with "in" &amp; "the"</code>
+<code class="response">[
+    "big"
+]</code></pre>
+        <p>The return value of each method varies depending on its functionality. In general, update methods return the
+            removed values or the new list length if they only add items. Among the methods discussed,
+            <code class="inline">splice()</code> stands out for its versatility. It can remove multiple items, insert
+            new ones, and even return the removed items in a separate list.</p>
+        <p>If you have followed the examples above in the correct order, your list should now contain only strings.
+            You can concatenate these strings into a single string using the <code class="inline">join()</code> method:</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">.L.join(" ");</code>  <code class="comment">// Join using a space</code>
+<code class="response">"The best Ham &amp; Eggs recipes in the world"</code></pre>
+        <section class="sect2">
+            <h4 id="ch03_1_1_h" class="title">3.1.1 Bounds Checking</h4>
+            <p>While lists in ThingsDB do not have a fixed size, accessing an index beyond the list's bounds will still
+                trigger a LookupError.</p>
+<pre><code class="prompt">(//chapter3)&gt;</code> <code class="user">.L[99];</code>
+<code class="response">LookupError: index out of range</code>
+<code class="prompt">(//chapter3)&gt;</code> <code class="user">.L[99] = 1;</code>
+<code class="response">LookupError: index out of range</code></pre>
+            <p>Instead of silently expanding the list, ThingsDB raises a LookupError. To extend a list, utilize methods like push or slice assignments,
+                which were previously demonstrated.</p>
+        </section>
+    </section>
+</section>
+</body>
+</html>
