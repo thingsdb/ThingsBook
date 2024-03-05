@@ -9,7 +9,39 @@
 <section class="sect1">
     <h3 id="ch04_7_h" class="title">4.7 Quiz - Challenge Your Understanding</h3>
     <ol class="quiz">
-
+        <li><p>Looking at the following code, will the thing “<code class="inline">t</code>” receive an unique ID and if so, at which line? <em>(a-e)</em></p>
+            <ol>
+                <li><code class="inline">t = {};</code></li>
+                <li><code class="inline">p = [t];</code></li>
+                <li><code class="inline">.p = p;</code></li>
+                <li><code class="inline">.t = t;</code></li>
+                <li><code class="inline">// “t” still lacks an ID</code></li>
+            </ol>
+        </li>
+        <li><p>What will be the response for a query using the following code?</p>
+            <p class="quizcode"><code class="inline">return {x: 1, y: 2}, 0;</code></p>
+        </li>
+        <li><p>What function is available to verify the <em>deep</em> value for a collection using a collection scope?</p></li>
+        <li><p>How can you see the ID of a thing in a query response? For example, in the response for this code?</p>
+            <p class="quizcode"><code class="inline">.x = {};</code></p>
+        </li>
+        <li><p>Which of the following code examples will work without returning an error?</p>
+            <ol>
+                <li><code class="inline">{4: 2}.restrict("int");</code></li>
+                <li><code class="inline">{}.restrict"'int").x = 123;</code></li>
+                <li><code class="inline">{m: 'Hello!'}.restrict("str");</code></li>
+                <li><code class="inline">{}.restrict("int").x = 1.0;</code></li>
+                <li><code class="inline">{pi: 3}.restrict("float").pi = MATH_PI;</code></li>
+            </ol>
+        </li>
+        <li><p>Can a <em>list</em> in ThingsDB be a part of itself?</p></li>
+        <li><p>Can a <em>thing</em> in ThingsDB be a part of itself?</p></li>
+        <li><p>Given the existing thing:</p>
+            <p class="quizcode"><code class="inline">.point = {x: 5, y: 7};</code></p>
+            <p>Can you create a query to return the following desired response:</p>
+            <p class="quizcode"><code class="inline">{"x": 5.0, "y": 7.0}</code></p>
+            <p>The returned object should contain float values instead of integer values for the <code class="inline">x</code> and <code class="inline">y</code> properties.</p>
+        </li>
     </ol>
 </section>
 </body>

@@ -9,7 +9,17 @@
 <section class="sect2">
     <h4 id="ch04_7_1_h" class="title">4.7.1 Quiz - Answers</h4>
     <ol class="quiz">
-
+        <li><p>At line “c”. The thing is a member of the list <code class="inline">p</code> which on this line is assigned to the collection root via property <code class="inline">p</code>.</p></li>
+        <li><p>The <em>deep</em> value has been set to 0, so the query will return an empty object: <code class="inline">{}</code></p></li>
+        <li><p>The <code class="inline">deep()</code> method can be used to retrieve the current deep value for a collection in the collection scope. </p></li>
+        <li><p>The ID of a thing is returned as the <code class="inline">#</code> property in the thing object unless explicitly the <code class="inline">NO_IDS</code> flag is used.</p></li>
+        <li><p>The code samples "b" and "c" will execute without errors. Code snippet "a" will fail because keys must be of type string, and snippet "d" will fail because the thing is restricted to integers and the value <code class="inline">1.0</code> is a float. Snipped "e" fails because the initial value of <code class="inline">pi</code> is an integer, and attempting to apply the restriction to type float will result in an error.</p></li>
+        <li><p>No, a <em>list</em> cannot be a part of itself. Lists are copied when nested, so they cannot be referenced by themselves.</p></li>
+        <li><p>Yes, a <em>thing</em> can be a part of itself. Things are always accessed by reference, so they can be self-referential.</p></li>
+        <li><p>The easiest way to accomplish this is by using the <code class="inline">vmap()</code> method which returns a new thing with equal keys but values computed as a result of a given closure callback.</p>
+            <p class="quizcode"><code class="inline">.point.vmap(|v| float(v));</code></p>
+            <p><em>(see <a href="https://docs.thingsdb.io/v1/data-types/thing/vmap">https://docs.thingsdb.io/v1/data-types/thing/vmap</a>)</em></p>
+        </li>
     </ol>
 </section>
 </body>

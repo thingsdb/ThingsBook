@@ -57,6 +57,42 @@
 		<item id="id-ch04" href="ch04.xhtml" media-type="application/xhtml+xml"/>
 		<item id="id-ch04quiz" href="ch04quiz.xhtml" media-type="application/xhtml+xml"/>
 		<item id="id-ch04answers" href="ch04answers.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch05" href="ch05.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch05quiz" href="ch05quiz.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch05answers" href="ch05answers.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch06" href="ch06.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch06quiz" href="ch06quiz.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch06answers" href="ch06answers.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch07" href="ch07.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch07quiz" href="ch07quiz.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch07answers" href="ch07answers.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch08" href="ch08.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch08quiz" href="ch08quiz.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch08answers" href="ch08answers.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch09" href="ch09.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch09quiz" href="ch09quiz.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch09answers" href="ch09answers.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch10" href="ch10.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch10quiz" href="ch10quiz.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch10answers" href="ch10answers.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch11" href="ch11.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch11quiz" href="ch11quiz.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch11answers" href="ch11answers.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch12" href="ch12.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch12quiz" href="ch12quiz.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch12answers" href="ch12answers.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch13" href="ch13.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch13quiz" href="ch13quiz.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch13answers" href="ch13answers.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch14" href="ch14.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch14quiz" href="ch14quiz.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch14answers" href="ch14answers.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch15" href="ch15.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch15quiz" href="ch15quiz.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch15answers" href="ch15answers.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch16" href="ch16.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch16quiz" href="ch16quiz.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ch16answers" href="ch16answers.xhtml" media-type="application/xhtml+xml"/>
 		<item id="lightbulb" href="images/lightbulb.png" media-type="image/png"/>
 		<item id="epub.embedded.font.1" href="fonts/Oswald-Bold.ttf" media-type="application/vnd.ms-opentype"/>
 		<item id="epub.embedded.font.2" href="fonts/RobotoMono-VariableFont_wght.ttf" media-type="application/vnd.ms-opentype"/>
@@ -88,5 +124,41 @@
 		<itemref idref="id-ch04"/>
 		<itemref idref="id-ch04quiz"/>
 		<itemref idref="id-ch04answers"/>
+		<itemref idref="id-ch05"/>
+		<itemref idref="id-ch05quiz"/>
+		<itemref idref="id-ch05answers"/>
+		<itemref idref="id-ch06"/>
+		<itemref idref="id-ch06quiz"/>
+		<itemref idref="id-ch06answers"/>
+		<itemref idref="id-ch07"/>
+		<itemref idref="id-ch07quiz"/>
+		<itemref idref="id-ch07answers"/>
+		<itemref idref="id-ch08"/>
+		<itemref idref="id-ch08quiz"/>
+		<itemref idref="id-ch08answers"/>
+		<itemref idref="id-ch09"/>
+		<itemref idref="id-ch09quiz"/>
+		<itemref idref="id-ch09answers"/>
+		<itemref idref="id-ch10"/>
+		<itemref idref="id-ch10quiz"/>
+		<itemref idref="id-ch10answers"/>
+		<itemref idref="id-ch11"/>
+		<itemref idref="id-ch11quiz"/>
+		<itemref idref="id-ch11answers"/>
+		<itemref idref="id-ch12"/>
+		<itemref idref="id-ch12quiz"/>
+		<itemref idref="id-ch12answers"/>
+		<itemref idref="id-ch13"/>
+		<itemref idref="id-ch13quiz"/>
+		<itemref idref="id-ch13answers"/>
+		<itemref idref="id-ch14"/>
+		<itemref idref="id-ch14quiz"/>
+		<itemref idref="id-ch14answers"/>
+		<itemref idref="id-ch15"/>
+		<itemref idref="id-ch15quiz"/>
+		<itemref idref="id-ch15answers"/>
+		<itemref idref="id-ch16"/>
+		<itemref idref="id-ch16quiz"/>
+		<itemref idref="id-ch16answers"/>
 	</spine>
 </package>

@@ -8,6 +8,314 @@
 <body>
 <section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch04_h" id="_ch04">
     <h2 id="ch04_h" class="title">Chapter 4 - Things</h2>
+    <p>Let's start this chapter with a new collection named "chapter4" and switch to its scope.
+        If you are unsure of the process, revisit the end of <a href="ch01.xhtml#ch01_6_h">Chapter 1</a> for a refresher.</p>
+    <p>Why is this programming language named ThingsDB?</p>
+    <p>In ThingsDB, data is organized and stored within things, which are essentially objects with properties.
+        Every collection starts with an empty root "thing" and you can create new things within the collection by
+        assigning properties to them. To create a new thing, you can use the <code class="inline">thing()</code> function
+        without arguments, or, more commonly, you can use curly braces <code class="inline">{}</code>:</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">t = {};</code>  <code class="comment">// Create an empty thing</code>
+<code class="user">t.x = 4;</code>  <code class="comment">// Assign property “x” with value 4 to “t”</code>
+<code class="user">t.y = 2;</code>  <code class="comment">// Assign property “y” with value 2 to “t”</code>
+<code class="user">t;</code>        <code class="comment">// Return “t”</code>
+<code class="response">{
+    "x": 4,
+    "y": 2
+}</code></pre>
+    <p>This can be simplified by initializing the thing with the properties in curly braces:</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">t = {x: 4, y: 2,};</code>
+<code class="response">{
+    "x": 4,
+    "y": 2
+}</code></pre>
+    <p>This initialization syntax only works for properties that adhere to the ThingsDB naming convention, which is the
+        same as the convention for variable names <em>(see <a href="ch01.xhtml#ch01_3_h">1.3 Variables and Properties</a>)</em>.
+        The properties are defined as key-value pairs separated by commas. You can omit the comma after the last property,
+        since ThingsDB will ignore it if no other key-value pairs follow.</p>
+    <div class="note">
+        <img class="note" src="images/lightbulb.png" alt="Note" />
+        <div class="content">
+            <p>The same principle applies when initializing lists. The last comma in a list initialization is optional if no
+                further items follow. For instance, both <code class="inline">[nil]</code> and <code class="inline">[nil,]</code>
+                are valid representations of the same list.</p>
+        </div>
+    </div>
+    <p>ThingsDB supports a shorthand notation to initialize a thing when using a variable and using the same variable
+        name as the property name:</p>
+<pre><code class="prompt">(//chapter4)&gt;</code>
+<code class="user">foo = 6;</code>
+<code class="user">bar = 7;</code>
+<code class="user">t = {foo:, bar:,};</code>
+<code class="response">{
+    "bar": 7,
+    "foo": 6
+}</code></pre>
+    <p>This syntax is equivalent to writing <code class="inline">t = {foo: foo, bar: bar};</code> but it eliminates
+        the need to repeat variable names.</p>
+    <section class="sect1">
+        <h3 id="ch04_1_h" class="title">4.1 Things for Descriptive Multi-Value Returns</h3>
+        <p>While lists, as shown in <a href="ch03.xhtml#ch03_5_h">Chapter 3</a>, provide a simple way to return
+            multiple values, things provide a more descriptive alternative. They allow assigning meaningful names to
+            each value, enhancing clarity and reducing reliance on positional interpretation. This structure improves
+            readability and understanding, but comes at a slight network bandwidth cost compared to lists.</p>
+        <p>Example:</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">status = 0; message = "success";</code>
+<code class="user">{
+    status:,
+    message:,
+};</code>  <code class="comment">// Thing containing both status code and message</code>
+<code class="response">{
+    "message": "success",
+    "status": 0
+}</code></pre>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>For optimal efficiency of read only queries, construct the thing containing multiple values either
+                    at the end of your query or after a <code class="inline">return</code> statement. Setting individual
+                    properties one by one might trigger unnecessary updates. While this has no effect on queries modifying
+                    the collection, it can lead to less efficient execution for queries which are intended to be read only.</p>
+            </div>
+        </div>
+    </section>
+    <section class="sect1">
+        <h3 id="ch04_2_h" class="title">4.2 Thing IDs</h3>
+        <p>Once a thing is stored, meaning it is connected to the collection root, it is assigned a unique identifier or ID.
+            Back in <a href="ch01.xhtml#ch01_1_h">Chapter 1</a> we already saw that our root thing had an ID and that we
+            could ask for this ID using the <code class="inline">id()</code> method.</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">.id();</code>  <code class="comment">// ID for the collection root</code>
+<code class="response">1</code>
+<code class="prompt">(//chapter4)&gt;</code> <code class="user">{}.id();</code>  <code class="comment">// Unattached thing lacks an ID</code>
+<code class="response">null</code>
+<code class="prompt">(//chapter4)&gt;</code> <code class="user">(.t = {}).id();</code>  <code class="comment">// Assign a new thing to property “t”,</code>
+                               <code class="comment">// guaranteeing a unique ID.</code>
+<code class="response">2</code></pre>
+        <p>A thing possesses no ID as long as it remains unattached to the collection. In the last example, we attached a
+            new thing to property <code class="inline">t</code> within the root and immediately queried its ID. The
+            response displayed a unique identifier.</p>
+        <p>Instead of explicitly requesting the ID, it is also accessible as a reserved property
+            named “<code class="inline">#</code>” within the thing's response.</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">.t;</code>
+<code class="response">{
+    "#": 2
+}</code></pre>
+        <p>However, it is important to note that “<code class="inline">#</code>” is not a genuine property of the thing,
+            as evidenced by the following code snippets:</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">.t["#"];</code>  <code class="comment">// Key ‘#’ does not exist</code>
+<code class="response">LookupError: thing `#2` has no property `#`</code>
+<code class="prompt">(//chapter4)&gt;</code> <code class="user">.t.len();</code>  <code class="comment">// The length is 0</code>
+<code class="response">0</code>
+<code class="prompt">(//chapter4)&gt;</code> <code class="user">bool(.t);</code>  <code class="comment">// Empty thing evaluates as false and .t is empty</code>
+<code class="response">false</code></pre>
+        <p>As ThingDB implicitly assigns IDs to things, it is crucial to grasp when this occurs.
+            While the earlier example might seem straightforward, it is essential to recognize its nuances.</p>
+        <p>The code below employs the <code class="inline">assert()</code> function, which triggers an exception
+            if the provided expression evaluates to <code class="inline">false</code>. This, along with the
+            <code class="inline">is_nil()</code> and <code class="inline">is_int()</code> functions,
+            facilitates straightforward testing for ID existence.</p>
+<pre><code class="prompt">(//chapter4)&gt;</code>
+<code class="user">arr = [];</code>               <code class="comment">// Create an empty list</code>
+<code class="user">a = {name: "Alice"};</code>    <code class="comment">// Create a thing with a name property</code>
+<code class="user">assert(is_nil(a.id()));</code> <code class="comment">// Confirm that the thing has no ID</code>
+<code class="user">arr.push(a);</code>            <code class="comment">// Add the thing to the list</code>
+<code class="user">assert(is_nil(a.id()));</code> <code class="comment">// Verify that the thing still lacks an ID</code>
+<code class="user">.arr = arr;</code>             <code class="comment">// Assign the list to a collection root property</code>
+<code class="user">assert(is_int(a.id()));</code> <code class="comment">// Verify that the thing now has an ID</code>
+<code class="user">a;</code>
+<code class="response">{
+    "#": 3,
+    "name": "Alice"
+}</code></pre>
+        <p>In this example, we observe that the ID is generated when the thing is linked to the collection. Initially,
+            we assigned the thing to a variable, followed by adding the variable to the list. Since the list remained
+            unattached to the collection, the thing retained its lack of an ID. It is only when we incorporated the
+            list as a property of the collection root that it became associated with the collection, triggering ID
+            assignment.</p>
+        <p>Another noteworthy aspect is that ThingsDB always interprets things by reference. This observation is evident
+            in the fact that we kept checking the original variable “<code class="inline">a</code>“.</p>
+        <p>Once an ID is assigned to a thing, it remains permanently associated with that thing and cannot be altered
+            or removed.</p>
+        <p>ThingsDB supports multiple references to the same ID, allowing you to link distinct properties or collections
+            to the same underlying thing. This is demonstrated in the code snippet:</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">.t.p = .arr.first();</code>
+<code class="response">{
+    "#": 3,
+    "name": "Alice"
+}</code></pre>
+        <p>As evident, property <code class="inline">p</code> of thing <code class="inline">t</code> points to the same
+            thing as the first element in the list.</p>
+        <p>If you know the ID of a specific thing, you can directly retrieve it using the <code class="inline">thing()</code>
+            function. When provided with an integer as the first argument, ThingsDB searches the collection for the
+            thing with that ID. This becomes particularly useful in practical scenarios.</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">thing(3).name = "Bob";</code>
+<code class="response">"Bob"</code>
+<code class="prompt">(//chapter4)&gt;</code> <code class="user">thing(99).name = "Charlie";</code>
+<code class="response">LookupError: collection `chapter4` has no `thing` with ID 99</code></pre>
+        <p>The first example successfully modifies the <code class="inline">name</code> property of the thing with ID 3 to <code class="inline">"Bob"</code>.
+            The second query fails because the collection does not contain a thing with ID 99.</p>
+        <p>Let's review the current state of the collection by querying the <code class="inline">root()</code> thing:</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">root();</code>
+<code class="response">{
+    "#": 1,
+    "arr": [{"#": 3}],
+    "t": {"#": 2}
+}</code></pre>
+        <p>This output might raise an eyebrow. While the <code class="inline">root()</code> with properties
+            <code class="inline">arr</code> and <code class="inline">t</code> is fully displayed, the
+            <code class="inline">p</code> property of the thing with ID 2 and the <code class="inline">name</code>
+            property of the thing with ID 3 are missing.</p>
+        <p>This is because ThingsDB, by default, returns things only <em>one level</em> deep. In this instance,
+            the <code class="inline">root()</code> represents the first level, and the things within list
+            <code class="inline">arr</code> and the thing within <code class="inline">t</code> are considered
+            the second level. This safety measure prevents accidentally returning the entire collection.
+            While this might be acceptable in our example due to its small size, it could pose issues with
+            larger collections.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch04_3_h" class="title">4.3 Control Response with return Statement</h3>
+        <p>To address the issue of returning only <em>one level</em> deep, we can utilize the <code class="inline">return</code>
+            keyword, which was introduced in <a href="ch01.xhtml#ch01_5_h">Chapter 1</a>. This statement accepts a
+            second argument that specifies the deep level:</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">return root(), 3;</code>
+<code class="response">{
+    "#": 1,
+    "arr": [{"#": 3, "name": "Bob"}],
+    "t": {"#": 2, "p": {"#": 3, "name": "Bob"}}
+}</code></pre>
+        <p>With this modified query, we now see the <code class="inline">root()</code> and its properties at <em>level 1</em>,
+            the thing with ID 3 within <code class="inline">arr</code> at <em>level 2</em>, the thing with ID 2 at <em>level 2</em>,
+            and the thing with ID 3 again, this time residing on property <code class="inline">p</code> at <em>level 3</em>.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>While it is generally recommended to keep the default deep level unchanged, it is possible to modify
+                    it using the <code class="inline">set_default_deep()</code> function. The current deep setting can
+                    be checked using the <code class="inline">deep()</code> function within a collection or through
+                    the <code class="inline">collections_info()</code> function in the <code class="inline">@thingsdb</code>
+                    scope.</p>
+            </div>
+        </div>
+        <p>The <code class="inline">return</code> statement accepts an optional third argument, which allows you to specify flags that modify the
+            returned data. Currently, only one flag is supported: <code class="inline">NO_IDS</code>.
+            When enabled, this flag prevents ThingsDB from including ID values in the response.</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">return root(), 3, NO_IDS;</code>
+<code class="response">{
+    "arr": [{"name": "Bob"}],
+    "t": {"p": {"name": "Bob"}}
+}</code></pre>
+        <p>While you might initially consider using the <code class="inline">return</code> statement frequently to control the deep level or
+            incorporate the <code class="inline">NO_IDS</code> flag, ThingsDB offers a more elegant and streamlined
+            approach to retrieving the desired data. This will be introduced in <a href="ch10.xhtml#ch10_h">Chapter 10</a>, where we delve into typed things and wrapping.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch04_4_h" class="title">4.4 Looping Over a Thing</h3>
+        <p>We can use a <code class="inline">for</code>-loop to iterate through the key value pairs of a thing.</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">.gps = {lat: 51.36, long: 5.23};
+for (key, value in .gps) {
+    log(`{key}: {value}`);
+};</code>
+<code class="response">WARNING:root:ThingsDB: lat: 51.36 (2)
+WARNING:root:ThingsDB: long: 5.23 (2)
+null</code></pre>
+        <p>The <code class="inline">for</code>-loop is similar when used on a thing compared to when iterating a list.
+            Only the arguments are different. While iterating over a list accepts a value and index, a thing accepts a
+            key and value.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>In this code snippet, we introduced a new <code class="inline">log()</code> function <em>(distinct
+                    from the <strong>loge()</strong> function that calculates the natural logarithm (base e) of a number)</em>.
+                    This <code class="inline">log()</code> function serves debugging purposes and operates as follows:
+                    Upon execution, it generates a warning log message to the console where the ThingsDB Node is running and emits a warning event to the client initiating the query. This warning event precedes the transmission of query results. The ThingsDB Prompt conveniently handles this event by displaying the warning message within the prompt. While real-world implementations may vary, warnings are typically logged for future reference.</p>
+            </div>
+        </div>
+        <p>Similar to lists, a thing also offers methods for iterating over its contents. The provided example
+            demonstrates how to achieve the same result as the <code class="inline">for</code>-loop using the
+            <code class="inline">each()</code> method:</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">.gps.each(|key, value| log(`{key}: {value}`));</code>
+<code class="response">WARNING:root:ThingsDB: lat: 51.36 (2)
+WARNING:root:ThingsDB: long: 5.23 (2)
+null</code></pre>
+        <p>Additional looping methods include <code class="inline">filter()</code>, <code class="inline">map()</code>,
+            and <code class="inline">vmap()</code>.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch04_5_h" class="title">4.5 Value Restriction</h3>
+        <p>While keys in ThingsDB are always restricted to strings, values can have any type. However, if a specific
+            type is required for all values, a value restriction can be applied to enforce this constraint.</p>
+        <p>Consider our existing "gps" example:</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">.gps.restriction();</code>
+<code class="response">null</code></pre>
+        <p>The <code class="inline">restriction()</code> method returns <code class="inline">nil</code>,
+            indicating that no value restriction is currently applied to the "gps" thing.</p>
+        <p>Attempting to apply an invalid restriction to a non-empty thing will result in an error. For instance,
+            trying to restrict "gps" to integer values will fail because it already contains float values:</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">.gps.restrict("int");</code>
+<code class="response">ValueError: at least one of the existing values does not match the desired restriction</code></pre>
+        <p>To successfully apply a value restriction, all existing values must adhere to the specified type. In this case,
+            we can successfully apply a float restriction:</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">.gps.restrict("float");</code>
+<code class="response">{
+    "#": 5,
+    "lat": 51.36,
+    "long": 5.23
+}</code></pre>
+        <p>Once a value restriction is applied, attempting to assign a value of an incompatible type will trigger a type error:</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">.gps.lat = nil;</code>
+<code class="response">TypeError: restriction mismatch</code></pre>
+        <p>This error prevents invalid value assignments and ensures data integrity.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch04_6_h" class="title">4.6 Self-References</h3>
+        <p>Lists and other data types in ThingsDB do not allow for self-references due to the creation of
+            copies (tuple conversion) when lists are nested. However, self-references are common within the
+            structure of things.</p>
+        <p>Consider a simple example of creating a book and its author:</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="comment">// Create a book and author</code>
+<code class="user">author = {name: "Katja Hoyer"};
+.book = {
+    title: "Beyond the wall",
+    author:,
+};</code>
+<code class="response">{
+    "#": 6,
+    "author": {"#": 7},
+    "title": "Beyond the wall"
+}</code></pre>
+        <p>Since we only retrieve the first deep level of detail, we do not see the entire author thing,
+            but we can see that both the book and author have unique IDs (6 and 7, respectively).</p>
+        <p>To retrieve the author of the book, we can simply access the author property of the book thing:</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">thing(6).author.name;</code>  <code class="comment">// ID 6 is the book</code>
+<code class="response">"Katja Hoyer"</code></pre>
+        <p>To retrieve the books written by the author, we can add a <code class="inline">books</code> property
+            to the author thing and populate it with the book:</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">thing(7).books = [.book];</code>  <code class="comment">// ID 7 is the author</code>
+<code class="user">nil;</code>  <code class="comment">// Return nil as we do not need the assignment as response</code>
+<code class="response">null</code></pre>
+        <p>Now, we can retrieve data in both directions, but we have created a nested self-reference for both the book
+            and the author.</p>
+        <p>You might wonder what will happen if we use a large deep value and ask for either the book or the author?
+            ThingsDB intelligently handles the situation by only returning the IDs of self-referential objects.
+            This prevents infinite loops and ensures data integrity:</p>
+<pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">return .book, 99;</code>
+<code class="response">{
+    "#": 6,
+    "author": {
+        "#": 7,
+        "books": [{"#": 6}],
+        "name": "Katja Hoyer"
+    },
+    "title": "Beyond the wall"
+}</code></pre>
+        <p>Establishing two-way relationships between things is a common practice in ThingsDB, but managing these
+            connections manually can be cumbersome and error-prone. To address this challenge, ThingsDB introduces
+            a sophisticated solution that simplifies and streamlines relationship management.</p>
+        <p>In <a href="ch09.xhtml#ch09_h">Chapter 9</a>, we'll delve into the details of this solution and explore
+            its capabilities in detail. But before we embark on this journey, we encourage you to assess your
+            comprehension by taking the quiz provided. This will help solidify your understanding of things and prepare
+            you for the next chapter, where we'll explore the powerful concept of <em>sets</em> in depth.</p>
+    </section>
 </section>
 </body>
 </html>

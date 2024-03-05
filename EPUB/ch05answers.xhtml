@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
+<head>
+<title>5.4.1 Quiz - Answers</title>
+<link rel="stylesheet" type="text/css" href="css/epub.css" />
+</head>
+<body>
+<section class="sect2">
+    <h4 id="ch05_4_1_h" class="title">5.4.1 Quiz - Answers</h4>
+    <ol class="quiz">
+        <li><p>Only unique “things” are allowed in a set.</p></li>
+        <li><p>The resulting set after performing the operation is <code class="inline">set(a)</code>.
+            The <code class="inline">-</code> operator in ThingsDB is used to perform set difference,
+            which removes elements from the first set that are also present in the second set.</p>
+        </li>
+        <li><p>The only expression which evaluates to <code class="inline">true</code> is the expression “d”.
+            The set with things <code class="inline">a</code> and <code class="inline">c</code> is a
+            subset of the set with things <code class="inline">a</code>, <code class="inline">b</code> and
+            <code class="inline">c</code>.</p></li>
+        <li><p>Because sets are not directly supported by the ThingsDB communication protocol, they must be
+            converted to a more fundamental data type when sent to a client. Therefore, the <em>set</em> is
+            converted into a <em>list</em>, which is a sequence of ordered elements. While this conversion
+            enables clients to receive and process sets, it is essential to remember that sets are inherently
+            unordered collections. As a result, you cannot rely on the order of things in the returned list
+            as they may not reflect the order in which the things were added to the set.</p></li>
+        <li><p>When a <em>set</em> is appended to a <em>list</em>, ThingsDB will create a copy and convert
+            the set into a <em>tuple</em>, which is an immutable collection of elements.</p></li>
+    </ol>
+</section>
+</body>
+</html>

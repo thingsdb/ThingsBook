@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
+<head>
+<title>Chapter 5 - Sets</title>
+<link rel="stylesheet" type="text/css" href="css/epub.css" />
+</head>
+<body>
+<section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch05_h" id="_ch05">
+    <h2 id="ch05_h" class="title">Chapter 5 - Sets</h2>
+    <p>Just like in previous chapters, we shall begin by creating a new collection and
+        switching the prompt to that collection.</p>
+    <p>In this chapter, we'll explore the concept of sets in ThingsDB. Let's start by
+        creating an empty set.</p>
+<pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">.mammals = set();</code>
+<code class="response">[]</code></pre>
+    <p>Notice that despite creating a set, the response displays an empty list. This is
+        because MessagePack, the underlying data serialization format for ThingsDB, does not
+        have explicit support for sets. As a result, sets are always converted to lists in responses.</p>
+    <p>To add elements to a set, we can utilize the <code class="inline">add()</code> method. Sets can only
+        accommodate things. Attempting to add other data types will trigger a type error.</p>
+<pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">.mammals.add("dog");</code>
+<code class="response">TypeError: cannot add type `str` to a set</code></pre>
+    <p>Let's add some mammals to the set. We can add multiple things simultaneously by separating them with commas.</p>
+<pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">.mammals.add(
+    {animal: "dog"},
+    {animal: "cat"},
+    {animal: "elephant"},
+    {animal: "lion"},
+);</code>
+<code class="response">4</code></pre>
+    <p>The number of things successfully added to the set is returned. In this instance, we added four new elements.</p>
+    <p>Let's examine the set we've created:</p>
+<pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">.mammals;</code>
+<code class="response">[
+    {"#": 2, "animal": "dog"},
+    {"#": 5, "animal": "lion"},
+    {"#": 4, "animal": "elephant"},
+    {"#": 3, "animal": "cat"}
+]</code></pre>
+    <p>As you can see, all things have been assigned unique IDs, but the order of elements does not match our expectation.
+        This is because sets are inherently unordered.</p>
+    <p>Due to this lack of order, retrieving an element by index is not possible.</p>
+<pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">.mammals[0];</code>
+<code class="response">TypeError: type `set` is not indexable</code></pre>
+    <p>Each thing can only exist once within a set. Remember that ThingsDB compares things by reference, so even if two things
+        have identical properties, they are considered distinct entities.</p>
+<pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">.mammals.add({animal: "dog"});</code>  <code class="comment">// Add another dog</code>
+<code class="response">1</code></pre>
+    <p>Despite having the same properties (<code class="inline">animal: "dog"</code>), this dog is
+        considered a different entity due to reference comparison. It is not the same “dog” previously added,
+        so it gets included in the set.</p>
+<pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">animal = .mammals.one();</code>  <code class="comment">// Take one element from the set</code>
+<code class="user">.mammals.add(animal);</code>  <code class="comment">// Try to add that animal</code>
+<code class="response">0</code></pre>
+    <p>The final query yielded <code class="inline">0</code>. This is because the animal already exists within
+        the set, and calling the <code class="inline">add()</code> method did not introduce any new elements.</p>
+    <section class="sect1">
+        <h3 id="ch05_1_h" class="title">5.1 Set Operations</h3>
+        <p>Before moving forward, let's create two more sets, one for birds and another for reptiles.
+            <em>(We apologize to any fish or other animal species that weren't included; we'll focus on these three classes for now ;-)</em></p>
+<pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">.birds = set(
+    {animal: "parrot"},
+    {animal: "flamingo"},
+);
+.reptiles = set(
+    {animal: "turtle"},
+    {animal: "snake"},
+);</code>
+<code class="user">nil;</code>  <code class="comment">// Return nil as we do not need a response</code>
+<code class="response">null</code></pre>
+        <p>Now that we have our sets ready, let's create a zoo and populate it with some animals.</p>
+<pre><code class="prompt">(//chapter5)&gt;</code>
+<code class="user">animals = ["lion", "elephant", "flamingo", "turtle", "snake"];
+all = .mammals | .birds | .reptiles;
+.zoo = all.filter(|x| animals.has(x.animal));
+.zoo.len();</code>
+<code class="response">5</code></pre>
+        <p>Let's break down what happened here:</p>
+        <ol>
+            <li>We defined a list (<code class="inline">animals</code>) containing the animals we want in the zoo.</li>
+            <li>Using the union operator (<code class="inline">|</code>), we created a new set (<code class="inline">all</code>) that combines the <code class="inline">mammals</code>, <code class="inline">birds</code>, and <code class="inline">reptiles</code> sets.</li>
+            <li>We employed the <code class="inline">filter()</code> method to iterate over the <code class="inline">all</code> set and select only those animals that are also present in the <code class="inline">animals</code> list.</li>
+            <li>Finally, we used the <code class="inline">len()</code> method to count the number of animals in the <code class="inline">zoo</code> set.</li>
+        </ol>
+        <p>Sets in ThingsDB provide a range of useful operations that enable efficient manipulation of data.
+            These operations, summarized in <a href="ch05.xhtml#ta5_1">Table 5.1</a>, facilitate tasks such as combining,
+            filtering, and finding specific subsets of things within sets.</p>
+        <div class="table">
+            <h2 id="ta5_1"></h2>
+            <p class="title">Table 5.1 - Set operations</p>
+            <table>
+                <tr><th>Operator</th><th>Operation</th><th>Description</th></tr>
+                <tr>
+                    <td><code class="inline">|</code> (union)</td>
+                    <td><code class="inline">A | B</code></td>
+                    <td>The set of things that are in either <code class="inline">A</code> or <code class="inline">B</code>.</td>
+                </tr>
+                <tr>
+                    <td><code class="inline">&amp;</code> (intersection)</td>
+                    <td><code class="inline">A &amp; B</code></td>
+                    <td>The set of things that are in both <code class="inline">A</code> and <code class="inline">B</code>.</td>
+                </tr>
+                <tr>
+                    <td><code class="inline">-</code> (difference)</td>
+                    <td><code class="inline">A - B</code></td>
+                    <td>The set of things that are in <code class="inline">A</code> but not <code class="inline">B</code>.</td>
+                </tr>
+                <tr>
+                    <td><code class="inline">^</code> (symmetric difference)</td>
+                    <td><code class="inline">A ^ B</code></td>
+                    <td>The set of things that are in either <code class="inline">A</code> or <code class="inline">B</code>, but not in both.</td>
+                </tr>
+            </table>
+        </div>
+        <p>We have already employed the union operation to populate our zoo with a diverse set of animals.
+            Now, let's delve into additional examples showcasing how set operations can be utilized within
+            the context of our zoo.</p>
+        <section class="sect2">
+            <h4 id="ch05_1_1_h" class="title">5.1.1 Identifying Birds Not in the Zoo</h4>
+            <p>The <code class="inline">-</code> operator allows us to find birds that are not part of the zoo:</p>
+<pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">.birds - .zoo;</code>
+<code class="response">[
+    {"#": 8, "animal": "parrot"}
+]</code></pre>
+            <p>This command retrieves the <code class="inline">birds</code> set and subtracts the
+                <code class="inline">zoo</code> set, resulting in a new set containing only the birds that
+                do not reside in the zoo.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch05_1_2_h" class="title">5.1.2 Selecting Warm-Blooded Animals in the Zoo</h4>
+            <p>We can combine the <code class="inline">|</code> and <code class="inline">&amp;</code>
+                operators to find warm-blooded animals that are also in the zoo:</p>
+<pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">(.mammals | .birds) &amp; .zoo;</code>
+<code class="response">[
+    {"#": 7, "animal": "flamingo"},
+    {"#": 5, "animal": "lion"},
+    {"#": 4, "animal": "elephant"}
+]</code></pre>
+            <p>This expression combines the <code class="inline">mammals</code> and
+                <code class="inline">birds</code> sets using <code class="inline">|</code>,
+                then intersects the resulting set with the <code class="inline">zoo</code> set,
+                effectively selecting only the warm-blooded animals that are in the zoo.</p>
+            <p>These examples demonstrate how set operations can effectively manage and analyze data
+                within sets, providing a powerful tool for building efficient and data-driven applications.</p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch05_2_h" class="title">5.2 Determining Set Membership and Supersets/Subsets</h3>
+        <p>In addition to the set operations we've covered, ThingsDB sets provide several additional
+            useful operators and methods. These enable us to determine whether a set contains all things
+            of another set, verify whether a set is a subset or superset of another, and check
+            whether a particular thing belongs to a set.</p>
+        <section class="sect2">
+            <h4 id="ch05_2_1_h" class="title">5.2.1 Verifying Set Membership</h4>
+            <p>The <code class="inline">has()</code> method can be employed to determine whether a specific
+                thing exists within a set. This method is particularly efficient for sets compared to lists,
+                as it does not require iterating through the entire collection to perform the check.</p>
+<pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">flamingo = .birds.find(|b| b.animal == "flamingo");
+.zoo.has(flamingo);</code>
+<code class="response">true</code></pre>
+        </section>
+        <section class="sect2">
+            <h4 id="ch05_2_2_h" class="title">5.2.2 Checking Subsets and Supersets</h4>
+            <p>To determine whether one set is a subset of another, we can use the
+                <code class="inline">&lt;=</code> operator. This operator checks if all elements of the first set
+                are also present in the second set.</p>
+<pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">.reptiles &lt;= .zoo;</code>  <code class="comment">// Determines if “reptiles” is a</code>
+                                  <code class="comment">// subset of “zoo”</code>
+<code class="response">true</code></pre>
+            <p>Conversely, to verify whether a set is a superset of another, we employ the
+                <code class="inline">&gt;=</code> operator. This operator checks if the second set contains all
+                the elements of the first set.</p>
+<pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">.zoo &gt;= .reptiles;</code>  <code class="comment">// Determines if “zoo” is a</code>
+                                  <code class="comment">// superset of “reptiles”</code>
+<code class="response">true</code></pre>
+            <p>To distinguish between proper subsets and supersets, which explicitly exclude the possibility of equality,
+                the <code class="inline">&lt;</code> and <code class="inline">&gt;</code> operators are employed.
+                These operators function similarly to their respective <code class="inline">&lt;=</code> and
+                <code class="inline">&gt;=</code> counterparts, but they return <code class="inline">false</code> when
+                the sets are equal.</p>
+            <div class="table">
+                <h2 id="ta5_2"></h2>
+                <p class="title">Table 5.2 - Subset and Superset operations</p>
+                <table>
+                    <tr><th>Operator</th><th>Operation</th><th>Description</th></tr>
+                    <tr>
+                        <td><code class="inline">&lt;=</code></td>
+                        <td>is subset</td>
+                        <td>Determines if all things of the first set are contained within the second set, ignoring equality.</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">&lt;</code></td>
+                        <td>is proper subset</td>
+                        <td>Determines if all things of the first set are contained within the second set, and the two sets are not equal.</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">&gt;=</code></td>
+                        <td>is superset</td>
+                        <td>Determines if all things of the second set are contained within the first set, ignoring equality.</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">&gt;</code></td>
+                        <td>is proper superset</td>
+                        <td>Determines if all things of the second set are contained within the first set, and the two sets are not equal.</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch05_3_h" class="title">5.3 Copy or Reference</h3>
+        <p>Assignments with sets follow a similar pattern to lists. When assigning a set to a variable,
+            it is treated as a reference. However, if you assign a set to a property of a thing,
+            a copy of the set will be created.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>Nested sets are not supported in ThingsDB. Sets can only contain things. However, you can add a set to a list.
+                    In this case, a copy of the set will be made, and it will be converted into an immutable tuple.</p>
+            </div>
+        </div>
+        <div class="table">
+            <h2 id="ta5_3"></h2>
+            <p class="title">Table 5.3 - Summary of when ThingsDB employs copying or reference assignment for a set</p>
+            <table>
+                <tr><th>Assignment</th><th>Description</th></tr>
+                <tr>
+                    <td><code class="inline">a = b</code></td>
+                    <td>By reference (<code class="inline">b</code> is a set)</td>
+                </tr>
+                <tr>
+                    <td><code class="inline">a = .b</code></td>
+                    <td>By reference (<code class="inline">.b</code> is a maintained set)</td>
+                </tr>
+                <tr>
+                    <td><code class="inline">.a = b</code></td>
+                    <td>Copy to new maintained set (<code class="inline">b</code> is a set)</td>
+                </tr>
+                <tr>
+                    <td><code class="inline">.a = .b</code></td>
+                    <td>Copy to new maintained set (<code class="inline">.b</code> is a maintained set)</td>
+                </tr>
+                <tr>
+                    <td><code class="inline">a.push(set())</code></td>
+                    <td>Copy to new tuple (<code class="inline">a</code> is a list)</td>
+                </tr>
+            </table>
+        </div>
+    </section>
+</section>
+</body>
+</html>
