@@ -8,6 +8,30 @@
 <body>
 <section class="appendix" epub:type="appendix" role="doc-appendix" aria-labelledby="ap01_h" id="_ap01">
     <h2 id="ap01_h" class="title">Appendix I - Chapter Data Import</h2>
+    <p>This appendix helps you jump into Chapters 7-13 of this book, which build on a
+        to-do application using the "todos" collection. Whether you want to start a specific
+        chapter or just explore the application with pre-populated data, follow these steps:</p>
+    <p>Switch to the <code class="inline">/thingsdb</code> Scope (using <code class="inline">@t</code>)
+        and install the <code class="inline">"requests"</code> module <em>(if not already done)</em>:</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">new_module("requests", "github.com/thingsdb/module-go-requests");</code>
+<code class="response">null</code></pre>
+    <p>Create a new collection (replace <code class="inline">"todos"</code> if you prefer another name):</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">new_collection("todos");</code>
+<code class="response">"todos"</code></pre>
+    <p>Switch to the newly created collection scope:</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">@ //todos</code>
+<code class="prompt">(//todos)&gt;</code></pre>
+    <p>Choose your starting chapter (<code class="inline">7</code>, <code class="inline">8</code>,
+        <code class="inline">9</code>, <code class="inline">10</code>, <code class="inline">11</code>,
+        <code class="inline">12</code>, or <code class="inline">13</code>):</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="comment">// Replace chapter9 with desired chapter number (7-13):</code>
+<code class="user">requests.get("https://docs.thingsdb.io/v1/book/chapter9.mp").then(|res| {
+    data = res.load().body;
+    import(data);
+});</code>
+<code class="response">null</code></pre>
+    <p><strong>Ready to Go!</strong></p>
+    <p>With these steps, you've imported the chapter data and can start exploring the "todos" application from your chosen point.</p>
 </section>
 </body>
 </html>

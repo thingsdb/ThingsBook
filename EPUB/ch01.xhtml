@@ -47,18 +47,18 @@
         persistence, ensuring uninterrupted data access and manipulation even after script
         termination.</p>
     <p>To better grasp this concept, consider what transpires when Python is launched.</p>
-    <pre><code class="prompt">$</code> <code class="user">python</code>
+<pre><code class="prompt">$</code> <code class="user">python</code>
 <code class="response">…</code>
 <code class="prompt">&gt;&gt;&gt;</code> <code class="user">value = 'Remember me'</code></pre>
     <p>Upon assigning the string <code class="inline">"Remember me"</code> to the variable
         <code class="inline">value</code>, Python retains this
         value as long as the interpreter remains open. To verify this, you can execute the
         following code snippet:</p>
-    <pre><code class="prompt">&gt;&gt;&gt;</code> <code class="user">print(value)</code>
+<pre><code class="prompt">&gt;&gt;&gt;</code> <code class="user">print(value)</code>
 <code class="response">Remember me</code></pre>
     <p>However, if we terminate the interpreter and relaunch Python, our
         <code class="inline">value</code> variable will be permanently lost:</p>
-    <pre><code class="prompt">&gt;&gt;&gt;</code> <code class="user">exit()</code>
+<pre><code class="prompt">&gt;&gt;&gt;</code> <code class="user">exit()</code>
 <code class="response"></code>
 <code class="prompt">$</code> <code class="user">python</code>
 <code class="response">…</code>
@@ -122,7 +122,7 @@ NameError: name value is not defined</code></pre>
                 This would remove all ThingsDB data and start a clean node</p>
         </div>
     </div>
-    <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">.value;</code>
+<pre><code class="prompt">(//stuff)&gt;</code> <code class="user">.value;</code>
 <code class="response">"Remember me"</code></pre>
     <p>As you can see, ThingsDB still knows about the property <code class="inline">value</code>.
         You might also notice that however this example is very simple, the syntax is more
