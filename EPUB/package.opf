@@ -93,6 +93,10 @@
 		<item id="id-ch16" href="ch16.xhtml" media-type="application/xhtml+xml"/>
 		<item id="id-ch16quiz" href="ch16quiz.xhtml" media-type="application/xhtml+xml"/>
 		<item id="id-ch16answers" href="ch16answers.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-closingnote" href="closingnote.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ap01" href="ap01.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-ap02" href="ap02.xhtml" media-type="application/xhtml+xml"/>
+		<item id="id-author" href="author.xhtml" media-type="application/xhtml+xml"/>
 		<item id="lightbulb" href="images/lightbulb.png" media-type="image/png"/>
 		<item id="epub.embedded.font.1" href="fonts/Oswald-Bold.ttf" media-type="application/vnd.ms-opentype"/>
 		<item id="epub.embedded.font.2" href="fonts/RobotoMono-VariableFont_wght.ttf" media-type="application/vnd.ms-opentype"/>
@@ -160,5 +164,9 @@
 		<itemref idref="id-ch16"/>
 		<itemref idref="id-ch16quiz"/>
 		<itemref idref="id-ch16answers"/>
+		<itemref idref="id-closingnote"/>
+		<itemref idref="id-ap01"/>
+		<itemref idref="id-ap02"/>
+		<itemref idref="id-author"/>
 	</spine>
 </package>

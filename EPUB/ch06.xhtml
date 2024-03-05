@@ -8,6 +8,46 @@
 <body>
 <section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch06_h" id="_ch06">
     <h2 id="ch06_h" class="title">Chapter 6 - Procedures</h2>
+    <p>In ThingsDB, we've encountered built-in functions like <code class="inline">is_nil()</code> and
+        methods like <code class="inline">.len()</code>, which are functions called on instances of a type.
+        We've also explored closures, which are unnamed functions commonly used as callback arguments to
+        iterate over lists, sets or things.</p>
+    <p>ThingsDB introduces another variation of these concepts called <em>procedures</em>.
+        Procedures bind a name to a closure and expose the procedure for direct execution. This means we
+        can call procedures directly, eliminating the need for queries. Procedures are typically created
+        within a collection, but ThingsDB also offers the <code class="inline">/thingsdb</code> scope for
+        procedures that simplify management tasks like user creation which we will explore later in this chapter.</p>
+     <p>In this chapter, we'll begin crafting a to-do application, empowering you to manage Alice's tasks
+        and keep her organized.</p>
+    <p>First, let's create a new collection named “todos” using the <code class="inline">/thingsdb</code> scope
+        and switch to the <code class="inline">//todos</code> scope.</p>
+<pre><code class="prompt">(/thingsdb)&gt;</code> <code class="user">new_collection("todos");</code>
+<code class="response">"todos"</code>
+<code class="prompt">(/thingsdb)&gt;</code> <code class="user">@ //todos</code>
+<code class="prompt">(//todos)&gt;</code></pre>
+    <p>To manage Alice's to-do items, we'll create a list to store them. This list will hold strings representing the to-do items. To control what gets added to the list, we'll use a procedure.</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">.todos = [];</code>  <code class="comment">// Create an empty list for to-do items</code>
+<code class="response">[]</code></pre>
+    <p>Instead of directly adding to-dos to the list, we'll create a procedure to manage this process.</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">new_procedure("add_todo", |body| {</code>
+    <code class="user">"Adds a to-do to the list.";</code>   <code class="comment">// Docstring</code>
+    <code class="user">assert(is_str(body) &amp;&amp; body);</code>  <code class="comment">// Check if the input is a</code>
+                                   <code class="comment">// non-empty string</code>
+    <code class="user">.todos.push(body);</code>  <code class="comment">// Add the to-do to the list</code>
+    <code class="user">nil;
+});</code>
+<code class="response">"add_todo"</code></pre>
+    <p>This creates a procedure named <code class="inline">add_todo</code> that takes a
+        single <code class="inline">todo</code> argument. The docstring specifies the procedure's purpose
+        and is optional. The <code class="inline">assert()</code> function ensures that the input is a valid,
+        non-empty string.</p>
+    <p>To utilize the <code class="inline">add_todo</code> procedure, we can simply call it directly in a query,
+        similar to a regular function.</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">add_todo("Read a book");</code>
+<code class="response">OperationError: closures with side effects require a change but none is created; use `wse(...)` to enforce a change; see https://docs.thingsdb.io/v1/collection-api/wse</code></pre>
+    <p>ThingsDB throws an error indicating that the procedure contains a closure which may introduce
+        changes to the collection and requires a change to synchronize the state. This is because ThingsDB
+        must ensure data consistency across all nodes when changes occur.</p>
 </section>
 </body>
 </html>
