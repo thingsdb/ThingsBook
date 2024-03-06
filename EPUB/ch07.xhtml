@@ -8,6 +8,341 @@
 <body>
 <section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch07_h" id="_ch07">
     <h2 id="ch07_h" class="title">Chapter 7 - Typed Things</h2>
+    <p>Currently, Alice can add and search for to-do items, but she lacks a straightforward method to mark them as completed. While we could implement a procedure to remove completed to-do items, Alice prefers to retain them for future reference.</p>
+    <p>To achieve this, we'll transform the current <em>“todo”</em>, which is simply a string, into a thing with
+        both a <code class="inline">body</code> property and a boolean property which we call <code class="inline">done</code>.
+        We initially set <code class="inline">done</code> to <code class="inline">false</code> and update
+        the property to <code class="inline">true</code> when the to-do is marked as completed.</p>
+    <p>However, using things without proper type constraints can lead to errors due to incorrect property
+        names or unexpected values. To enhance control and prevent such issues, we'll explore the concept
+        of types in this chapter. In practical applications, it is rare to store plain things; instead,
+        we mainly choose to employ typed things.</p>
+    <div class="note">
+        <img class="note" src="images/lightbulb.png" alt="Note" />
+        <div class="content">
+            <p>Typed things offer significant memory advantages over regular things with identical properties.
+                This is because typed things in memory only store the data associated with that particular instance,
+                while the property names are stored only once, centrally within the type definition. This
+                centralized storage significantly reduces memory consumption, particularly for large collections of
+                typed things.</p>
+        </div>
+    </div>
+    <section class="sect1">
+        <h3 id="ch07_1_h" class="title">7.1 Create Your First Type</h3>
+        <p>To create a type, you'll need to use the <code class="inline">new_type()</code> function to define
+            the type and the <code class="inline">set_type()</code> function to initialize it with property
+            definitions. While it is technically possible to skip <code class="inline">new_type()</code> and
+            call <code class="inline">set_type()</code> directly, this approach may lead to issues with
+            self-referential type definitions. To avoid potential problems, it is recommended to follow the
+            conventional practice of using <code class="inline">new_type()</code> first, followed by
+            <code class="inline">set_type()</code>. Unlike procedures, types can only be created within a
+            collection's scope.</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">new_type("Todo");
+set_type("Todo", {
+    body: "str",
+    done: "bool",
+});</code>
+<code class="response">null</code></pre>
+        <p>Both <code class="inline">new_type()</code> and <code class="inline">set_type()</code> require a type
+            name as their first argument. It is considered best practice to use CamelCase naming convention for types,
+            starting with a capital letter. The <code class="inline">set_type()</code> function takes a second
+            argument, which is a <em>thing</em> object that defines the properties and their respective definitions.
+            Property definitions are always expressed as strings.</p>
+        <p>Once the <code class="inline">Todo</code> type is created, you can initialize an instance of it by simply
+            writing <code class="inline">Todo{}</code>. Every type can be initialized without explicitly specifying
+            the properties. This implies that every property must have a default value at initialization.</p>
+        <p>For instance, here's how to initialize a <code class="inline">Todo</code> instance using its default values:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">Todo{};</code>  <code class="comment">// Initialize a Todo using the default values</code>
+<code class="response">{
+    "body": "",
+    "done": false
+}</code></pre>
+        <p>This creates a new <code class="inline">Todo</code> instance with an empty <code class="inline">body</code>
+            property and a <code class="inline">done</code> property set to <code class="inline">false</code>. As you
+            can see, the default values for <code class="inline">body</code> and <code class="inline">done</code> are
+            automatically assigned when the instance is created.</p>
+        <section class="sect2">
+            <h4 id="ch07_1_1_h" class="title">7.1.1 Enhancing the Todo Type using mod_type()</h4>
+            <p>We defined the <code class="inline">Todo</code> type to accept empty strings for the
+                <code class="inline">body</code> property. However, this is not ideal, as we want to ensure that
+                to-do’s always have a meaningful description. To address this, we can utilize property definitions
+                to impose stricter constraints on the <code class="inline">body</code> property.</p>
+            <p>Instead of simply <code class="inline">"str"</code>, we can specify a range condition
+                using <code class="inline">"str&lt;1:&gt;"</code>. This indicates that the body must be at least
+                one character long. We could also define maximum length restrictions or additional default values
+                if needed.</p>
+            <p>To modify the <code class="inline">Todo</code> type, we'll employ the
+                <code class="inline">mod_type()</code> function. This function is specifically designed for type
+                modification and is commonly used in migration scripts to streamline data migration processes.
+                It is somewhat analogous to the <code class="inline">ALTER TABLE</code> syntax in SQL, often
+                employed when introducing new features or enhancing existing applications.</p>
+            <p>The <code class="inline">mod_type()</code> function takes the type name as its first argument,
+                followed by an <em>action</em> string specifying the desired operation. In this case, we'll use
+                the <code class="inline">"mod"</code> action, which indicates a property definition modification.</p>
+            <p>Here's a table summarizing the available <code class="inline">mod_type()</code> actions:</p>
+            <div class="table">
+                <h2 id="ta07_1_1"></h2>
+                <p class="title">Table 7.1.1 - Summary of mod_type() actions</p>
+                <table>
+                    <tr><th>Action</th><th>Description</th></tr>
+                    <tr><td><code class="inline">"add"</code></td><td>Adds a new property or method to the type</td></tr>
+                    <tr><td><code class="inline">"all"</code></td><td>Iterates over all instances of a given type</td></tr>
+                    <tr><td><code class="inline">"del"</code></td><td>Deletes a property or method from the type</td></tr>
+                    <tr><td><code class="inline">"hid"</code></td><td>Enables or disable <em>hide-id</em> for the type</td></tr>
+                    <tr><td><code class="inline">"mod"</code></td><td>Modifies a property or method definition</td></tr>
+                    <tr><td><code class="inline">"rel"</code></td><td>Creates a relation between types</td></tr>
+                    <tr><td><code class="inline">"ren"</code></td><td>Renames a property or method</td></tr>
+                    <tr><td><code class="inline">"wpo"</code></td><td>Enables or disable <em>wrap-only</em> mode for the type</td></tr>
+                </table>
+            </div>
+            <p>The specific arguments required depend on the chosen action. For <code class="inline">"mod"</code>, we
+                need to provide the property name, the new definition, and a migration callback if the new definition
+                is incompatible with the old one. This is the case here, as the old definition allowed empty strings,
+                while the new one does not. The migration callback will be invoked for each instance of the type and
+                should return either <code class="inline">nil</code> to retain the original property value or a new
+                value that complies with the updated definition.</p>
+            <p>Now, let's migrate the “todos” collection to utilize the updated <code class="inline">Todo</code> type:</p>
+<pre><code class="prompt">(//todos)&gt;</code>
+<code class="comment">// Migrate existing string values to the Todo type</code>
+<code class="user">.todos = .todos.map(|body| Todo{body:});</code>
+
+<code class="comment">// Modify the Todo type to disallow empty bodies</code>
+<code class="user">mod_type("Todo", "mod", "body", "str&lt;1:&gt;", |todo| !todo.body ? "-" : nil);</code>
+
+<code class="comment">// Migrate procedures to ensure compatibility with the updated type</code>
+<code class="user">mod_procedure("add_todo", |body| {
+    "Adds a to-do to the list.";
+    .todos.push(Todo{body:});
+    nil;
+});
+mod_procedure("search_todos", |needle| {
+    "Search for to-do's";
+    .todos.filter(|todo| todo.body.contains(needle));
+});</code>
+<code class="response">null</code></pre>
+            <p>By applying the migration in a single query, we eliminate the risk of using deprecated procedures or
+                performing operations on incompatible data structures.</p>
+            <p>To verify that the migration to the <code class="inline">Todo</code> type has been successful,
+                let's execute the <code class="inline">search_todos.py</code> script again:</p>
+<pre><code class="prompt">$</code> <code class="user">python search_todos.py</code>
+<code class="prompt">Search for:</code> <code class="user">book</code>
+<code class="response">[{'#': 2, 'body': 'Read a book', 'done': False}]</code></pre>
+        </section>
+        <section class="sect2">
+            <h4 id="ch07_1_2_h" class="title">7.1.2 Customizing ID Representation in Responses</h4>
+            <p>The previous example demonstrated how to retrieve a list of <code class="inline">Todo</code> objects
+                using the <code class="inline">search_todos.py</code> script. The response included the properties
+                of the <code class="inline">Todo</code> type along with the unique identifier for each object, represented by the
+                <code class="inline">#</code> key.</p>
+            <p>While this approach works, it is possible to gain more control over how IDs are returned in
+                responses by leveraging type definitions. Specifically, we can utilize
+                the <code class="inline">"#"</code> definition to specify the desired key for the ID.</p>
+            <p>To achieve this, we'll employ the <code class="inline">mod_type()</code> function again. This time,
+                we'll modify the <code class="inline">Todo</code> type to return the ID as <code class="inline">"id"</code>
+                instead of <code class="inline">"#"</code>.</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">mod_type("Todo", "add", "id", "#");</code>
+<code class="response">null</code></pre>
+            <p>This modification tells ThingsDB to return the unique identifier for each <code class="inline">Todo</code>
+                object as the <code class="inline">"id"</code> key in responses.</p>
+            <p>Now, let's re-execute the <code class="inline">search_todos.py</code> script to observe the change:</p>
+<pre><code class="prompt">$</code> <code class="user">python search_todos.py</code>
+<code class="prompt">Search for:</code> <code class="user">book</code>
+<code class="response">[{'id': 2, 'body': 'Read a book', 'done': False}]</code></pre>
+            <p>As expected, the response now includes the <code class="inline">"id"</code> key instead of
+                <code class="inline">"#"</code>, providing a more consistent and user-friendly representation
+                of the object identifier.</p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch07_2_h" class="title">7.2 Collection Structure with Types</h3>
+        <p>While we've established a well-defined structure for <code class="inline">Todo</code> objects,
+            the <code class="inline">.todos</code> list still accepts items of other types, potentially
+            introducing inconsistencies. Additionally, the collection root lacks strict structure, allowing
+            for arbitrary property assignments.</p>
+        <p>To address these concerns, we'll create a new type which we call <code class="inline">Root</code> to
+            represent the collection root. The name <code class="inline">Root</code> is just a choice, another
+            good name would be <code class="inline">Collection</code> or a more descriptive name like
+            <code class="inline">TodoCollection</code>. This type will solely contain a property named
+            <code class="inline">todos</code> with type definition <code class="inline">"[Todo]"</code>, ensuring
+            that only <code class="inline">Todo</code> objects can be added to the list.</p>
+        <p>Let's create the <code class="inline">Root</code> type:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">new_type("Root");
+set_type("Root", {
+    todos: "[Todo]",
+});</code>
+<code class="response">null</code></pre>
+        <p>To convert the collection root to the <code class="inline">Root</code> type, we'll use the
+            <code class="inline">to_type()</code> method.</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">.to_type("Root");</code>
+<code class="response">null</code></pre>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>If you encounter an error indicating that the <code class="inline">Root</code> type is missing a property called hacked,
+                    it is likely due to the hacked property introduced in <a href="ch06.xhtml#ch06_2_3_h">Chapter 6</a>.
+                    To resolve this, remove the hacked property using <code class="inline">.del("hacked");</code></p>
+            </div>
+        </div>
+        <p>With the <code class="inline">Root</code> type applied to the collection root, we have achieved stronger
+            type enforcement. Attempts to assign arbitrary properties or add non-<code class="inline">Todo</code> objects
+            to the <code class="inline">.todos</code> list will trigger errors.</p>
+        <p>Here are some examples illustrating this enhanced type safety:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">.x = 1;</code>
+<code class="response">LookupError: type `Root` has no property `x`</code>
+<code class="prompt">(//todos)&gt;</code> <code class="user">.todos.push(123);</code>
+<code class="response">TypeError: type `int` is not allowed in restricted array</code>
+<code class="prompt">(//todos)&gt;</code> <code class="user">type(root());</code>
+<code class="response">"Root"</code>
+<code class="prompt">(//todos)&gt;</code> <code class="user">.todos.restriction();</code>
+<code class="response">"Todo"</code></pre>
+        <p>By leveraging typed roots, we've significantly enhanced the structure and type safety of our collection,
+            promoting data integrity and consistency.</p>
+        <p>As your application grows and evolves, you may need to adapt your data structures to accommodate new
+            requirements or enhance existing features. To address such changes, the earlier
+            discussed <code class="inline">mod_type()</code> function is available, enabling you to modify existing
+            types by adding new properties, changing data types, or introducing restrictions.</p>
+        <p>If, for any reason, you need to revert a type back to its original <em>“thing”</em> form,
+            the <code class="inline">to_thing()</code> method is your go-to solution. This method effectively
+            de-structures the typed thing, removing any imposed constraints and allowing for arbitrary property
+            assignments.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch07_3_h" class="title">7.3 Retrieving Typed Things by ID</h3>
+        <p>In <a href="ch04.xhtml#ch04_2_h">Chapter 4</a>, we learned how to retrieve a specific thing using
+            the <code class="inline">thing()</code> function by providing its ID. This method also applies to
+            typed things, but for greater control, we can directly invoke the type name and pass the ID as an
+            argument. This approach ensures that only instances of the specified type are returned.</p>
+        <p>Consider the following examples:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">Todo(2);</code>  <code class="comment">// ID 2 is a Todo item</code>
+<code class="response">{
+    "body": "Read a book",
+    "done": false,
+    "id": 2
+}</code>
+<code class="prompt">(//todos)&gt;</code> <code class="user">Todo(1);</code>  <code class="comment">// ID 1 is the collection root</code>
+<code class="response">TypeError: `#1` is of type `Root`, not `Todo`</code></pre>
+        <p>In the first example, the <code class="inline">Todo(2)</code> call successfully retrieves
+            the <code class="inline">Todo</code> object with ID 2. However, when attempting to access the
+            collection root using <code class="inline">Todo(1)</code>, an error is raised because the collection
+            root is a <code class="inline">Root</code> object, not a <code class="inline">Todo</code> object.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch07_4_h" class="title">7.4 Type Methods</h3>
+        <p>Up to this point, the <code class="inline">Todo</code> type has a property named <code class="inline">done</code>
+            to indicate whether a to-do item is completed. However, if Alice finishes reading a book, she needs a way to
+            mark the corresponding to-do item as completed. While we could simply set the <code class="inline">done</code>
+            property to <code class="inline">true</code>, it is better to adopt a more flexible approach that allows
+            for potential future changes in data representation.</p>
+        <p>Type “methods” are self-contained functions within a type definition, allowing us to encapsulate specific
+            behavior for that type. Instead of directly modifying the <code class="inline">done</code> property,
+            we'll create a method named <code class="inline">mark_as_done</code> that handles the task completion logic.</p>
+        <p>In contrast to properties, which are defined using strings, methods are defined using closures. These closures
+            encapsulate the method's logic and receive the <code class="inline">this</code> object as their first argument,
+            which represents the instance of the type where the method is being called on.</p>
+        <p>We'll use the <code class="inline">mod_type()</code> function to add the <code class="inline">mark_as_done</code>
+            method to the <code class="inline">Todo</code> type:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">mod_type("Todo", "add", "mark_as_done", |this| this.done = true);</code>
+<code class="response">null</code></pre>
+        <p>Next, we'll create a procedure to interact with the <code class="inline">mark_as_done</code> method.
+            This procedure will receive a <code class="inline">todo_id</code> as input and call the
+            <code class="inline">mark_as_done</code> method on the corresponding <code class="inline">Todo</code> instance:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">new_procedure("mark_as_done", |todo_id| {
+    wse();
+    Todo(todo_id).mark_as_done();
+    nil;
+});</code>
+<code class="response">"mark_as_done"</code></pre>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>Here, we again need to use the <code class="inline">wse()</code> function to inform ThingsDB that
+                    this procedure may modify the “todos” collection and potentially trigger side effects.</p>
+            </div>
+        </div>
+        <p>To test the new <code class="inline">mark_as_done</code> procedure, we'll create a Python file
+            named <code class="inline">mark_as_done.py</code> based on the template and modify the work method to
+            capture user input for the <code class="inline">todo_id</code> and call the procedure:</p>
+<pre><code class="prompt">async def work(client: Client):</code>
+<code class="user">    todo_id = int(input("To-do ID: "))
+    await client.run('mark_as_done', todo_id=todo_id)
+</code></pre>
+        <p>Running this Python file will prompt you to enter a <code class="inline">todo_id</code>, which will
+            then be used to invoke the <code class="inline">mark_as_done</code> procedure.</p>
+<pre><code class="prompt">$</code> <code class="user">python mark_as_done.py</code>
+<code class="prompt">To-do ID:</code> <code class="user">2</code></pre>
+        <p>If no errors occur, it indicates that the operation was successful.</p>
+        <p>To verify that the to-do item has been marked as completed, you can run the
+            <code class="inline">search_todos.py</code> script again and observe the
+            updated <code class="inline">done</code> property:</p>
+<pre><code class="prompt">$</code> <code class="user">python search_todos.py</code>
+<code class="prompt">Search for:</code> <code class="user">book</code>
+<code class="response">[{'id': 2, 'body': 'Read a book', 'done': True}]</code></pre>
+    </section>
+    <section class="sect1">
+        <h3 id="ch07_5_h" class="title">7.5 Type Information</h3>
+        <p>With the <code class="inline">types_info()</code> function, you can explore all the types defined
+            within a collection. The function returns a list of information objects.</p>
+        <p>For detailed information about a single type, use the <code class="inline">type_info()</code> method.
+            The <code class="inline">Todo</code> type information, for example, would look like this:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">type_info("Todo");</code>
+<code class="response">{
+    "created_at": 1706696007,
+    "fields": [
+        ["id", "#"],
+        ["body", "str&lt;1:&gt;"],
+        ["done", "bool"]
+    ],
+    "hide_id": false,
+    "methods": {
+        "mark_as_done": {
+            "arguments": ["this"],
+            "definition": "|this| this.done = true",
+            "doc": "",
+            "with_side_effects": true
+        }
+    },
+    "modified_at": 1707128380,
+    "name": "Todo",
+    "relations": {},
+    "type_id": 0,
+    "wrap_only": false
+}</code></pre>
+    </section>
+    <section class="sect1">
+        <h3 id="ch07_6_h" class="title">7.6 Removing a Type</h3>
+        <p>ThingsDB empowers you to remove existing types using the <code class="inline">del_type()</code> function.
+            However, exercise caution, as this function operates even when instances of the
+            targeted type still exist.</p>
+        <p>Consider the following example:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">new_type("T");</code>      <code class="comment">// Create type T</code>
+<code class="user">set_type("T", {name: "str"});</code>  <code class="comment">// Define type T</code>
+<code class="user">t = T{name: "test"};</code>           <code class="comment">// Create an instance of T</code>
+<code class="user">assert(type(t) == "T");</code>        <code class="comment">// Verify the type</code>
+<code class="user">del_type("T");</code>                 <code class="comment">// Delete type T</code>
+<code class="user">assert(type(t) == "thing");</code>    <code class="comment">// Verify type is now "thing"</code>
+<code class="user">t;</code>
+<code class="response">{
+    "name": "test"
+}</code></pre>
+        <p>As observed, deleting the type converts all existing instances to plain "things", discarding the
+            specific type information. This transformation is not easily reversible unless you possess precise
+            knowledge of the original type belonging to each instance.</p>
+        <section class="sect2">
+            <h4 id="ch07_6_1_h" class="title">7.6.1 Dependency Considerations</h4>
+            <p>Furthermore, attempting to remove a type referenced by another type or enumerator will fail.
+                To successfully delete such a type, you must first address the dependencies. Refer
+                to <a href="ch09.xhtml#ch09_h">Chapter 9</a> for in-depth exploration of type connections
+                and <a href="ch11.xhtml#ch11_h">Chapter 11</a> for detailed discussions on enumerators.</p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch07_7_h" class="title">7.7 More Definitions</h3>
+        <p>In this book we’ll explore more definitions than discussed so far. We already used a definition
+            to specify a string with a range, a boolean and a list restricted to a specific data type.</p>
+        <p>As always, use the documentation page for a full description of all the type property definitions
+            which can be found here: <a href="https://docs.thingsdb.io/v1/overview/type/">https://docs.thingsdb.io/v1/overview/type/</a>
+        </p>
+    </section>
 </section>
 </body>
 </html>
