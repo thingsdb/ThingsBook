@@ -9,7 +9,26 @@
 <section class="sect1">
     <h3 id="ch08_5_h" class="title">8.5 Quiz - Challenge Your Understanding</h3>
     <ol class="quiz">
-
+        <li><p>What data type is returned by the <code class="inline">now()</code> function, and what does it represent?</p></li>
+        <li><p>How would you calculate the timestamp for January 25, 2025, at 13:05 Kyiv time, considering time zone differences and potential daylight saving time adjustments?</p></li>
+        <li><p>Remember the range definition from the previous chapter? Consider the property definition <code class="inline">"int&lt;-1:1&gt;?"</code>. What range of values would be allowed for this property?</p></li>
+        <li><p>You have a task that you no longer want to execute, but you still want to keep it for reference. How can you achieve this without permanently removing the task from the task list?</p></li>
+        <li><p>Which of the following will create a daily repeating task?</p>
+            <ol>
+                <li><code class="inline">task(datetime(), |task| nil).repeat("daily");</code></li>
+                <li><code class="inline">task(datetime(), |task| task.again_in("days", 1));</code></li>
+                <li><code class="inline">task(datetime(), |task| task.again_at(datetime(2025, 1, 1)));</code></li>
+            </ol>
+        </li>
+        <li><p>Write a single line of code that evaluates all tasks and returns <code class="inline">true</code> only if all tasks are in a non-error state. If at least one task is in an error state, the code should return <code class="inline">false</code>.</p></li>
+        <li><p>Which of the following statements is true?</p>
+            <ol>
+                <li>The <em>datetime</em> type has millisecond precision.</li>
+                <li>The <em>datetime</em> type is mutable, allowing changes like time zone adjustment.</li>
+                <li>The <em>datetime</em> and <em>timeval</em> types represent the same information but differ in response format.</li>
+                <li>The <em>timeval</em> type represents a timestamp, while the <em>datetime</em> type can be zone-aware.</li>
+            </ol>
+        </li>
     </ol>
 </section>
 </body>

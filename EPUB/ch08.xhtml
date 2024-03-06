@@ -8,6 +8,275 @@
 <body>
 <section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch08_h" id="_ch08">
     <h2 id="ch08_h" class="title">Chapter 8 - Date, Time and Tasks</h2>
+    <p>Effectively managing to-do lists involves not only tracking tasks themselves, but also the
+        timing of their creation and completion. In this chapter, we delve into two core methods for
+        capturing time in ThingsDB: <em>timestamps</em>, the <em>datetime</em> type and the <em>task</em> type
+        used for scheduling code execution.</p>
+    <section class="sect1">
+        <h3 id="ch08_1_h" class="title">8.1 Timestamps vs. Datetime</h3>
+        <p>Timestamps represent time as a single numerical value, specifically the number of seconds elapsed
+            since January 1, 1970, 00:00:00 UTC. This representation offers compact storage and is suitable
+            for calculations involving relative time differences.</p>
+        <p>The <code class="inline">now()</code> function retrieves the current timestamp:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">now();</code>
+<code class="response">1707145945.4736154</code></pre>
+        <p>While timestamps offer efficient storage and ease of calculating time differences between events,
+            their single numerical representation can pose challenges when dealing with absolute dates or
+            time zones. These scenarios often require intricate calculations to extract the desired information.</p>
+        <p>ThingsDB simplifies time-related tasks with the datetime type, offering a human-readable and
+            efficient approach to date and time manipulation.</p>
+        <p>Unless explicitly overridden with the <code class="inline">set_time_zone()</code> function,
+            datetime objects in ThingsDB default to Coordinated Universal Time (UTC), the global standard
+            for timekeeping.</p>
+        <p>Generate a datetime object reflecting the current date and time by simply calling
+            the <code class="inline">datetime()</code> function without arguments:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">datetime();</code>
+<code class="response">"2024-02-05T15:22:05Z"</code></pre>
+        <p>The datetime object is returned in a response as a string using the ISO 8601 format.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>While powerful, datetime objects have limited precision, offering only up to the <em>second</em> level.
+                    If your needs require millisecond-level accuracy or finer granularity, alternative approaches
+                    like timestamps might be more suitable.</p>
+            </div>
+        </div>
+        <p>The <code class="inline">datetime()</code> function offers a variety of methods to create datetime objects,
+            ensuring adaptability to diverse data sources and formatting preferences.</p>
+        <p>Construct datetime objects with year, month, and day:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">datetime(2024, 2, 6);</code>
+<code class="response">"2024-02-06T00:00:00Z"</code></pre>
+        <p>Add optional hour, minute, and seconds:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">datetime(2024, 2, 6, 9, 57, 30);</code>
+<code class="response">"2024-02-06T09:57:30Z"</code></pre>
+        <p>When the final argument passed to <code class="inline">datetime()</code> is a string, ThingsDB
+            interprets it as a time zone identifier. This allows you to "ground" your datetime object in a
+            specific geographical location, ensuring accurate representation across regions:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">datetime(2024, 2, 6, 9, 58, "Europe/Kyiv");</code>
+<code class="response">"2024-02-06T09:58:00+0200"</code></pre>
+        <p>In this example, the time zone <code class="inline">"Europe/Kyiv"</code> is specified, resulting in a
+            datetime object reflecting the time in Kyiv, Ukraine. For a comprehensive overview of all available
+            time zones supported by ThingsDB, use the <code class="inline">time_zones_info()</code> function.</p>
+        <p>Create datetime objects from ISO 8601 formatted strings:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">datetime("2024-02-06T10:05:00Z");</code>
+<code class="response">"2024-02-06T10:05:00Z"</code></pre>
+        <p>Accommodate diverse date and time representations using format specifiers:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">datetime("2024-2-6", "%Y-%m-%d");</code>
+<code class="response">"2024-02-06T00:00:00Z"</code></pre>
+        <p>Convert a timestamp to a datetime object and return using a custom format:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">datetime(1707211569).format("%a, %d %b %Y %H:%M%S %Z");</code>
+<code class="response">"Tue, 06 Feb 2024 09:2609 UTC"</code></pre>
+        <p>As illustrated in the provided examples, datetime object initialization in ThingsDB boasts
+            remarkable flexibility. For a comprehensive overview of possible initialization options,
+            delve into the detailed online documentation: <a href="https://docs.thingsdb.io/v1/collection-api/datetime/">https://docs.thingsdb.io/v1/collection-api/datetime/</a></p>
+        <p>Once initialized, datetime objects uphold immutability, safeguarding the integrity of their
+            original data. Consequently, methods like <code class="inline">move()</code>, <code class="inline">to()</code>,
+            and <code class="inline">replace()</code> always create new datetime objects,
+            leaving the original unaltered.</p>
+        <p>Need to tweak specific components within a datetime object? The <code class="inline">replace()</code> method
+            is your friend. It allows you to craft new instances with adjusted values, ensuring pinpoint accuracy:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">datetime("2024-02-06T09:26:09Z").replace({
+    minute: 0,
+    second: 0,
+});</code>
+<code class="response">"2024-02-06T09:00:00Z"</code></pre>
+        <p>Accurate time representation across different regions is crucial. With the <code class="inline">to()</code> method,
+            you can seamlessly apply different time zones to your datetime objects:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">datetime("2024-02-06T09:26:09Z").to("Europe/Kyiv");</code>
+<code class="response">"2024-02-06T11:26:09+0200"</code></pre>
+        <p>Move through time with ease using the <code class="inline">move()</code> method. It allows you to
+            generate new datetime objects adjusted by specified intervals, empowering you to navigate temporal
+            data efficiently:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">datetime("2024-02-06T09:26:09Z").move("years", -1);</code>
+<code class="response">"2023-02-06T09:26:09Z"</code></pre>
+        <p>By mastering these and other methods, you'll unlock a powerful toolkit for manipulating datetime objects
+            within ThingsDB projects. This ensures precision and flexibility in managing your time-related data.</p>
+        <section class="sect2">
+            <h4 id="ch08_1_1_h" class="title">8.1.1 Bridging the Gap Between Datetime and Timestamp</h4>
+            <p>Converting a datetime object to a timestamp can be achieved effortlessly by casting it as an integer.</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">timeval("2024-02-06T09:26:09Z");</code>
+<code class="response">1707211569</code></pre>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch08_2_h" class="title">8.2 Enhancing Todo with Datetime Properties</h3>
+        <p>Now that you've grasped the power of datetime for representing and manipulating temporal data,
+            let's apply this knowledge to enhance our understanding of the <code class="inline">Todo</code> type
+            in ThingsDB. We'll focus on adding two useful properties: <code class="inline">creation</code>
+            and <code class="inline">completion</code>.</p>
+        <p>We want to keep track of when each <code class="inline">Todo</code> item was created. To achieve this,
+            we'll add a new property named <code class="inline">creation</code> with the datetime type:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">mod_type("Todo", "add", "creation", "datetime");</code>
+<code class="response">null</code></pre>
+        <p>This command seamlessly integrates the <code class="inline">creation</code> property into the <code class="inline">Todo</code> type.
+            However, since we don't possess historical data about the exact creation dates of existing to-do’s,
+            the system automatically assigns the current date and time to them. This ensures consistency while
+            acknowledging the limitations of our historical data.</p>
+        <p>Next, we want to record the moment when a <code class="inline">Todo</code> item is marked as completed.
+            But here's a twist: not all to-do’s might be completed yet. For this, we'll introduce a property
+            named completion, but with the <code class="inline">"datetime?"</code> definition. The question
+            mark (<code class="inline">?</code>) signifies that this property is optional, allowing it to hold
+            either a datetime value (representing the completion time) or <code class="inline">nil</code> (indicating
+            no completion yet).</p>
+        <p>Here's the command to add the <code class="inline">completion</code> property:</p>
+<pre><code class="prompt">(//todos)&gt;</code>
+<code class="comment">// Adds the completion property</code>
+<code class="user">mod_type("Todo", "add", "completion", "datetime?", |this| {
+    this.done ? datetime() : nil;
+});</code>
+<code class="comment">// Fix the mark_as_done method</code>
+<code class="user">mod_type("Todo", "mod", "mark_as_done", |this| {
+    this.done = true;
+    this.completion = datetime();
+});</code>
+<code class="response">null</code></pre>
+        <p>This code snippet does more than simply adding the property. It also defines a closure to initialize
+            the <code class="inline">completion</code> value appropriately for existing to-do’s and it also fixes
+            the <code class="inline">mark_as_done</code> method to set the <code class="inline">completion</code> value
+            after the to-do will be marked as done.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch08_3_h" class="title">8.3 Scheduling Code Execution with Tasks</h3>
+        <p>Tasks allow you to schedule code execution at specific dates and times.</p>
+        <p>Key Features of the task type:</p>
+        <ul>
+            <li><strong>Guaranteed consistency: </strong>ThingsDB ensures that each task runs on exactly one node, preventing data conflicts and maintaining data integrity across the system.</li>
+            <li><strong>User context execution: </strong>Tasks execute within the context of the user who created them, inheriting their permissions and ensuring appropriate access control. However, you can change the task owner using the <code class="inline">set_owner()</code> method, granting ownership and associated permissions to a different user.</li>
+            <li><strong>Automatic node distribution: </strong>No need to worry about task allocation! ThingsDB takes care of distributing tasks across available nodes.</li>
+        </ul>
+        <p>Let's explore what happens when we create tasks in ThingsDB:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">task(datetime(), || nil);</code>
+<code class="response">"&lt;task:4 owner:admin run_at:2024-02-07T14:49:36Z status:nil&gt;"</code></pre>
+        <p>This task is scheduled for immediate execution as <code class="inline">datetime()</code> specifies the
+            current date and time. It doesn't perform any actions (<code class="inline">|| nil</code>) but serves
+            as an example of task creation.</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">task(datetime(), || 1/0);</code>
+<code class="response">"&lt;task:5 owner:admin run_at:2024-02-07T14:49:50Z status:nil&gt;"</code></pre>
+        <p>This task attempts to perform a division by zero, which will result in an error when executed.
+            It is useful for demonstrating how ThingsDB handles task errors.</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">task(datetime().move("days", 1), || nil);</code>
+<code class="response">"&lt;task:6 owner:admin run_at:2024-02-08T14:50:01Z status:nil&gt;"</code></pre>
+        <p>This task is scheduled to run a day later using <code class="inline">datetime().move("days", 1)</code>, showcasing how to schedule actions for specific future moments.</p>
+        <p>Use the <code class="inline">tasks()</code> function to view all tasks within the current scope:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">tasks();</code>
+<code class="response">[
+    "&lt;task:5 owner:admin run_at:nil status:err&gt;",
+    "&lt;task:6 owner:admin run_at:2024-02-08T14:50:01Z status:nil&gt;"
+]</code></pre>
+        <p>Note that successfully completed tasks are removed from the list, while those with errors and pending tasks remain.</p>
+        <p>Task with ID 5 has encountered an error, preventing its successful completion. To uncover the cause
+            of the problem, we'll utilize the <code class="inline">err()</code> method:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">task(5).err();</code>
+<code class="response">"division or modulo by zero"</code></pre>
+        <section class="sect2">
+            <h4 id="ch08_3_1_h" class="title">8.3.1 Cancel or Delete a Task</h4>
+            <p>There are two ways to stop tasks from running. Using the <code class="inline">cancel()</code> method
+                preserves the task information for later use and marks it with
+                a <code class="inline">cancelled_err</code> while the <code class="inline">del()</code> method
+                permanently removes it.</p>
+            <p>The code below illustrates the use of both methods:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">task(6).cancel();</code>  <code class="comment">// Cancel task with ID 6</code>
+<code class="response">null</code>
+
+<code class="prompt">(//todos)&gt;</code> <code class="user">task(6).err();</code>  <code class="comment">// Observe cancelled error</code>
+<code class="response">"operation is cancelled before completion"</code>
+
+<code class="prompt">(//todos)&gt;</code> <code class="user">task(6).del();</code>  <code class="comment">// Delete task</code>
+<code class="response">null</code>
+
+<code class="prompt">(//todos)&gt;</code> <code class="user">task(6);</code>  <code class="comment">// Attempt to access task with ID 6 (now deleted)</code>
+<code class="response">LookupError: task with id 6 not found</code></pre>
+        </section>
+        <section class="sect2">
+            <h4 id="ch08_3_2_h" class="title">8.3.2 Repeating Tasks</h4>
+            <p>Incorporating <code class="inline">again_in()</code> within your task's code allows you to
+                reschedule its execution based on desired time units and values. It acts like a built-in calendar
+                reminder, prompting the task to reactivate itself after a defined period.</p>
+            <p>Let's illustrate this with an example: Alice needs a daily reminder to send reports to Bob.
+                She can achieve this with a single task coded as follows:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">task(datetime(), |task, body| {</code>
+    <code class="user">task.again_in("days", 1);</code>  <code class="comment">// Reschedule the task in 1 day</code>
+    <code class="user">add_todo(body);</code>  <code class="comment">// Add the "Send report to Bob" to-do</code>
+<code class="user">}, ["Send report to Bob"]);</code>
+<code class="response">"&lt;task:7 owner:admin run_at:2024-02-07T14:52:25Z status:nil&gt;"</code></pre>
+            <p>In this code, the task immediately executes using <code class="inline">datetime()</code>. Within
+                the closure, <code class="inline">task.again_in("days", 1)</code> reschedules it to run again in
+                one day. The task then adds a to-do with the message <code class="inline">"Send report to Bob"</code>.</p>
+            <p>But what if you need to modify the report content later? No worries! The task type offers
+                the <code class="inline">set_args()</code> method, enabling you to dynamically change
+                task arguments without recreating the entire task.</p>
+            <p>While <code class="inline">again_in()</code> offers convenient rescheduling relative to the
+                original task time, the task type also provides <code class="inline">again_at()</code> for
+                pinpoint accuracy in setting future execution.</p>
+            <p>Choosing the right method:</p>
+            <ul>
+                <li><p><code class="inline">again_in()</code>:</p>
+                    <ul>
+                        <li>- Reschedules a task relative to its original execution time.</li>
+                        <li>- Is ideal for creating repeating tasks at specific intervals (e.g., daily, hourly).</li>
+                        <li>- Example: <code class="inline">task.again_in("days", 1)</code> reschedules the task to run in 1 day.</li>
+                    </ul>
+                </li>
+                <li><p><code class="inline">again_at()</code>:</p>
+                    <ul>
+                        <li>- Reschedules a task to a specific new date and time.</li>
+                        <li>- Is useful for one-time adjustments or scheduling tasks for future deadlines.</li>
+                        <li>- Example: <code class="inline">task.again_at(datetime(2024, 02, 09, 10, 00))</code> reschedules the task for February 9th, 2024, at 10:00 AM.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+        <section class="sect2">
+            <h4 id="ch08_3_3_h" class="title">8.3.3 Status for Repeating Task</h4>
+            <p>As we explored, completed tasks vanished from the ThingsDB list, leaving no trace of their successful
+                execution. But what about repeating tasks? How do we track their progress and ensure they are
+                functioning smoothly?</p>
+            <p>A successfully completed run of a repeating task changes its status from <code class="inline">"nil"</code>
+                to <code class="inline">"ok"</code> indicating a successful execution. You can check this status using
+                the <code class="inline">task()</code> function, providing the task ID of your repeating task:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">task(7);</code>
+<code class="response">"&lt;task:7 owner:admin run_at:2024-02-08T14:52:25Z status:ok&gt;"</code></pre>
+            <p>This example shows that the task with ID 9, scheduled to repeat on February 8th, 2024, at 2:52 PM UTC,
+                has successfully completed its previous run.</p>
+            <p>If you need to check the task status in code, use the <code class="inline">err()</code> method.
+                This reveals any errors encountered during the last execution.</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">task(7).err();</code>
+<code class="response">null</code></pre>
+            <p>If everything went well, the output will be <code class="inline">nil</code>, indicating no errors.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch08_3_4_h" class="title">8.3.4 Deleting All Tasks with a Single Statement</h4>
+            <p>Before starting the quiz, let's clean up the tasks we created during this chapter.
+                Can you guess how to delete all of them at once?</p>
+            <p>Indeed! The following code snippet achieves this efficiently:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">tasks().each(|task| task.del());</code>
+<code class="response">null</code></pre>
+            <p>This expression iterates through every task using <code class="inline">tasks()</code>, and for
+                each <code class="inline">task</code>, it calls the <code class="inline">del()</code> method
+                to permanently remove it.</p>
+            <p>To verify, you can check the list again:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">tasks();</code>
+<code class="response">[]</code></pre>
+            <p>As you can see, the list is now empty, indicating all tasks have been successfully deleted.</p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch08_4_h" class="title">8.4 Farewell, done Property</h3>
+        <p>Remember the <code class="inline">done</code> property for marking completed to-do’s?
+            We can actually remove it! The <code class="inline">completion</code> property serves this purpose perfectly.</p>
+        <p>Here's how we clean up the data model:</p>
+<pre><code class="prompt">(//todos)&gt;</code>
+<code class="comment">// Remove the done property</code>
+<code class="user">mod_type("Todo", "del", "done");</code>
+
+<code class="comment">// Update the mark_as_done method</code>
+<code class="user">mod_type("Todo", "mod", "mark_as_done", |this| {
+    this.completion = datetime();
+});</code>
+<code class="response">null</code></pre>
+        <p>This updated method only sets the <code class="inline">completion</code> property to the current date
+            and time, indicating the to-do is complete.</p>
+    </section>
 </section>
 </body>
 </html>
