@@ -9,7 +9,36 @@
 <section class="sect1">
     <h3 id="ch07_8_h" class="title">7.8 Quiz - Challenge Your Understanding</h3>
     <ol class="quiz">
-
+        <li><p>Choose which statement declares a new type?</p>
+            <ol>
+                <li><code class="inline">del_type("A");</code></li>
+                <li><code class="inline">new_type("A");</code></li>
+                <li><code class="inline">mod_type("A");</code></li>
+                <li><code class="inline">set_type("A");</code></li>
+            </ol>
+        </li>
+        <li><p>Can you identify which strings fit the property definition <code class="inline">"str&lt;4:8&gt;"</code>?</p>
+            <ol>
+                <li><code class="inline">"ThingsDB"</code></li>
+                <li><code class="inline">"Hi"</code></li>
+                <li><code class="inline">nil</code></li>
+                <li><code class="inline">"Hello"</code></li>
+                <li><code class="inline">"Bicycle Race"</code></li>
+            </ol>
+        </li>
+        <li><p>How can you seamlessly integrate the ID of type <code class="inline">T</code> instances as a property
+            named <code class="inline">"identifier"</code> in responses, given that the ID is currently exposed
+            as <code class="inline">"#"</code>?</p></li>
+        <li><p>Suppose a type <code class="inline">T</code> exposes the ID for each instance as key <code class="inline">"identifier"</code> <em>(see previous question)</em>.
+            How can you change the name for this key to <code class="inline">"id"</code>?</p></li>
+        <li><p>Complete the <code class="inline">set_type("P", ???);</code> statement to create type <code class="inline">P</code>, enabling the following code to function flawlessly:</p>
+            <p class="quizcode"><code class="inline">a = P{x: 3.0, y: 2.0};</code></p>
+            <p class="quizcode"><code class="inline">b = P{x: 7.0, y: 8.0};</code></p>
+            <p class="quizcode"><code class="inline">d = a.distance(b);  // Should produce 7.211102550927978</code></p>
+            <p><em>Hint: recall the distance formula: √((x₂ - x₁)² + (y₂ - y₁)²)</em></p>
+        </li>
+        <li><p>Can you produce a query that returns a list containing <em>only the type names</em> present in the collection?</p></li>
+        <li><p>When a type is removed using <code class="inline">del_type()</code>, what happens to existing instances of that type?</p></li>
     </ol>
 </section>
 </body>

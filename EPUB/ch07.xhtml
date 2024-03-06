@@ -9,7 +9,7 @@
 <section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch07_h" id="_ch07">
     <h2 id="ch07_h" class="title">Chapter 7 - Typed Things</h2>
     <p>Currently, Alice can add and search for to-do items, but she lacks a straightforward method to mark them as completed. While we could implement a procedure to remove completed to-do items, Alice prefers to retain them for future reference.</p>
-    <p>To achieve this, we'll transform the current <em>“todo”</em>, which is simply a string, into a thing with
+    <p>To achieve this, we'll transform the current <em>"todo"</em>, which is simply a string, into a thing with
         both a <code class="inline">body</code> property and a boolean property which we call <code class="inline">done</code>.
         We initially set <code class="inline">done</code> to <code class="inline">false</code> and update
         the property to <code class="inline">true</code> when the to-do is marked as completed.</p>
@@ -101,7 +101,7 @@ set_type("Todo", {
                 while the new one does not. The migration callback will be invoked for each instance of the type and
                 should return either <code class="inline">nil</code> to retain the original property value or a new
                 value that complies with the updated definition.</p>
-            <p>Now, let's migrate the “todos” collection to utilize the updated <code class="inline">Todo</code> type:</p>
+            <p>Now, let's migrate the "todos" collection to utilize the updated <code class="inline">Todo</code> type:</p>
 <pre><code class="prompt">(//todos)&gt;</code>
 <code class="comment">// Migrate existing string values to the Todo type</code>
 <code class="user">.todos = .todos.map(|body| Todo{body:});</code>
@@ -201,7 +201,7 @@ set_type("Root", {
             requirements or enhance existing features. To address such changes, the earlier
             discussed <code class="inline">mod_type()</code> function is available, enabling you to modify existing
             types by adding new properties, changing data types, or introducing restrictions.</p>
-        <p>If, for any reason, you need to revert a type back to its original <em>“thing”</em> form,
+        <p>If, for any reason, you need to revert a type back to its original <em>"thing"</em> form,
             the <code class="inline">to_thing()</code> method is your go-to solution. This method effectively
             de-structures the typed thing, removing any imposed constraints and allowing for arbitrary property
             assignments.</p>
@@ -233,7 +233,7 @@ set_type("Root", {
             mark the corresponding to-do item as completed. While we could simply set the <code class="inline">done</code>
             property to <code class="inline">true</code>, it is better to adopt a more flexible approach that allows
             for potential future changes in data representation.</p>
-        <p>Type “methods” are self-contained functions within a type definition, allowing us to encapsulate specific
+        <p>Type "methods" are self-contained functions within a type definition, allowing us to encapsulate specific
             behavior for that type. Instead of directly modifying the <code class="inline">done</code> property,
             we'll create a method named <code class="inline">mark_as_done</code> that handles the task completion logic.</p>
         <p>In contrast to properties, which are defined using strings, methods are defined using closures. These closures
@@ -256,7 +256,7 @@ set_type("Root", {
             <img class="note" src="images/lightbulb.png" alt="Note" />
             <div class="content">
                 <p>Here, we again need to use the <code class="inline">wse()</code> function to inform ThingsDB that
-                    this procedure may modify the “todos” collection and potentially trigger side effects.</p>
+                    this procedure may modify the "todos" collection and potentially trigger side effects.</p>
             </div>
         </div>
         <p>To test the new <code class="inline">mark_as_done</code> procedure, we'll create a Python file

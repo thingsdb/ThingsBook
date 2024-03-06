@@ -16,9 +16,9 @@
         assigning properties to them. To create a new thing, you can use the <code class="inline">thing()</code> function
         without arguments, or, more commonly, you can use curly braces <code class="inline">{}</code>:</p>
 <pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">t = {};</code>  <code class="comment">// Create an empty thing</code>
-<code class="user">t.x = 4;</code>  <code class="comment">// Assign property “x” with value 4 to “t”</code>
-<code class="user">t.y = 2;</code>  <code class="comment">// Assign property “y” with value 2 to “t”</code>
-<code class="user">t;</code>        <code class="comment">// Return “t”</code>
+<code class="user">t.x = 4;</code>  <code class="comment">// Assign property "x" with value 4 to "t"</code>
+<code class="user">t.y = 2;</code>  <code class="comment">// Assign property "y" with value 2 to "t"</code>
+<code class="user">t;</code>        <code class="comment">// Return "t"</code>
 <code class="response">{
     "x": 4,
     "y": 2
@@ -88,19 +88,19 @@
 <code class="response">1</code>
 <code class="prompt">(//chapter4)&gt;</code> <code class="user">{}.id();</code>  <code class="comment">// Unattached thing lacks an ID</code>
 <code class="response">null</code>
-<code class="prompt">(//chapter4)&gt;</code> <code class="user">(.t = {}).id();</code>  <code class="comment">// Assign a new thing to property “t”,</code>
+<code class="prompt">(//chapter4)&gt;</code> <code class="user">(.t = {}).id();</code>  <code class="comment">// Assign a new thing to property "t",</code>
                                <code class="comment">// guaranteeing a unique ID.</code>
 <code class="response">2</code></pre>
         <p>A thing possesses no ID as long as it remains unattached to the collection. In the last example, we attached a
             new thing to property <code class="inline">t</code> within the root and immediately queried its ID. The
             response displayed a unique identifier.</p>
         <p>Instead of explicitly requesting the ID, it is also accessible as a reserved property
-            named “<code class="inline">#</code>” within the thing's response.</p>
+            named "<code class="inline">#</code>" within the thing's response.</p>
 <pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">.t;</code>
 <code class="response">{
     "#": 2
 }</code></pre>
-        <p>However, it is important to note that “<code class="inline">#</code>” is not a genuine property of the thing,
+        <p>However, it is important to note that "<code class="inline">#</code>" is not a genuine property of the thing,
             as evidenced by the following code snippets:</p>
 <pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">.t["#"];</code>  <code class="comment">// Key ‘#’ does not exist</code>
 <code class="response">LookupError: thing `#2` has no property `#`</code>
@@ -133,7 +133,7 @@
             list as a property of the collection root that it became associated with the collection, triggering ID
             assignment.</p>
         <p>Another noteworthy aspect is that ThingsDB always interprets things by reference. This observation is evident
-            in the fact that we kept checking the original variable “<code class="inline">a</code>“.</p>
+            in the fact that we kept checking the original variable "<code class="inline">a</code>".</p>
         <p>Once an ID is assigned to a thing, it remains permanently associated with that thing and cannot be altered
             or removed.</p>
         <p>ThingsDB supports multiple references to the same ID, allowing you to link distinct properties or collections

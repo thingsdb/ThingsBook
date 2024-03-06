@@ -9,7 +9,39 @@
 <section class="sect2">
     <h4 id="ch07_8_1_h" class="title">7.8.1 Quiz - Answers</h4>
     <ol class="quiz">
-
+        <li><p>The correct answer is "b". While <code class="inline">set_type()</code> can technically be
+            used to create a new type, it is primarily used to set the properties and/or methods for a type.
+            It requires an additional argument, even when not setting any properties or methods.
+            <code class="inline">del_type()</code> is the opposite, it removes a type instead of creating one.
+            <code class="inline">mod_type()</code> is used to modify a type and at least requires an "action”
+            as second argument.</p></li>
+        <li><p>Both “a”, <code class="inline">"ThingsDB"</code> and “d”, <code class="inline">"Hello"</code> are valid.
+            The defined range accepts strings from 4 up till 8 characters, both inclusive.
+            The string <code class="inline">"ThingsDB"</code> contains exactly 8 characters so it is a valid string.
+            Type <code class="inline">nil</code> is not allowed for this definition since only type string is allowed. </p></li>
+        <li><p>By executing the following statement:</p>
+            <p class="quizcode"><code class="inline">mod_type("T", "add", "identifier", "#");</code></p>
+        </li>
+        <li><p>A type can only have a single <code class="inline">"#"</code> definition. By executing the
+            following statement the key will be renamed from <code class="inline">"identifier"</code> to <code class="inline">"id"</code>.</p>
+            <p class="quizcode"><code class="inline">mod_type("T", "ren", "identifier", "id");</code></p>
+        </li>
+        <li><p>To enable distance calculations between points, create type <code class="inline">P</code> with the following masterful definition:</p>
+            <p class="quizcode"><code class="inline">set_type("P", {</code></p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;// Properties for point coordinates</code></p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;x: "float",</code></p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;y: "float",</code></p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;</code></p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;// Method for calculating distance:</code></p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;distance: |this, other| {</code></p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;&#xA0;&#xA0;// Distance formula</code></p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;&#xA0;&#xA0;sqrt(pow(other.x - this.x, 2.0) + pow(other.y - this.y, 2.0));</code></p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;},</code></p>
+            <p class="quizcode"><code class="inline">});</code></p>
+        </li>
+        <li><p>Use <code class="inline">types_info().map(|info| info.load().name);</code> to get a list of type names.
+            This iterates through type info objects, extracting and returning only the <code class="inline">name</code> property.</p></li>
+        <li><p>Instances of the removed type are downcast to regular things. This means that while their existing properties and values remain intact, the original type information becomes unavailable.</p></li>
     </ol>
 </section>
 </body>

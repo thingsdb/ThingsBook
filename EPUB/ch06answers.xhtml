@@ -11,7 +11,7 @@
     <ol class="quiz">
         <li><p>ThingsDB employs intelligent algorithms to identify queries with side effects that modify system state. However, in certain scenarios, these algorithms may fail to detect side effects, necessitating the explicit use of the <code class="inline">wse()</code> function. One such instance arises when invoking procedures that themselves encompass side effects.</p></li>
         <li><p>No, the provided query will not work without explicitly invoking the <code class="inline">wse()</code> function.</p></li>
-        <li><p>Answer “d”. All methods can be used to execute procedures in ThingsDB.</p>
+        <li><p>Answer "d". All methods can be used to execute procedures in ThingsDB.</p>
             <ul>
                 <li>You can simply include the procedure's name in your query, and ThingsDB will execute the procedure and return the result.</li>
                 <li>The ThingsDB protocol allows you to make a direct call to a procedure without invoking a query. Native clients for popular programming languages, including Python, C#, and Go, provide built-in support for this direct procedure invocation.</li>

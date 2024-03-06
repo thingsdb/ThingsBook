@@ -83,10 +83,10 @@
         <p>Here are a few examples:</p>
 <pre><code class="user">0xff;</code>    <code class="comment">// hex notation (255)</code>
 <code class="user">0x1F;</code>    <code class="comment">// hex notation (31) - capital letters are allowed</code>
-<code class="user">0X10;</code>    <code class="comment">// !! error !! - the “x” must be lowercase</code>
+<code class="user">0X10;</code>    <code class="comment">// !! error !! - the "x" must be lowercase</code>
 <code class="user">123;</code>     <code class="comment">// decimal notation</code>
-<code class="user">0o77;</code>    <code class="comment">// octal notation (63) - the “o” must be lowercase</code>
-<code class="user">0b1010;</code>  <code class="comment">// binary notation (10) - the “b” must be lowercase</code></pre>
+<code class="user">0o77;</code>    <code class="comment">// octal notation (63) - the "o" must be lowercase</code>
+<code class="user">0b1010;</code>  <code class="comment">// binary notation (10) - the "b" must be lowercase</code></pre>
         <p>Assignments work from right to left. The example below first assigns <code class="inline">30</code> to
             <code class="inline">apples</code>, then <code class="inline">apples</code> is assigned to <code class="inline">grapes</code>
             and finally <code class="inline">grapes</code> is assigned to <code class="inline">lemons</code>.</p>
@@ -319,7 +319,7 @@ are multiline!!";</code>
             <p>Take note that this does not work with other data types unless we explicitly convert them to strings:</p>
 <pre><code class="prompt">(//chapter2)&gt;</code> <code class="comment">// CTRL-n for a new line</code>
 <code class="user">.n = 3;</code>  <code class="comment">// Assign integer 3 to property "n"</code>
-<code class="user">"I've " + .n + “ apples";</code>
+<code class="user">"I've " + .n + " apples";</code>
 <code class="response">TypeError: `+` not supported between `str` and `int`</code></pre>
             <div class="note">
                 <img class="note" src="images/lightbulb.png" alt="Note" />
@@ -330,7 +330,7 @@ are multiline!!";</code>
             </div>
             <p>To rectify the example above, we can utilize the <code class="inline">str()</code> method to convert
                 the integer to a string:</p>
-<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">"I've " + str(.n) + “ apples";</code>
+<pre><code class="prompt">(//chapter2)&gt;</code> <code class="user">"I've " + str(.n) + " apples";</code>
 <code class="response">"I've 3 apples"</code></pre>
             <p>In practice, it is advisable to avoid string concatenation. Instead, opting for t-strings is a
                 superior choice. A t-string starts and ends with a backtick (<code class="inline">`</code>) and

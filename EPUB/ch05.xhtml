@@ -48,7 +48,7 @@
 <pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">.mammals.add({animal: "dog"});</code>  <code class="comment">// Add another dog</code>
 <code class="response">1</code></pre>
     <p>Despite having the same properties (<code class="inline">animal: "dog"</code>), this dog is
-        considered a different entity due to reference comparison. It is not the same “dog” previously added,
+        considered a different entity due to reference comparison. It is not the same "dog" previously added,
         so it gets included in the set.</p>
 <pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">animal = .mammals.one();</code>  <code class="comment">// Take one element from the set</code>
 <code class="user">.mammals.add(animal);</code>  <code class="comment">// Try to add that animal</code>
@@ -165,14 +165,14 @@ all = .mammals | .birds | .reptiles;
             <p>To determine whether one set is a subset of another, we can use the
                 <code class="inline">&lt;=</code> operator. This operator checks if all elements of the first set
                 are also present in the second set.</p>
-<pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">.reptiles &lt;= .zoo;</code>  <code class="comment">// Determines if “reptiles” is a</code>
-                                  <code class="comment">// subset of “zoo”</code>
+<pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">.reptiles &lt;= .zoo;</code>  <code class="comment">// Determines if "reptiles" is a</code>
+                                  <code class="comment">// subset of "zoo"</code>
 <code class="response">true</code></pre>
             <p>Conversely, to verify whether a set is a superset of another, we employ the
                 <code class="inline">&gt;=</code> operator. This operator checks if the second set contains all
                 the elements of the first set.</p>
-<pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">.zoo &gt;= .reptiles;</code>  <code class="comment">// Determines if “zoo” is a</code>
-                                  <code class="comment">// superset of “reptiles”</code>
+<pre><code class="prompt">(//chapter5)&gt;</code> <code class="user">.zoo &gt;= .reptiles;</code>  <code class="comment">// Determines if "zoo" is a</code>
+                                  <code class="comment">// superset of "reptiles"</code>
 <code class="response">true</code></pre>
             <p>To distinguish between proper subsets and supersets, which explicitly exclude the possibility of equality,
                 the <code class="inline">&lt;</code> and <code class="inline">&gt;</code> operators are employed.

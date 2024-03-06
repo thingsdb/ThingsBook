@@ -19,7 +19,7 @@
         procedures that simplify management tasks like user creation which we will explore later in this chapter.</p>
      <p>In this chapter, we'll begin crafting a to-do application, empowering you to manage Alice's tasks
         and keep her organized.</p>
-    <p>First, let's create a new collection named “todos” using the <code class="inline">/thingsdb</code> scope
+    <p>First, let's create a new collection named "todos" using the <code class="inline">/thingsdb</code> scope
         and switch to the <code class="inline">//todos</code> scope.</p>
 <pre><code class="prompt">(/thingsdb)&gt;</code> <code class="user">new_collection("todos");</code>
 <code class="response">"todos"</code>
@@ -217,7 +217,7 @@ asyncio.run(main())</code></pre>
         </section>
         <section class="sect2">
             <h4 id="ch06_2_4_h" class="title">6.2.4 Migrating from Query to Procedure</h4>
-            <p>To enhance code organization, we'll migrate the <em>“search_todos”</em> query to a reusable procedure.
+            <p>To enhance code organization, we'll migrate the <em>"search_todos"</em> query to a reusable procedure.
                 This approach encapsulates the search logic and makes it easily accessible from multiple parts of the
                 application.</p>
             <p>Create the procedure in the <em>things-prompt</em>:</p>
