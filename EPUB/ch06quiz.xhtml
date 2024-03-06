@@ -9,7 +9,34 @@
 <section class="sect1">
     <h3 id="ch06_5_h" class="title">6.5 Quiz - Challenge Your Understanding</h3>
     <ol class="quiz">
-
+        <li><p>Under what circumstances is the <code class="inline">wse()</code> function necessary?</p></li>
+        <li><p>Will the following query succeed in executing the <code class="inline">set_x()</code> procedure
+            and modifying the corresponding property in the collection?</p>
+            <p class="quizcode"><code class="inline">set_x(123);</code></p>
+        </li>
+        <li><p>How can you invoke a procedure in ThingsDB?</p>
+            <ol>
+                <li>Call the procedure directly from a query</li>
+                <li>Use the ThingsDB protocol to run the procedure directly</li>
+                <li>Use the HTTP API to run the procedure</li>
+                <li>All of the above</li>
+            </ol>
+        </li>
+        <li><p>In the following query, what is the data type of the variable <code class="inline">info</code>?</p>
+            <p class="quizcode"><code class="inline">info = procedure_info("set_x");</code></p>
+            <p class="quizcode"><code class="inline">type(info);  // ???</code></p>
+        </li>
+        <li><p>Which authentication methods does ThingsDB support?</p></li>
+        <li><p>If you want to restrict your application to executing only predefined procedures that do not modify the state, which authentication flag(s) should you use?</p>
+            <ol>
+                <li><code class="inline">QUERY</code></li>
+                <li><code class="inline">READ</code></li>
+                <li><code class="inline">CHANGE</code></li>
+                <li><code class="inline">RUN</code></li>
+                <li><code class="inline">USER</code></li>
+            </ol>
+        </li>
+        <li><p>Verify if the <code class="inline">.hacked</code> property is present in the todos collection. If so, can you remove the property to ensure the integrity of the data?</p></li>
     </ol>
 </section>
 </body>

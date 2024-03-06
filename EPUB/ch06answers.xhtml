@@ -9,7 +9,28 @@
 <section class="sect2">
     <h4 id="ch06_5_1_h" class="title">6.5.1 Quiz - Answers</h4>
     <ol class="quiz">
-
+        <li><p>ThingsDB employs intelligent algorithms to identify queries with side effects that modify system state. However, in certain scenarios, these algorithms may fail to detect side effects, necessitating the explicit use of the <code class="inline">wse()</code> function. One such instance arises when invoking procedures that themselves encompass side effects.</p></li>
+        <li><p>No, the provided query will not work without explicitly invoking the <code class="inline">wse()</code> function.</p></li>
+        <li><p>Answer “d”. All methods can be used to execute procedures in ThingsDB.</p>
+            <ul>
+                <li>You can simply include the procedure's name in your query, and ThingsDB will execute the procedure and return the result.</li>
+                <li>The ThingsDB protocol allows you to make a direct call to a procedure without invoking a query. Native clients for popular programming languages, including Python, C#, and Go, provide built-in support for this direct procedure invocation.</li>
+                <li>If you have enabled the HTTP API, you can also use it to call procedures. This can be a good option if you want to call procedures from a web application or other client that does not support the ThingsDB protocol. We’ll explore the HTTP API in more detail in <a href="ch16.xhtml#ch16_h">Chapter 16</a>.</li>
+            </ul>
+        </li>
+        <li><p>While the client response for <code class="inline">procedure_info()</code> might initially seem to imply that the return value is a <em>thing</em>, it is actually an instance of <em>mpdata</em>, a specialized data type that represents serialized MessagePack data. To convert mpdata, you can call the <code class="inline">load()</code> method on the mpdata object. This will effectively de-serialize the MessagePack data and return the corresponding thing instance.</p></li>
+        <li><p>ThingsDB offers two primary authentication methods: token-based and username/password. ThingsDB provides the <code class="inline">new_token()</code> function for generating secure tokens and the <code class="inline">set_password()</code> function for managing user credentials.</p></li>
+        <li><p>The correct answer is <code class="inline">RUN</code>.</p>
+            <ul>
+                <li>The <code class="inline">QUERY</code> flag enables users to execute queries that retrieve and process data from ThingsDB. However, the goal is to restrict the application to executing only pre-defined procedures without modifying the system state.</li>
+                <li>The <code class="inline">READ</code> flag is not a valid authentication flag in ThingsDB.</li>
+                <li>The <code class="inline">CHANGE</code> flag allows users to modify data. Since the goal is to prevent the application from modifying the state, the <code class="inline">CHANGE</code> flag is not suitable.</li>
+                <li>The <code class="inline">USER</code> constant serves as a convenient shorthand for combining the commonly used <code class="inline">QUERY</code>, <code class="inline">CHANGE</code>, <code class="inline">JOIN</code>, and <code class="inline">RUN</code> permissions into a single name.</li>
+            </ul>
+        </li>
+        <li><p>In <a href="ch06.xhtml#ch06_2_2_h">Section 6.2.2</a>, we explored code injection vulnerabilities. If you executed the code snippet provided in that section, a new property named <code class="inline">.hacked</code> may have been added to the collection. To remove this unintended property, you can use the following code:</p>
+            <p class="quizcode"><code class="inline">.del("hacked");</code></p>
+        </li>
     </ol>
 </section>
 </body>

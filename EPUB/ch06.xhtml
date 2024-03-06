@@ -28,7 +28,7 @@
     <p>To manage Alice's to-do items, we'll create a list to store them. This list will hold strings representing the to-do items. To control what gets added to the list, we'll use a procedure.</p>
 <pre><code class="prompt">(//todos)&gt;</code> <code class="user">.todos = [];</code>  <code class="comment">// Create an empty list for to-do items</code>
 <code class="response">[]</code></pre>
-    <p>Instead of directly adding to-dos to the list, we'll create a procedure to manage this process.</p>
+    <p>Instead of directly adding to-do's to the list, we'll create a procedure to manage this process.</p>
 <pre><code class="prompt">(//todos)&gt;</code> <code class="user">new_procedure("add_todo", |body| {</code>
     <code class="user">"Adds a to-do to the list.";</code>   <code class="comment">// Docstring</code>
     <code class="user">assert(is_str(body) &amp;&amp; body);</code>  <code class="comment">// Check if the input is a</code>
@@ -48,6 +48,337 @@
     <p>ThingsDB throws an error indicating that the procedure contains a closure which may introduce
         changes to the collection and requires a change to synchronize the state. This is because ThingsDB
         must ensure data consistency across all nodes when changes occur.</p>
+    <section class="sect1">
+        <h3 id="ch06_1_h" class="title">6.1 Side Effects and Changes</h3>
+        <p>To explicitly signal to ThingsDB that the query involves side effects and requires a change,
+            we can use the <code class="inline">wse()</code> function. This function informs ThingsDB that
+            the query will modify the collection and necessitates a change to maintain data integrity.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>In most cases, ThingsDB automatically detects and handles the need for changes when queries
+                    modify data. However, there may be situations where this automatic detection is not
+                    possible or desired.</p>
+                <p>To explicitly instruct ThingsDB to initiate a change, the <code class="inline">wse()</code>
+                    <em>(with-side-effects)</em> function can be used. This function explicitly informs ThingsDB
+                    that the query involves modifications to the collection and requires a change operation to
+                    ensure data consistency across nodes.</p>
+                <p>Conversely, there may be scenarios where ThingsDB incorrectly identifies a change as necessary,
+                    even though it is not the case. To prevent unnecessary changes, the <code class="inline">nse()</code>
+                    <em>(no-side-effects)</em> function can be employed. This function tells ThingsDB that the
+                    query does not involve any data modifications and therefore does not require a change operation.</p>
+                <p>By utilizing these functions, developers can effectively manage change propagation in ThingsDB,
+                    ensuring data consistency and avoiding unnecessary change operations.</p>
+            </div>
+        </div>
+        <p>Here is the corrected code snippet with the wse() function:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">wse();</code>  <code class="comment">// Tell ThingsDB to initiate a change</code>
+<code class="user">add_todo("Read a book");</code>
+<code class="response">null</code></pre>
+        <p>By including the <code class="inline">wse()</code> function, ThingsDB recognizes the potential data
+            modification and initiates the necessary change operations to maintain consistency across nodes.
+            This approach ensures that any changes made by the procedure are applied in a coordinated manner,
+            preserving the integrity of the data managed by ThingsDB.</p>
+        <p>In addition to calling procedures within queries, ThingsDB also allows direct procedure calls without
+            the need for queries. While the ThingsDB Prompt does not support direct procedure calls,
+            this opens up the opportunity to utilize Python code to interact with ThingsDB. As mentioned earlier,
+            Python is not the only programming language supported by ThingsDB; there are also official clients
+            for C# and Go. Furthermore, procedures can be invoked through the ThingsDB HTTP API, a topic we'll
+            explore in <a href="ch16.xhtml#ch16_h">Chapter 16</a>.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch06_2_h" class="title">6.2 Python</h3>
+        <p>To streamline the development process, we'll create a reusable template that serves as a foundation
+            for our code examples. This template will encapsulate the common connection and authentication steps,
+            allowing us to focus on the specific procedure call logic.</p>
+        <p>Create a file named <code class="inline">template.py</code> and save the following code:</p>
+<pre><code class="prompt">import asyncio
+from thingsdb.client import Client
+
+async def work(client: Client):
+    pass
+
+async def main():
+    client = Client()
+    client.set_default_scope('//todos')
+    await client.connect('localhost')</code>  <code class="comment"># Replace with the actual ThingsDB</code>
+                                       <code class="comment"># server address</code>
+<code class="prompt">    try:
+        await client.authenticate('admin', 'pass')</code>  <code class="comment"># Replace with your</code>
+                                                    <code class="comment"># ThingsDB credentials</code>
+<code class="prompt">        await work(client)
+    finally:
+        client.close()
+        await client.wait_closed()
+
+asyncio.run(main())</code></pre>
+        <p>This template assumes ThingsDB is running on localhost. If this is not the case, modify the
+            <code class="inline">connect()</code> function call to specify the correct address and,
+            optionally, a port number. Similarly, update the <code class="inline">authenticate()</code>
+            function call with your actual ThingsDB credentials.</p>
+        <p>To test the template, run the following command:</p>
+<pre><code class="prompt">$</code> <code class="user">python template.py</code>
+<code class="prompt">$</code></pre>
+        <p>The code should execute without errors, demonstrating the successful connection and authentication
+            with ThingsDB.</p>
+        <section class="sect2">
+            <h4 id="ch06_2_1_h" class="title">6.2.1 Run Procedure</h4>
+            <p>To execute the <code class="inline">add_todo</code> procedure directly, we'll create a copy of the template Python script
+                and name it <code class="inline">add_todo.py</code>.</p>
+            <p>Within the work function, we'll modify the code to handle user input and invoke the procedure:</p>
+<pre><code class="prompt">async def work(client: Client):</code>
+<code class="user">    todo_body = input("To-do body: ")</code>  <code class="comment"># Prompt user for to-do item</code>
+<code class="user">    await client.run('add_todo', body=todo_body)</code>  <code class="comment"># Call the add_todo</code>
+                                                  <code class="comment"># procedure</code></pre>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>Since we previously called <code class="inline">client.set_default_scope('//todos')</code> in
+                        the template, we do not need to explicitly specify the scope in this instance.</p>
+                </div>
+            </div>
+            <p>Save the file and run the following command to execute the code:</p>
+<pre><code class="prompt">$</code> <code class="user">python add_todo.py</code>
+<code class="prompt">To-do body:</code> <code class="user">Brush your teeth</code>
+<code class="prompt">$</code></pre>
+            <p>If successful, no errors should be shown.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch06_2_2_h" class="title">6.2.2 Perform a Query</h4>
+            <p>Next, create another file based on the template and name it <code class="inline">search_todos.py</code>:</p>
+<pre><code class="prompt">async def work(client: Client):</code>
+<code class="user">    needle = input("Search for: ")</code>  <code class="comment"># Prompt user for search input</code>
+<code class="user">    res = await client.query("""//ti
+        .todos.filter(|todo| todo.contains('""" + needle + """'));
+    """)
+    print(res)</code></pre>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>This code utilizes a multi-line string to define the query and prefixes it with <code class="inline">//ti</code>
+                        to improve syntax highlighting in some IDEs. However, this is not mandatory and does not affect
+                        the query execution.</p>
+                </div>
+            </div>
+            <p>Execute the following command to run the <code class="inline">search_todos.py</code> file:</p>
+<pre><code class="prompt">$</code> <code class="user">python search_todos.py</code>
+<code class="prompt">Search for:</code> <code class="user">book</code>
+<code class="response">['Read a book']</code></pre>
+            <p>The output confirms that the to-do item <code class="inline">"Read a book"</code> has been
+                added and retrieved successfully.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch06_2_3_h" class="title">6.2.3 Prevent Code Injections</h4>
+            <p>While the code works, it also contains a potential security flaw. The direct embedding of user
+                input into the query structure makes it vulnerable to code injections, allowing malicious code
+                to manipulate the collection's properties.</p>
+            <p>Consider the scenario where a malicious user inputs the following:</p>
+<pre><code class="prompt">$</code> <code class="user">python search_todos.py</code>
+<code class="prompt">Search for:</code> <code class="user">' + {.hacked = true; "book";} + '</code>
+<code class="response">['Read a book']</code></pre>
+            <p>This input, when passed directly into the query, would effectively create an unauthorized
+                property <code class="inline">.hacked</code> on the <code class="inline">//todos</code>
+                collection root. This highlights the potential for code injections to compromise the integrity
+                of ThingsDB data.</p>
+            <p>To address this vulnerability, it is essential to separate user input from the query structure by
+                using variables. This technique allows for a more secure and controlled handling of user-provided
+                data.</p>
+            <p>To enhance security and prevent code injections, we'll modify the <code class="inline">search_todos.py</code>
+                code to use variables for user input:</p>
+<pre><code class="prompt">async def work(client: Client):</code>
+<code class="user">    needle = input("Search for: ")</code>  <code class="comment"># Prompt user for search input</code>
+<code class="user">    res = await client.query(
+        """//ti
+            .todos.filter(|todo| todo.contains(needle));
+        """,
+        needle=needle)
+    print(res)</code></pre>
+            <p>The original code, which directly embedded the user input into the query, was vulnerable to
+                code injections. By using variables, we can isolate the user input and prevent it from affecting
+                the query structure. This safeguard protects the integrity of the ThingsDB database and ensures
+                that only authorized operations are executed.</p>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>Another benefit of separating input from the query structure is that it enables ThingsDB to
+                        cache the query, independent of the user input. This caching mechanism can significantly
+                        improve the performance of frequently executed queries, especially those that involve
+                        user-provided data.</p>
+                    <p>By isolating user input, ThingsDB can store the compiled query separately from the input values.
+                        This allows the database to pre-compile and optimize the query for later execution, regardless
+                        of the specific input received. As a result, subsequent executions of the same query can be
+                        performed more efficiently, reducing response times and improving overall
+                        application performance.</p>
+                    <p>In contrast, if the user input were directly embedded within the query, ThingsDB would need to
+                        recompile the query each time it was executed with different input. This would lead to
+                        increased processing overhead and potentially slower query performance.</p>
+                </div>
+            </div>
+        </section>
+        <section class="sect2">
+            <h4 id="ch06_2_4_h" class="title">6.2.4 Migrating from Query to Procedure</h4>
+            <p>To enhance code organization, we'll migrate the <em>“search_todos”</em> query to a reusable procedure.
+                This approach encapsulates the search logic and makes it easily accessible from multiple parts of the
+                application.</p>
+            <p>Create the procedure in the <em>things-prompt</em>:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">new_procedure("search_todos", |needle| {
+    "Search for todo's";
+    .todos.filter(|todo| todo.contains(needle));
+});</code>
+<code class="response">"search_todos"</code></pre>
+            <p>Update the <code class="inline">work</code> method in <code class="inline">search_todos.py</code>
+                to call the procedure:</p>
+<pre><code class="prompt">async def work(client: Client):</code>
+<code class="user">    needle = input("Search for: ")</code>  <code class="comment"># Prompt user for search input</code>
+<code class="user">    res = await client.run("search_todos", needle=needle)
+    print(res)</code></pre>
+            <p>By using a procedure, we've encapsulated the search logic and made it reusable. This approach promotes
+                code modularity, improves maintainability, and reduces development complexity.</p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch06_3_h" class="title">6.3 Requesting Procedure Information</h3>
+        <p>Procedures are stored within a scope, but they are not directly attached to the root of the collection.
+            To retrieve information about procedures within a specific scope, the <code class="inline">procedures_info()</code>
+            function is employed. This function returns a list of procedure information objects, each containing
+            detailed metadata about the procedure.</p>
+        <p>Calling <code class="inline">procedures_info()</code> within the <code class="inline">//todos</code> scope
+            produces the following output:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">procedures_info();</code>
+<code class="response">[
+    {
+        "arguments": ["todo"],
+        "created_at": 1706363614,
+        "doc": "Adds a to-do to the list.",
+        "name": "add_todo",
+        "with_side_effects": true
+    },
+    {
+        "arguments": ["needle"],
+        "created_at": 1706540544,
+        "doc": "Search for todo's",
+        "name": "search_todos",
+        "with_side_effects": false
+    }
+]</code> <code class="comment">//-- some information is left out to keep the sample comprehensible</code></pre>
+        <p>The properties of each procedure in this list provide valuable insights. The
+            <code class="inline">with_side_effects</code> property indicates whether invoking the procedure
+            modifies the dataset or not. Additionally, each procedure's arguments are listed, and a brief
+            description of its functionality is provided in the <code class="inline">doc</code> property
+            <em>(this is the docstring we provided earlier in the closure body)</em>.</p>
+        <section class="sect2">
+            <h4 id="ch06_3_1_h" class="title">6.3.1 Extracting Properties from Information Objects</h4>
+            <p>Now that we have a basic understanding of procedure information objects, let's focus on
+                extracting just the procedure names.</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">type(procedures_info());</code>
+<code class="response">"list"</code>
+<code class="prompt">(//todos)&gt;</code> <code class="user">type(procedures_info().first());</code>
+<code class="response">"mpdata"</code></pre>
+            <p>Observing the data types involved, we can see that the <code class="inline">procedures_info()</code>
+                function returns a list of <em>mpdata</em> objects, not <em>things</em>. MPdata stands
+                for "MessagePack-Data" and represents serialized MessagePack data. Information objects
+                in ThingsDB are pre-serialized to minimize work and enhance performance.</p>
+            <p>To extract the procedure names, we can utilize the <code class="inline">load()</code> method
+                provided by the mpdata type. This method allows us to deserialize mpdata objects into
+                ThingsDB objects, enabling us to access their properties.</p>
+            <p>Applying <code class="inline">load()</code> to a procedure information object results in a
+                thing object. This enables us to access the <code class="inline">name</code> property of
+                the procedure, which provides the procedure's identifier.</p>
+            <p>With this approach, we can efficiently retrieve a list of procedure names using the
+                following code:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">procedures_info().map(|mpdata| mpdata.load().name);</code>
+<code class="response">[
+    "add_todo",
+    "search_todos"
+]</code></pre>
+            <p>This concise code demonstrates the ability to extract relevant information from
+                pre-serialized MessagePack data.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch06_3_2_h" class="title">6.3.2 Additional Procedure Functions</h4>
+            <p>We've covered the <code class="inline">new_procedure()</code> and <code class="inline">procedures_info()</code>
+                functions, but ThingsDB offers a few more functions that you can find in a dedicated
+                documentation section.</p>
+            <p>For detailed information on these additional procedure functions, please refer to the
+                ThingsDB documentation: <a href="https://docs.thingsdb.io/v1/procedures-api/">https://docs.thingsdb.io/v1/procedures-api/</a></p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch06_4_h" class="title">6.4 Thinking Ahead</h3>
+        <p>While the current setup of the to-do application works well for Alice, it is important to consider
+            scalability and maintainability from the start. While full admin access might be sufficient for now,
+            granting such extensive permissions to the Python code might not be the best approach in the long run.</p>
+        <p>To address this, we can create a dedicated user for the Python code and grant them only the necessary
+            permissions. This will provide a more secure and controlled environment for managing user access.</p>
+        <p>Using the <code class="inline">grant()</code> function, we can assign the appropriate permissions to
+            the newly created user. The table below summarizes the various permission flags available in ThingsDB:</p>
+        <div class="table">
+            <h2 id="ta06_4"></h2>
+            <p class="title">Table 6.4 - Summary of permission flags</p>
+            <table>
+                <tr><th>Mask</th><th>Description</th></tr>
+                <tr><td><code class="inline">QUERY</code> (<code class="inline">1</code>)</td><td>Grants access to execute queries</td></tr>
+                <tr><td><code class="inline">CHANGE</code> (<code class="inline">2</code>)</td><td>Grants access to make changes</td></tr>
+                <tr><td><code class="inline">GRANT</code> (<code class="inline">4</code>)</td><td>Grants administrative privileges, allowing users to grant and revoke permissions to other users</td></tr>
+                <tr><td><code class="inline">JOIN</code> (<code class="inline">8</code>)</td><td>Grants join (and leave) privileges to a room</td></tr>
+                <tr><td><code class="inline">RUN</code> (<code class="inline">16</code>)</td><td>Grants access to run procedures directly</td></tr>
+                <tr><td><code class="inline">USER</code> (<code class="inline">27</code>)</td><td>Combination of <code class="inline">QUERY</code>, <code class="inline">CHANGE</code>, <code class="inline">JOIN</code> and RUN</td></tr>
+                <tr><td><code class="inline">FULL</code> (<code class="inline">31</code>)</td><td>Combination of all privileges</td></tr>
+            </table>
+        </div>
+        <p>Since we've migrated all the queries from the Python code to procedures, we no longer
+            require <code class="inline">QUERY</code> access. Therefore, we can safely grant the user
+            <code class="inline">CHANGE</code> and <code class="inline">RUN</code> permissions, which will allow them to
+            modify data and execute procedures within the "todos" scope.</p>
+        <p>By adopting this approach, we can effectively differentiate between the administrative user (Alice) and the
+            Python code, ensuring that the code has the appropriate level of access to perform its tasks while
+            maintaining security and control over the system.</p>
+        <p>Instead of creating users manually, we can create a procedure to automate the process. This will make
+            it easier to manage users and create new ones as needed.</p>
+        <p>Let's create a procedure called <code class="inline">new_todo_user</code> in the
+            <code class="inline">/thingsdb</code> scope that takes a user name as input and generates a unique
+            token for authentication.</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">@ /t;</code>  <code class="comment">// Switch to the /thingsdb scope</code>
+<code class="prompt">(/t)&gt;</code> <code class="user">new_procedure("new_todo_user", |name, access| {
+    "Creates a new user with access to the todos scope.";
+    new_user(name);
+    grant('//todos', name, access);
+    new_token(name);
+});</code>
+<code class="response">"new_todo_user"</code></pre>
+        <p>This procedure first creates a new user with the specified name using the <code class="inline">new_user()</code>
+            function. Then, it grants the desired user permission for the <code class="inline">//todos</code> scope
+            using the <code class="inline">grant()</code> function. Finally, it generates a unique token for the user
+            using the <code class="inline">new_token()</code> function.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>Instead of using a token, we could have opted for username and password authentication through the
+                    <code class="inline">set_password()</code> function. However, tokens offer several advantages:
+                    they are strong, easily revoked (using: <code class="inline">del_token()</code>), and allow for
+                    issuing multiple tokens per account for different purposes.</p>
+            </div>
+        </div>
+        <p>To create a user named <code class="inline">py</code> and obtain their token, run the following command:</p>
+<pre><code class="prompt">(/t)&gt;</code> <code class="user">wse(); new_todo_user('py', RUN | CHANGE);</code>
+<code class="response">"9U0unWQglFlxl1DUBX5JsR"</code></pre>
+        <p>This will create a user named <code class="inline">py</code> and provide you with their token,
+            which you should copy and paste into the corresponding Python script.</p>
+        <p>Now, modify the authentication call in the <code class="inline">template.py</code> and
+            <code class="inline">search_todos.py</code> scripts to replace the default token with
+            the generated one:</p>
+<pre><code class="prompt">    …
+    try:
+        await client.authenticate(</code><code class="user">'9U0unWQglFlxl1DUBX5JsR'</code><code class="prompt">)
+        await work(client)
+    …
+</code></pre>
+        <p>Replace <code class="inline">"9U0unWQglFlxl1DUBX5JsR"</code> with the actual token you obtained
+            from the previous command.</p>
+        <p>With this change, the Python scripts should now use the <code class="inline">py</code> user's token
+            to authenticate with ThingsDB and access the <code class="inline">//todos</code> scope.
+            This provides a more secure and maintainable approach to managing user access.</p>
+    </section>
 </section>
 </body>
 </html>
