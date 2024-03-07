@@ -9,7 +9,26 @@
 <section class="sect2">
     <h4 id="ch10_5_1_h" class="title">10.5.1 Quiz - Answers</h4>
     <ol class="quiz">
-
+        <li><p>Both <code class="inline">"str?"</code> and <code class="inline">"any"</code> can inherit
+            the <code class="inline">email</code> property due to their less restrictive nature compared to the
+            original <code class="inline">"email?"</code> definition. This follows the principle of compatibility
+            where definitions should be either the same or less restrictive for properties to appear.
+            While <code class="inline">"str"</code> enforces string type, it loses the nillability aspect from
+            the original. On the other hand, <code class="inline">"any"</code> allows any type,
+            including <code class="inline">nil</code>, effectively inheriting the nillability due to its broadness.</p></li>
+        <li><p>Answer “a”. The first <code class="inline">true</code> enables wrap-only mode, and the second <code class="inline">true</code> activates the hide-ID flag. Both arguments default to <code class="inline">false</code> if omitted.</p></li>
+        <li><p>Methods in wrap-only types define <em>computed properties</em>: properties whose values are dynamically calculated on response creation.</p></li>
+        <li><p>The most efficient way to achieve this transformation is using the built-in <code class="inline">map_wrap()</code>
+            method. Simply calling <code class="inline">people.map_wrap("_Person");</code> will wrap each <code class="inline">Person</code> object in the
+            list with the <code class="inline">_Person</code> type. While other methods like <code class="inline">map()</code> can
+            also be used, <code class="inline">map_wrap()</code> offers the most concise and efficient solution in this case.</p></li>
+        <li><p>All the proposed names technically work. However, best practices favor naming conventions for clarity
+            and consistency. Options like <code class="inline">_Person</code> or the more descriptive
+            name <code class="inline">_PersonCompact</code> using the underscore prefix instantly reveal the
+            wrap-only purpose, enhancing code understanding and avoiding confusion.</p></li>
+        <li><p>The correct answer is “c”. ThingsDB handles errors in computed properties gracefully by incorporating
+            the error message itself as the property's string value within the result. This approach ensures visibility
+            of any issues that may arise during calculation, promoting transparency and facilitating troubleshooting.</p></li>
     </ol>
 </section>
 </body>

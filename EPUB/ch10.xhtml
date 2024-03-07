@@ -8,6 +8,218 @@
 <body>
 <section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch10_h" id="_ch10">
     <h2 id="ch10_h" class="title">Chapter 10 - Control Responses</h2>
+    <p>Remember how <code class="inline">search_todos.py</code> returned a <code class="inline">Todo</code> instance?
+        While it is functional, imagine customizing the response to something like this:</p>
+<pre><code class="response">{
+    "id": 2,
+    "body": "Read a book",
+    "done": true,
+    "user": {
+       "name": "Alice",
+    }
+}</code></pre>
+    <p>This example showcases the desired structure:</p>
+    <ul>
+        <li>Essential keys like <code class="inline">"id"</code> and <code class="inline">"body"</code> remain unchanged.</li>
+        <li>The <code class="inline">completion</code> property is replaced with a <code class="inline">"done"</code> flag.</li>
+        <li>User information is simplified, including only the <code class="inline">"name"</code>.</li>
+    </ul>
+    <section class="sect1">
+        <h3 id="ch10_1_h" class="title">10.1 The Power of Wrap-Only Types</h3>
+        <p>While code manipulation can achieve this, ThingsDB offers a more efficient approach: Wrap-Only types.
+            These types act as templates defining how to present existing data. They can't be directly created,
+            but they can "wrap" other types, transforming their output.</p>
+        <p>Let's dive into defining our wrap-only type for to-do’s.</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">new_type("_Todo", true);</code>
+<code class="response">"_Todo"</code></pre>
+        <p>The name we choose for our wrap-only type plays a role. While not strictly required, many developers
+            adopt the convention of starting it with an underscore (<code class="inline">_Todo</code> in our case).
+            This helps visually distinguish wrap-only types from regular ones at a glance.</p>
+        <p>The second boolean argument (<code class="inline">true</code>) passed to <code class="inline">new_type()</code>
+            serves as a flag, enabling the "wrap-only" mode for the defined type (<code class="inline">_Todo</code>).
+            This signifies that direct instantiation of instances is prohibited. Instead, its functionality lies in
+            dynamically transforming existing data structures based on the properties and computed values specified
+            within its definition.</p>
+        <p>Having declared our <code class="inline">_Todo</code> wrap-only type, we proceed to define its structure and behavior
+            using <code class="inline">set_type()</code>:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">set_type("_Todo", {
+    id: "#",
+    body: "any",
+    done: |this| is_datetime(this.completion),
+});</code>
+<code class="response">null</code></pre>
+        <p>Let's dissect the key aspects of our wrap-only type configuration:</p>
+        <ul>
+            <li><p><code class="inline">id: "#"</code></p>
+                <p class="uname">This familiar selection directly includes the unique identifier (id) of the wrapped <code class="inline">Todo</code> object in the response.</p>
+            </li>
+            <li><p><code class="inline">body: "any"</code></p>
+                <p class="uname">This indicates we want to incorporate the entire text content of the <code class="inline">body</code> property, regardless of its original data type. To include a property in the wrapped data, its definition in the wrap-only type must be <em>equal or less restrictive</em> compared to the original. In this case, <code class="inline">"any"</code> covers any possible data type for the <code class="inline">body</code>.</p>
+            </li>
+            <li><p><code class="inline">done: |this| is_datetime(this.completion)</code></p>
+                <p class="uname">This is where things get interesting! We're utilizing a <em>computed property</em>. This method dynamically examines the <code class="inline">completion</code> property of the wrapped <code class="inline">Todo</code>. If it finds a datetime value present, it sets the <code class="inline">done</code> flag to <code class="inline">true</code>, otherwise it remains <code class="inline">false</code>. This demonstrates the power of computed properties to not only select specific data but also transform it based on defined logic, adding new insights to the wrapped representation.</p>
+            </li>
+        </ul>
+        <p>Fundamental to the design of wrap-only types is the restriction on direct instance creation. Let's confirm this behavior:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">_Todo{};</code>
+<code class="response">TypeError: type `_Todo` has wrap-only mode enabled</code></pre>
+        <p>As expected, attempting to directly create an instance of the <code class="inline">_Todo</code> type throws an error.</p>
+        <p>To leverage the power of <code class="inline">_Todo</code>, we employ the <code class="inline">wrap()</code> method, available on thing objects. Let's see how it works:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">Todo(2).wrap("_Todo");</code>
+<code class="response">{
+    "body": "Read a book",
+    "done": true,
+    "id": 2
+}</code></pre>
+        <p>We've achieved a significant transformation. The wrapped <code class="inline">Todo</code> now exhibits the
+            desired structure, including the calculated <code class="inline">done</code> property. However, one
+            crucial element remains missing - the <code class="inline">user</code> information.</p>
+        <p>To incorporate <code class="inline">user</code> information, let's create another wrap-only type specifically for this purpose:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">new_type("_TodoUser", true, true);</code>
+<code class="response">"_TodoUser"</code></pre>
+        <p>The first <code class="inline">true</code> argument activates the familiar wrap-only mode functionality.
+            However, the inclusion of the second <code class="inline">true</code> argument introduces a privacy feature.
+            By specifying this additional flag, we instruct ThingsDB to exclude the ID property within the response.</p>
+        <p>We'll keep the <code class="inline">_TodoUser</code> type simple, focusing on the essential <code class="inline">name</code> property:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">set_type("_TodoUser", {name: "str"});</code>
+<code class="response">null</code></pre>
+        <p>Now, let's merge <code class="inline">_TodoUser</code> into our <code class="inline">_Todo</code> type:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">mod_type("_Todo", "add", "user", "&amp;_TodoUser?");</code>
+<code class="response">null</code></pre>
+        <p>Let's delve into the meaning of the <code class="inline">"&amp;_TodoUser?"</code> definition assigned to the <code class="inline">user</code> property.</p>
+        <p>The <code class="inline">?</code> symbol is crucial as it preserves the original nillability <code class="inline">"User?"</code>
+            of the <code class="inline">user</code> property. If we omitted the <code class="inline">?</code>,
+            it would remove the nillability flag, making the definition stricter and preventing the <code class="inline">user</code> property
+            to be included in a response.</p>
+        <p>The <code class="inline">&amp;</code> symbol at the beginning of the <code class="inline">"&amp;_TodoUser?"</code>
+            definition is a prefix flag in ThingsDB. Several such flags exist, each influencing how properties are returned
+            in a query response. Remember the optional <code class="inline">deep</code> value in the <code class="inline">return</code>
+            statement? It is actually rarely needed to define this <code class="inline">deep</code> value. The <code class="inline">&amp;</code>
+            flag acts similarly, instructing ThingsDB to directly include the specified property in the response without
+            manual deep level specification. It effectively maintains the same deep level as the parent property.</p>
+        <div class="table">
+            <h2 id="ta10_1"></h2>
+            <p class="title">Table 10.1 - Summarizing prefix flags</p>
+            <table>
+                <tr><th>Flag</th><th>Description</th></tr>
+                <tr><td><code class="inline">"&amp;"</code></td><td>Use parent's deep level</td></tr>
+                <tr><td><code class="inline">"+"</code></td><td>Force the maximum deep level of 126 (127 in parent)</td></tr>
+                <tr><td><code class="inline">"-"</code></td><td>Force deep level of 0 (1 in parent)</td></tr>
+                <tr><td><code class="inline">"^"</code></td><td>Apply <code class="inline">NO_IDS</code> return flag</td></tr>
+                <tr><td><code class="inline">"*"</code></td><td>Return enumerator names instead of values</td></tr>
+            </table>
+        </div>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>While the <code class="inline">^</code> flag effectively hides IDs, you might wonder if it is equivalent to setting
+                    the hide-ID flag for the <code class="inline">_TodoUser</code> type like we did. Both achieve
+                    the same result here, but with a key difference. The <code class="inline">^</code> flag
+                    applies the <code class="inline">NO_IDS</code> restriction
+                    recursively, anonymizing IDs throughout nested user data. In contrast, hide-ID only
+                    affects the <code class="inline">_TodoUser</code> type itself, potentially exposing IDs in
+                    nested objects.</p>
+            </div>
+        </div>
+        <p>Now that we've incorporated the <code class="inline">user</code> property, let's witness the magic!</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">Todo(2).wrap("_Todo");</code>
+<code class="response">{
+    "id": 2,
+    "body": "Read a book",
+    "done": true,
+    "user": {
+        "name": "Alice"
+    }
+}</code></pre>
+        <p>This output aligns perfectly with our desired format!</p>
+        <p>No need for a <code class="inline">return</code> statement or manual deep level specification! Our wrap-only types seamlessly weave together to-do information and the user's name, presenting a cohesive response in the desired format.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch10_2_h" class="title">10.2 Update Search Todos</h3>
+        <p>Now that we have a robust wrap-only type for to-do’s, let's adapt the <code class="inline">search_todos</code>
+            procedure to leverage its functionality.</p>
+        <p>Initially, we could employ the familiar <code class="inline">map()</code> method to wrap each filtered <code class="inline">Todo</code> instance:</p>
+<pre><code class="user">.users.values().reduce(|total, user| {
+    total |= user.todos.filter(|todo| todo.body.contains(needle));
+    total;
+}, set()).map(|todo| todo.wrap("_Todo"));</code></pre>
+        <p>However, ThingsDB offers a dedicated and more efficient option specifically designed for this common wrapping scenario:
+            the <code class="inline">map_wrap()</code> method.</p>
+        <p>Update the the <code class="inline">search_todos</code> procedure by incorporating the <code class="inline">map_wrap()</code> method:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">mod_procedure("search_todos", |needle| {
+    "Search for to-do’s";
+    .users.values().reduce(|total, user| {
+        total |= user.todos.filter(|todo| todo.body.contains(needle));
+        total;
+    }, set()).map_wrap("_Todo");</code>  <code class="comment">// map_wrap() for efficient conversion</code>
+<code class="user">});</code>
+<code class="response">null</code></pre>
+        <p>To confirm the successful integration of the <code class="inline">Todo</code> type, let's re-run
+            the <code class="inline">search_todos.py</code> script:</p>
+<pre><code class="prompt">$</code> <code class="user">python search_todos.py</code>
+<code class="prompt">Search for:</code> <code class="user">book</code>
+<code class="response">[{'id': 2, 'body': 'Read a book', 'user': {'name': 'Alice'}, 'done': True}]</code></pre>
+        <p>As expected, the output now reflects the desired structure, incorporating the to-do details and user information within the expected format.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch10_3_h" class="title">10.3 Wrap Every-Thing</h3>
+        <p>In this chapter, we crafted the <code class="inline">_Todo</code> wrap-only type, but did you
+            notice a key detail? We never explicitly specified the target type for wrapping.
+            That's because wrap-only types possess remarkable versatility! Any thing, any instance, can be
+            wrapped using <code class="inline">_Todo</code>, regardless of its original definition.</p>
+        <p>Let's observe what happens when we wrap an empty thing:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">{}.wrap("_Todo");</code>
+<code class="response">{
+    "done": "thing `#0` has no property `completion`"
+}</code></pre>
+        <p>While not ideal, the result is understandable. The computed <code class="inline">done</code> property
+            returns an error message as the wrapped thing lacks the required <code class="inline">completion</code> property.</p>
+        <p>Now, let's try wrapping an object with some properties:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">{completion: nil, body: 123, smile: true}.wrap("_Todo");</code>
+<code class="response">{
+    "body": 123,
+    "done": false
+}</code></pre>
+        <p>As expected, the <code class="inline">done</code> property is calculated correctly based on the
+            provided <code class="inline">completion</code> property. Remember, the <code class="inline">body</code>
+            property in <code class="inline">_Todo</code> is defined as <code class="inline">"any"</code>,
+            allowing it to accept various data types like integers here. Since <code class="inline">smile</code> is not defined
+            in <code class="inline">_Todo</code>, it is simply ignored.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>While ThingsDB can wrap even plain things, it is worth noting that wrapping typed things
+                    offers a significant performance advantage. This is due to an internal optimization
+                    mechanism: The first time a typed thing is wrapped, ThingsDB creates a mapping table.
+                    This table efficiently stores how each property in the typed object maps to the corresponding
+                    property in the wrap-only type. For subsequent wraps of the same type, ThingsDB can leverage
+                    this pre-calculated table, drastically reducing computation overhead. This optimization
+                    excludes computed properties, which inherently require dynamic evaluation.</p>
+            </div>
+        </div>
+    </section>
+    <section class="sect1">
+        <h3 id="ch10_4_h" class="title">10.4 Modifying Wrap-Only and Hide-ID Flags</h3>
+        <p>In this chapter, we've explored creating wrap-only types and defining hide-ID behavior. While we
+            covered the standard approach, you might be wondering what happens if you forget to set these
+            flags initially?</p>
+        <p>The <code class="inline">mod_type()</code> function provides two key actions for modifying these
+            configurations after creation: <code class="inline">"wpo"</code> for managing wrap-only mode
+            and <code class="inline">"hid"</code> for controlling hide-ID behavior.</p>
+        <p>The following code demonstrates how to apply these actions in practice:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">mod_type("_Todo", "wpo", true);</code>
+<code class="response">null</code>
+<code class="prompt">(//todos)&gt;</code> <code class="user">mod_type("_TodoUser", "hid", true);</code>
+<code class="response">null</code></pre>
+        <p>Enabling wrap-only mode for an existing type is restricted to when no instances of that type currently exist.
+            Attempting to activate it with existing instances will result in an error.</p>
+        <p>We trust you've gained a solid grasp of the transformative potential of wrap-only types. By
+            leveraging them effectively, you can streamline your code, eliminating custom deep levels
+            within <code class="inline">return</code> statements and achieving your desired data structures
+            effortlessly.</p>
+        <p>We wish you the best of luck with the quiz! In the next chapter, we'll delve into the exciting world of
+            implementing flags and enumerators, further expanding your data manipulation capabilities within ThingsDB.</p>
+    </section>
 </section>
 </body>
 </html>

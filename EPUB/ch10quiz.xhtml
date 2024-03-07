@@ -9,7 +9,49 @@
 <section class="sect1">
     <h3 id="ch10_5_h" class="title">10.5 Quiz - Challenge Your Understanding</h3>
     <ol class="quiz">
-
+        <li><p>Both type <code class="inline">A</code> and <code class="inline">B</code> have an <code class="inline">email</code> property.
+            On type <code class="inline">A</code> the property is defined as <code class="inline">"email?"</code>. In which
+            scenario will the <code class="inline">email</code> property appear in the response when an instance of
+            type <code class="inline">A</code> is wrapped with type <code class="inline">B</code>?</p>
+            <p>Choose the correct definition(s) for the <code class="inline">email</code> property in type <code class="inline">B</code>:</p>
+            <ol>
+                <li><code class="inline">"any"</code></li>
+                <li><code class="inline">"str"</code></li>
+                <li><code class="inline">"str?</code></li>
+                <li><code class="inline">"email"</code></li>
+            </ol>
+        </li>
+        <li><p>Consider the following code snippet:</p>
+            <p class="quizcode"><code class="inline">new_type("T", true, true);</code></p>
+            <p>What do the two boolean arguments in the provided <code class="inline">new_type()</code> function call signify?</p>
+            <ol>
+                <li>The first <code class="inline">true</code> activates wrap-only mode, the second activates the hide-ID flag.</li>
+                <li>The first <code class="inline">true</code> activates wrap-only mode, the second activates the show-ID flag.</li>
+                <li>The first <code class="inline">true</code> activates the hide-ID flag, the second activates wrap-only mode.</li>
+                <li>The first <code class="inline">true</code> activates the show-ID flag, the second activates wrap-only mode.</li>
+            </ol>
+        </li>
+        <li><p>Wrap-only types empower you to define properties or methods. What purpose do methods serve in this context?</p></li>
+        <li><p>Imagine you have a variable <code class="inline">people</code> holding a list of things of
+            type <code class="inline">Person</code>. Your task is to return this list with each <code class="inline">Person</code>
+            instance transformed and represented using the <code class="inline">_Person</code> wrap-only type. Write the most concise and efficient statement possible to achieve this transformation.</p></li>
+        <li><p>Imagine you're creating a wrap-only type to transform existing instances of the <code class="inline">Person</code> type. Which of the following names are valid for your new wrap-only type?</p>
+            <ol>
+                <li><code class="inline">Beer</code></li>
+                <li><code class="inline">_Person</code></li>
+                <li><code class="inline">person</code></li>
+                <li><code class="inline">_PersonCompact</code></li>
+                <li><em>all of the above</em></li>
+            </ol>
+        </li>
+        <li><p>What happens when a <em>computed property</em> encounters an error during its calculation? Choose the correct answer:</p>
+            <ol>
+                <li>It throws an exception that needs to be handled elsewhere.</li>
+                <li>It silently returns a default value like <code class="inline">nil</code>.</li>
+                <li>It adds the property with a string value containing the error message.</li>
+                <li>It continues with the calculation, potentially leading to unexpected results.</li>
+            </ol>
+        </li>
     </ol>
 </section>
 </body>
