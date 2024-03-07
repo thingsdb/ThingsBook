@@ -264,8 +264,7 @@ set_type("Root", {
             capture user input for the <code class="inline">todo_id</code> and call the procedure:</p>
 <pre><code class="prompt">async def work(client: Client):</code>
 <code class="user">    todo_id = int(input("To-do ID: "))
-    await client.run('mark_as_done', todo_id=todo_id)
-</code></pre>
+    await client.run('mark_as_done', todo_id=todo_id)</code></pre>
         <p>Running this Python file will prompt you to enter a <code class="inline">todo_id</code>, which will
             then be used to invoke the <code class="inline">mark_as_done</code> procedure.</p>
 <pre><code class="prompt">$</code> <code class="user">python mark_as_done.py</code>

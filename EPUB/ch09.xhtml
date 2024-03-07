@@ -8,6 +8,300 @@
 <body>
 <section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch09_h" id="_ch09">
     <h2 id="ch09_h" class="title">Chapter 9 - Two-Way Links</h2>
+    <p>Alice's trusty to-do app has caught Bob's eye, and now it's time to take it multi-user!
+        Let's dive into how we can transform the app to accommodate different users and their to-do’s.</p>
+    <p>Let's start with creating a new type called <code class="inline">User</code> with properties
+        for their <code class="inline">name</code> and <code class="inline">todos</code>:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">new_type("User");
+set_type("User", {
+    name: "str",
+    todos: "{Todo}",
+});</code>
+<code class="response">null</code></pre>
+    <div class="note">
+        <img class="note" src="images/lightbulb.png" alt="Note" />
+        <div class="content">
+            <p>We're switching from a <em>list</em> to a <em>set</em> for <code class="inline">todos</code>.
+                This prepares us for introducing relations later in the chapter,
+                as relations only work between sets and plain properties, not lists.</p>
+        </div>
+    </div>
+    <p>Now comes the migration magic! Though slightly longer than previous code, keep in mind this
+        single query transforms the entire collection from single-user to multi-user.
+        It seamlessly adds users for Alice and Bob, migrates Alice's existing to-do’s,
+        and updates all procedures to function with the new setup.</p>
+<pre><code class="prompt">(//todos)&gt;</code>
+<code class="comment">// Add user lookup</code>
+<code class="user">mod_type("Root", "add", "users", "thing&lt;User&gt;");</code>
+
+<code class="comment">// Add procedure for adding a user</code>
+<code class="user">new_procedure("add_user", |name| {
+    "Add a new todo user.";
+    uid = name.lower();
+    assert(!.users.has(uid));
+    user = .users[uid] = User{name:,};
+    user.id();
+});</code>
+
+<code class="comment">// Add users and migrate Alice's to-do’s</code>
+<code class="user">user_id = add_user("Alice");
+User(user_id).todos |= set(.todos);
+add_user("Bob");</code>
+
+<code class="comment">// Remove todos from Root</code>
+<code class="user">mod_type("Root", "del", "todos");</code>
+
+<code class="comment">// Update search_todos</code>
+<code class="user">mod_procedure("search_todos", |needle| {
+    "Search for to-do's";
+    .users.values().reduce(|total, user| {
+        total |= user.todos.filter(|todo| todo.body.contains(needle));
+        total;
+    }, set());
+});</code>
+
+<code class="comment">// Update add_todo</code>
+<code class="user">mod_procedure("add_todo", |name, body| {
+    "Adds a to-do to a user's todo list.";
+    todo = Todo{body:,};
+    .users[name.lower()].todos.add(todo);
+    todo.id();
+});</code>
+<code class="response">null</code></pre>
+    <p>So far, everything seems familiar. We can easily find a user's to-do’s because
+        they are directly stored under the <code class="inline">todos</code> property.
+        But what if we have a specific to-do? How do we know which user it belongs to
+        without searching through all users?</p>
+    <p>This becomes evident when using our existing <code class="inline">search_todos.py</code> script:</p>
+<pre><code class="prompt">$</code> <code class="user">python search_todos.py</code>
+<code class="prompt">Search for:</code> <code class="user">report</code>
+<code class="response">[{'id': 8, 'body': 'Send report to Bob', 'creation': '2024-02-07T14:52:26Z', 'completion': None}]</code></pre>
+    <p>As you can see, the search does not reveal which user this to-do belongs to.</p>
+    <section class="sect1">
+        <h3 id="ch09_1_h" class="title">9.1 Introducing Relations</h3>
+        <p>To address the issue described in the previous paragraph, we can add
+            a <code class="inline">user</code> property to the <code class="inline">Todo</code> type.
+            However, manually maintaining its accuracy could be cumbersome. ThingsDB offers a more
+            elegant solution: <em>relations</em>.</p>
+        <p>Let's add a relation between the <code class="inline">Todo</code> and <code class="inline">User</code>
+            types using the following code:</p>
+<pre><code class="prompt">(//todos)&gt;</code>
+<code class="comment">// 1. Add the optional user property to Todo</code>
+<code class="user">mod_type("Todo", "add", "user", "User?");</code>
+
+<code class="comment">// 2. Create the bidirectional relation</code>
+<code class="user">mod_type("Todo", "rel", "user", "todos");</code>
+<code class="response">null</code></pre>
+        <p>Let's break down the key steps:</p>
+        <ol>
+            <li>
+                We add a new property named user to the <code class="inline">Todo</code> type.
+                This property holds a reference to a <code class="inline">User</code> object, but here is the crucial part:
+                it is nillable (indicated by the question mark <code class="inline">?</code>). Why is this important?
+                Imagine we remove a <code class="inline">Todo</code> from a user's set.
+                With a nillable property, ThingsDB can effortlessly set the <code class="inline">user</code> property
+                to <code class="inline">nil</code>, reflecting the broken relationship. Without
+                nillable properties, such changes would lead to errors or inconsistencies.
+            </li>
+            <li>
+                Now comes the magic: creating a bidirectional relationship
+                between <code class="inline">Todo</code> and <code class="inline">User</code>. We do
+                this by specifying the <code class="inline">user</code> property on
+                the <code class="inline">Todo</code> side and the <code class="inline">todos</code> property on
+                the <code class="inline">User</code> side. This tells ThingsDB how they're connected. As a result,
+                you can easily access a user's to-do’s through their <code class="inline">todos</code> property
+                and identify the owner of a specific <code class="inline">Todo</code> using
+                its <code class="inline">user</code> property.
+            </li>
+        </ol>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>This relationship can be initiated from either the <code class="inline">Todo</code>
+                    or <code class="inline">User</code> type, both would yield the same result.</p>
+            </div>
+        </div>
+        <p>Now that we've built the bridge between <code class="inline">Todo</code>
+            and <code class="inline">User</code>, let's see if it holds. Let's use our
+            trusty <code class="inline">search_todos.py</code> script:</p>
+<pre><code class="prompt">$</code> <code class="user">python search_todos.py</code>
+<code class="prompt">Search for:</code> <code class="user">book</code>
+<code class="response">[{
+    'id': 2,
+    'body': 'Read a book',
+    'creation': '2024-02-07T14:47:49Z',
+    'completion': '2024-02-07T14:48:06Z',
+    'user': {'#': 10}
+}]</code></pre>
+        <p>Look! ThingsDB automatically populated the <code class="inline">user</code> property for us.
+            But the real magic happens when we modify this relationship. Imagine changing
+            the <code class="inline">"Read a book"</code> to-do’s owner from Alice to Bob.
+            Thanks to the <em>relation</em>, this change would seamlessly ripple through the system.
+            The to-do automatically gets removed from Alice's <code class="inline">todos</code> set
+            and added to Bob's! This dynamic behavior ensures your data stays consistent and
+            reflects real-world ownership of to-do’s.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch09_2_h" class="title">9.2 Exploring More Relations</h3>
+        <p>Our to-do example showcased a <em>one-to-many</em> relationship between a single
+            property <code class="inline">user</code> and a set todos. But ThingsDB's relational
+            power doesn't stop there! Let's dive into the other types which are briefly
+            described in <a href="ch09.xhtml#ta09_2">Table 9.2</a> below.</p>
+        <div class="table">
+            <h2 id="ta09_2"></h2>
+            <p class="title">Table 9.2 - Relationship Types</p>
+            <table>
+                <tr><th>Relation</th><th>Definition</th><th>Description</th><th>Example</th></tr>
+                <tr><td>One-on-One</td><td><code class="inline">T?</code> &lt;-&gt; <code class="inline">T?</code></td><td>Type to Type</td><td>Passport and owner</td></tr>
+                <tr><td>One-to-Many</td><td><code class="inline">T?</code> &lt;-&gt; <code class="inline">{T}</code></td><td>Type to Set</td><td>User and their to-do’s</td></tr>
+                <tr><td>Many-to-Many</td><td><code class="inline">{T}</code> &lt;-&gt; <code class="inline">{T}</code></td><td>Set to Set</td><td>Users and their friends</td></tr>
+            </table>
+        </div>
+        <p>Let's take a quick break from our current topic and set up a dedicated space for
+            exploring the different types of relationships in ThingsDB. Using
+            the <code class="inline">/thingsdb</code> scope, we'll create a new collection
+            called <code class="inline">"relations"</code> to use for upcoming examples.</p>
+        <p>Here's how we'll do it:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">@t</code>
+<code class="prompt">(/t)&gt;</code> <code class="user">new_collection("relations");</code>
+<code class="response">"relations"</code>
+<code class="prompt">(/t)&gt;</code> <code class="user">@ //relations</code>
+<code class="prompt">(//relations)></code></pre>
+        <p>Now, with the <code class="inline">"relations"</code> collection ready and waiting, we can
+            now examine the different types of relationships available in ThingsDB.</p>
+        <section class="sect2">
+            <h4 id="ch09_2_1_h" class="title">9.2.1 One-on-One Relationship</h4>
+            <p>Imagine a <code class="inline">Passport</code> type linked to its owner through
+                a <code class="inline">user</code> property. Each owner can have only one passport,
+                and each passport belongs to exactly one owner. This scenario represents
+                a <em>one-on-one</em> relationship, denoted
+                as <code class="inline">T?</code> &lt;-&gt; <code class="inline">T?</code>
+                in <a href="ch09.xhtml#ta09_2">Table 9.2</a>.</p>
+            <p>One-on-One relationships in ThingsDB offer flexibility beyond just connecting different
+                types. You can create a relationship where one instance connects to exactly one other
+                instance of the same type. This even allows for reflexive relationships, where an
+                instance connects to itself!</p>
+            <p>Defining the type <code class="inline">Pair</code> to demonstrate this type of relationship:</p>
+<pre><code class="prompt">(//relations)&gt;</code> <code class="user">new_type("Pair");</code>
+<code class="user">set_type("Pair", {other: "Pair?"});</code>
+
+<code class="comment">// Create a relationship to the same property</code>
+<code class="user">mod_type("Pair", "rel", "other", "other");</code>
+<code class="response">null</code></pre>
+            <p>Creating a <code class="inline">Pair</code> in action:</p>
+<pre><code class="prompt">(//relations)&gt;</code> <code class="user">.p = Pair{};
+.p.other= Pair{};
+.p.other.other == .p;</code>  <code class="comment">// Returns true, confirming the link</code>
+<code class="response">true</code></pre>
+            <p>Building on the idea of self-referencing relationships, let's dive into chain relationships.
+                These are perfect for modeling parent-child scenarios where each parent has only one child,
+                and vice versa. Imagine a chain of connected elements, where each element points to the
+                next one in line.</p>
+            <p>Creating the <code class="inline">Chain</code> Type:</p>
+<pre><code class="prompt">(//relations)&gt;</code> <code class="user">new_type("Chain");
+set_type("Chain", {prev: "Chain?", next: "Chain?"});</code>
+
+<code class="comment">// Create a relationship between “prev” and “next”</code>
+<code class="user">mod_type("Chain", "rel", "prev", "next");</code>
+<code class="response">null</code></pre>
+            <p>Now, let's create some <code class="inline">Chain</code> instances and connect them:</p>
+<pre><code class="prompt">(//relations)&gt;</code> <code class="user">.chain = Chain{};
+.chain.next = Chain{};
+.chain.next.next = Chain{};
+.chain.next.next.prev == .chain.next;</code>  <code class="comment">// Returns true, confirming the link</code>
+<code class="response">true</code></pre>
+            <p>See how each element's <code class="inline">next</code> property points to the next one in
+                the chain, and the last element's <code class="inline">prev</code> points back to the second element!</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch09_2_2_h" class="title">9.2.2 Many-to-Many Relationship</h4>
+            <p>Now, consider a social network scenario where users have friends. Adding Bob as a friend for
+                Alice should automatically make Alice a friend of Bob.
+                This <em>many-to-many</em> relationship connects two sets.</p>
+            <p>Let's create a <code class="inline">Person</code> type in the <code class="inline">//relations</code>
+                scope to model this scenario:</p>
+<pre><code class="prompt">(//relations)&gt;</code> <code class="user">new_type("Person");
+set_type("Person", {friends: "{Person}"});</code>
+
+<code class="comment">// Define the many-to-many relationship</code>
+<code class="user">mod_type("Person", "rel", "friends", "friends");</code>
+<code class="response">null</code></pre>
+            <p>Now, let's see how Thelma and Louise become friends:</p>
+<pre><code class="prompt">(//relations)&gt;</code> <code class="user">.Thelma = Person{}; .Louise = Person{};</code>
+<code class="user">.Thelma.friends.add(.Louise);</code>  <code class="comment">// Thelma adds Louise as a friend</code>
+<code class="user">.Louise.friends.has(.Thelma);</code>  <code class="comment">// Returns true, confirming their friendship</code>
+<code class="response">true</code></pre>
+            <p>By adding Louise to Thelma's <code class="inline">friends</code> set, the relationship automatically
+                applies to Louise's <code class="inline">friends</code> set as well, thanks to the defined relationship.</p>
+            <p>Like other relationship types, <em>many-to-many</em> relationships aren't limited to connecting instances
+                of the same type. As long as both participating entities have sets defined with each other's type,
+                you can create a bidirectional connection. In <a href="ch09.xhtml#ta09_2">Table 9.2</a>, we used the
+                notation <code class="inline">{T}</code> &lt;-&gt; <code class="inline">{T}</code> to represent this
+                flexibility.</p>
+            <p>We've explored different relationships in ThingsDB. Now, let's head back to
+                the <code class="inline">//todos</code> collection to continue building our to-do app!</p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch09_3_h" class="title">9.3 Creating Relations: A Deeper Look</h3>
+        <p>Adding a relation in ThingsDB might seem like a simple task, but there's more to it than meets the eye.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>In ThingsDB, sets are deliberately chosen for the <em>"many"</em> side of relationships due to their unique
+                    strengths: they naturally avoid order-related issues when removing things (unlike lists),
+                    guarantee uniqueness (aligned with expected behavior) and offer optimized performance for managing
+                    relations.</p>
+            </div>
+        </div>
+        <p>Before officially establishing a relation, ThingsDB performs a thorough check to ensure everything is in
+            order. Think of it like a safety net to prevent potential data conflicts.</p>
+        <p>These checks are crucial for maintaining data integrity and consistency. Imagine accidentally creating a
+            relation that would lead to duplicate data or inconsistent information. By proactively identifying such
+            issues, ThingsDB safeguards your data and prevents headaches down the line.</p>
+        <p>Now that we understand the importance of pre-checks, let's remember a key requirement for relations:
+            <em>they only work with stored data</em>. This means that at least one of the entities involved in
+            creating a relation (e.g. a <code class="inline">Todo</code> and its <code class="inline">User</code>) needs to have an ID assigned by ThingsDB.</p>
+        <p>Consider this code snippet that tries to create a relation without this requirement:</p>
+<pre><code class="prompt">(//todos)&gt;</code>
+<code class="user">t = Todo{};</code>  <code class="comment">// Todo without ID</code>
+<code class="user">u = User{};</code>  <code class="comment">// User without ID</code>
+<code class="user">u.todos.add(t);</code>
+<code class="response">TypeError: relations must be created using a property on a stored thing (a thing with an Id)</code></pre>
+        <p>In this example, we attempt to link a <code class="inline">Todo</code> and a <code class="inline">User</code>
+            by adding the <code class="inline">Todo</code> object to the user’s <code class="inline">todos</code> property.
+            However, the <code class="inline">User</code> object lacks an ID, which is essential for establishing the
+            relation. Remember from <a href="ch04.xhtml#ch04_2_h">Chapter 4</a> that things only get IDs when they are
+            assigned to a collection.</p>
+        <p>To correctly create the relation, first assign the <code class="inline">User</code> to the collection before
+            adding the <code class="inline">Todo</code>. This will grant them IDs, enabling ThingsDB to establish the
+            desired connection.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>Storing a thing before creating a relation is a fundamental principle in ThingsDB. While it might
+                    seem like an extra step, it often aligns with the natural flow of data creation. Take
+                    the <code class="inline">add_todo</code> procedure, for example. While we did not explicitly
+                    mention the rule there, adding the <code class="inline">Todo</code> object to
+                    the <code class="inline">todos</code> set on the stored user is the correct way to establish
+                    the relation with a <code class="inline">User</code>.</p>
+            </div>
+        </div>
+    </section>
+    <section class="sect1">
+        <h3 id="ch09_4_h" class="title">9.4 Code Cleanup</h3>
+        <p>Previously, adding to-do’s was limited to a specific user. Now, we'll prompt the user for a name during
+            the process. This information will be passed to the <code class="inline">add_todo</code> procedure,
+            ensuring the to-do gets linked to the correct user.</p>
+        <p>Here's the updated <code class="inline">add_todo.py</code> script:</p>
+<pre><code class="prompt">async def work(client: Client):</code>
+<code class="user">    name = input("Name: ")
+    todo_body = input("To-do body: ")
+    todo_id = await client.run('add_todo', name=name, body=todo_body)
+    print(todo_id);</code></pre>
+        <p>With the <code class="inline">add_todo.py</code> back on track, it's time to test your knowledge with
+            the quiz! Then, in the next chapter, we'll master controlling ThingsDB responses.</p>
+    </section>
 </section>
 </body>
 </html>

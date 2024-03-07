@@ -9,7 +9,25 @@
 <section class="sect2">
     <h4 id="ch09_5_1_h" class="title">9.5.1 Quiz - Answers</h4>
     <ol class="quiz">
-
+        <li><p>Valid relation types are “a”, “c” and “d”.</p>
+            <ol>
+                <li><code class="inline">T?</code> &lt;-&gt; <code class="inline">T?</code> <em>(One-on-One relation)</em></li>
+                <li><code class="inline">T?</code> &lt;-&gt; <code class="inline">[T]</code> <em>(!!! Invalid - A relation with a “list” is not possible)</em></li>
+                <li><code class="inline">{T}</code> &lt;-&gt; <code class="inline">{T}</code> <em>(Many-to-Many relation)</em></li>
+                <li><code class="inline">T?</code> &lt;-&gt; <code class="inline">{T}</code> <em>(One-to-Many relation)</em></li>
+                <li><code class="inline">T</code> &lt;-&gt; <code class="inline">{T}</code> <em>(!!! Invalid - The property must be marked nillable)</em></li>
+            </ol>
+        </li>
+        <li><p>The correct statements are “a” and “d”. When establishing a relationship, ThingsDB relies on the third argument to locate the other type based on the provided property. Subsequently, the fourth argument serves as a pointer, directing ThingsDB to the target property on that type where the relationship will be formed.</p></li>
+        <li><p>In ThingsDB, establishing a relation between two types relies on stored data and their associated IDs. In your code, the <code class="inline">User</code> object with ID 10 exists, but you are trying to assign it to a new <code class="inline">Todo</code> without an ID. The solution is to use the stored user:</p>
+            <p class="quizcode"><code class="inline">User(10).todos.add(Todo{});</code></p>
+            <p>When working with relations in ThingsDB, always keep in mind the importance of stored data and IDs. Utilize existing objects with IDs to establish connections.</p>
+        </li>
+        <li><p>The final value of <code class="inline">todo.user</code> in the given code snippet will
+            be <code class="inline">nil</code>. The key lies in the line <code class="inline">user.todos -= set(todo)</code>.
+            Here, we're using set subtraction to remove the <code class="inline">Todo</code> object from
+            the <code class="inline">user.todos</code> set. ThingsDB then automatically updates the <code class="inline">user</code> property
+            of the <code class="inline">Todo</code> object to <code class="inline">nil</code>, reflecting the “broken” relationship. This behavior ensures consistency and eliminates the possibility of orphaned references.</p></li>
     </ol>
 </section>
 </body>

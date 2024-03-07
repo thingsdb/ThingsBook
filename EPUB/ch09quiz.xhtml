@@ -9,7 +9,41 @@
 <section class="sect1">
     <h3 id="ch09_5_h" class="title">9.5 Quiz - Challenge Your Understanding</h3>
     <ol class="quiz">
-
+        <li><p>Which of the following are valid relation types which can be handled by ThingsDB?</p>
+            <ol>
+                <li><code class="inline">T?</code> &lt;-&gt; <code class="inline">T?</code></li>
+                <li><code class="inline">T?</code> &lt;-&gt; <code class="inline">[T]</code></li>
+                <li><code class="inline">{T}</code> &lt;-&gt; <code class="inline">{T}</code></li>
+                <li><code class="inline">T?</code> &lt;-&gt; <code class="inline">{T}</code></li>
+                <li><code class="inline">T</code> &lt;-&gt; <code class="inline">{T}</code></li>
+            </ol>
+        </li>
+        <li><p>Can you identify which statement(s) establish a relation between type <code class="inline">X</code> on
+            property <code class="inline">one</code> with definition <code class="inline">"Y?"</code> and
+            type <code class="inline">Y</code> on a property called many using definition <code class="inline">"{X}"</code>?</p>
+            <ol>
+                <li><code class="inline">mod_type("X", "rel", "one", "many");</code></li>
+                <li><code class="inline">mod_type("X", "rel", "many", "one");</code></li>
+                <li><code class="inline">mod_type("Y", "rel", "one", "many");</code></li>
+                <li><code class="inline">mod_type("Y", "rel", "many", "one");</code></li>
+            </ol>
+        </li>
+        <li><p>Imagine we're building a to-do app with users and their tasks. We have a <code class="inline">Todo</code> type and a <code class="inline">User</code> type connected by a <em>one-to-many</em> relation on the <code class="inline">user</code> and <code class="inline">todos</code> properties. Now, consider the following code:</p>
+            <p class="quizcode"><code class="inline">Todo{user: User(10)};</code></p>
+            <p>This code tries to create a new <code class="inline">Todo</code> object and assign
+                a <code class="inline">User</code> object with ID 10 to its <code class="inline">user</code> property.
+                The <code class="inline">User</code> with ID 10 exists, so why would this code fail?
+                Can you identify the issue and explain why it would not work in ThingsDB?</p>
+        </li>
+        <li><p>Remember our to-do app with the <code class="inline">Todo</code> and <code class="inline">User</code> types
+            linked by a <em>one-to-many</em> relation? Now, consider the following code snippet:</p>
+            <p class="quizcode"><code class="inline">todo = Todo(2);</code></p>
+            <p class="quizcode"><code class="inline">user = User(10);</code></p>
+            <p class="quizcode"><code class="inline">assert(todo.user == user);</code></p>
+            <p class="quizcode"><code class="inline">user.todos -= set(todo);</code></p>
+            <p class="quizcode"><code class="inline">todo.user;  // ??? what will it be?</code></p>
+            <p>Given that this code runs without errors, can you predict what value will be assigned to <code class="inline">todo.user</code> after the final line?</p>
+        </li>
     </ol>
 </section>
 </body>
