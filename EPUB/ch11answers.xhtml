@@ -9,7 +9,26 @@
 <section class="sect2">
     <h4 id="ch11_6_1_h" class="title">11.6.1 Quiz - Answers</h4>
     <ol class="quiz">
-
+        <li><p>The correct choices are “a” and “c”. Enumerators enforce strict data type consistency for their members and require unique names and values. While <code class="inline">new_enum()</code> might seem fitting, remember that ThingsDB uses <code class="inline">set_enum()</code> to create enumerators. Enumerators are mutable, allowing you to add, rename, delete, and change members and methods using the <code class="inline">mod_enum()</code> function.</p></li>
+        <li><p>Setting a default value using <code class="inline">mod_enum()</code> is generally recommended for enumerators, particularly those used within a type to influence its behavior. While less crucial for enumerators solely used for storing values like flags, defining a default value through <code class="inline">mod_enum()</code> provides additional control and clarity in various use cases.</p></li>
+        <li><p>To dynamically retrieve the Colors member based on the name stored in x, you can use a closure expression enclosed in curly braces:</p>
+            <p class="quizcode"><code class="inline">Colors{||x};</code></p>
+        </li>
+        <li><p>The two basic methods accessible to every enumerator member are:</p>
+            <ul>
+                <li><code class="inline">name()</code>: This method returns the string name of the member as defined in the enumerator declaration.</li>
+                <li><code class="inline">value()</code>: This method returns the value associated with the member.</li>
+            </ul>
+            <p>Remember that enumerators themselves can have additional methods defined beyond these two, depending on how they were created using <code class="inline">set_enum()</code> or <code class="inline">mod_enum()</code>.</p>
+        </li>
+        <li><p>The <code class="inline">*</code> prefix flag, when used in a type property definition for an enumerator, influences the value returned when the instance is wrapped for the response. It instructs the system to return the <em>name</em> of the corresponding enumerator member instead of its <em>value</em>.</p></li>
+        <li><p>The following regular expression, combined with the <code class="inline">test()</code> method, can be used to check if the variable <code class="inline">animal</code> matches either <code class="inline">"Dog"</code> or <code class="inline">"Cat"</code> (case-insensitive):</p>
+            <p class="quizcode"><code class="inline">/^(dog|cat)$/i.test(animal);</code></p>
+        </li>
+        <li><p>The correct answer is “d”:</p>
+            <p class="quizcode"><code class="inline">set_enum("Colors", {R: 1&lt;&lt;0, G: 1&lt;&lt;1, : 1&lt;&lt;2});</code></p>
+            <p>This option uses the bitwise left shift operator (<code class="inline">&lt;&lt;</code>) to assign distinct binary values to each member. Answer “a” and “c” are using consecutive integer values (0, 1, 2) and (1, 2, 3) which don't provide distinct binary representations for bitwise operations. Answer “b” is using string values for their members, which cannot be used for bitwise operations.</p>
+        </li>
     </ol>
 </section>
 </body>

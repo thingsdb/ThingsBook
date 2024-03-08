@@ -8,6 +8,370 @@
 <body>
 <section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch11_h" id="_ch11">
     <h2 id="ch11_h" class="title">Chapter 11 - Flags, Enumerators and Regex</h2>
+    <p>This chapter equips you with more powerful tools to manage data efficiently in ThingsDB: bitwise flags,
+        regular expressions and enumerators. Let's jump right in with enumerators!</p>
+    <p>Consider a <code class="inline">severity</code> property for your to-do items. An enumerator allows you
+        to establish a finite list of valid options, such as "Low", "Medium", and "High". This enforces data
+        integrity by ensuring only permitted values are assigned, preventing inconsistencies or invalid entries</p>
+    <section class="sect1">
+        <h3 id="ch11_1_h" class="title">11.1 Crafting Your First Enumerator</h3>
+        <p>Unlike conventional data types, enumerators in ThingsDB are created directly using
+            the <code class="inline">set_enum()</code> function. Here's the code to define the <code class="inline">Severity</code> enumerator
+            for our to-do application:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">set_enum("Severity", {
+    Low: 0,
+    Medium: 1,
+    High: 2,
+</code>
+<code class="comment">    // Optional method for customized string representation</code>
+<code class="user">    str: |this| `{this.name()} ({this.value()})`,
+});</code>
+<code class="response">null</code></pre>
+        <p>Key Technical Properties:</p>
+        <ul>
+            <li><strong>Supported Data Types: </strong>Enumerators can accommodate integers, floats, strings, bytes, and things. Other types like sets, lists, and tasks are not supported.</li>
+            <li><strong>Unique Value Requirement: </strong>Each value within an enumerator must be distinct.</li>
+            <li><strong>Mutable Object Handling: </strong>Things, being mutable, can have identical content within an enumerator as long as they reference different objects.</li>
+            <li><strong>Method Inclusion: </strong>Enumerators can also house methods, like the <code class="inline">str()</code> method in our example, used for custom string formatting.</li>
+            <li><strong>Member Rules: </strong>At least one member is mandatory, and all members must share the same data type (e.g., all integers). Mixing types like integers and floats is not allowed.</li>
+        </ul>
+        <section class="sect2">
+            <h4 id="ch11_1_1_h" class="title">11.1.1 Setting the Default Member of an Enumerator</h4>
+            <p>Like other ThingsDB elements, enumerators possess default members. To avoid unexpected behavior,
+                it is highly recommended to explicitly define these defaults using the <code class="inline">mod_enum()</code>
+                function. Here's how to set <code class="inline">Medium</code> as the default member for
+                the <code class="inline">Severity</code> enumerator:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">mod_enum("Severity", "def", "Medium");</code>
+<code class="response">null</code></pre>
+            <p>To verify that the default member is correctly configured, simply call the <code class="inline">Severity</code> enumerator without providing a specific value to get the default member:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">Severity();</code>
+<code class="response">1</code></pre>
+            <p>As demonstrated, when a member is returned in a response, its underlying value is displayed by default.
+                In this case, <code class="inline">1</code> (representing <code class="inline">Medium</code>) is returned.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch11_1_2_h" class="title">11.1.2 Working with Enumerator Methods</h4>
+            <p>Each enumerator member in ThingsDB offers two built-in methods: <code class="inline">name()</code>
+                and <code class="inline">value()</code>. These methods provide programmatic access to the
+                enumerator's name and value, respectively. Additionally, any custom methods defined within
+                the enumerator become available to its members.</p>
+            <p>Let's delve into practical examples using the <code class="inline">Severity</code> enumerator we defined earlier:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">Severity().name();</code>
+<code class="response">"Medium"</code>
+<code class="prompt">(//todos)&gt;</code> <code class="user">Severity().value();</code>
+<code class="response">1</code></pre>
+            <p>As expected, <code class="inline">name()</code> returns the string <code class="inline">"Medium"</code>,
+                while <code class="inline">value()</code> retrieves the corresponding value, <code class="inline">1</code>.</p>
+            <p>Remember the optional <code class="inline">str()</code> method we defined for formatting? We can access it through a member:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">Severity().str();</code>
+<code class="response">"Medium (1)"</code></pre>
+            <p>This demonstrates how custom methods enhance the functionality of enumerator members.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch11_1_3_h" class="title">11.1.3 Retrieving Enumerator Members</h4>
+            <p>Need a member with a specific value? Simply pass the value directly to the enumerator constructor:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">Severity(2).name();</code>  <code class="comment">// Value 2 for High</code>
+<code class="response">"High"</code></pre>
+            <p>This straightforward approach is ideal when the value is readily available.</p>
+            <p>Know the enumerator name beforehand? Use static access with curly braces:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">Severity{High}.str();</code>
+<code class="response">"High (2)"</code></pre>
+            <p>This method is useful when the name is known and fixed.</p>
+            <p>Working with dynamic names stored in variables? Employ a closure within curly braces:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">name = "High"; Severity{||name};</code>
+<code class="response">2</code></pre>
+            <p>While the example might seem unusual, the name variable is simply for demonstration.
+                In practice, you might receive it as an input argument or retrieve it dynamically.
+                This method ensures security against code injection vulnerabilities, as described
+                in <a href="ch06.xhtml#ch06_2_3_h">Chapter 6</a>.
+            </p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch11_1_4_h" class="title">11.1.4 Enumerator Validation</h4>
+            <p>When you attempt to access an enumerator using an invalid value or name, it raises an error
+                instead of silently continuing. This prevents unexpected behavior and ensures data accuracy.</p>
+            <p>Here's what happens when you try to use non-existent values or names:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">Severity(9);</code>
+<code class="response">LookupError: enum `Severity` has no member with value 9</code>
+<code class="prompt">(//todos)&gt;</code> <code class="user">Severity{Insane};</code>
+<code class="response">LookupError: enum `Severity` has no member `Insane`</code>
+<code class="prompt">(//todos)&gt;</code> <code class="user">Severity{||"NotAtAll"};</code>
+<code class="response">LookupError: enum `Severity` has no member `NotAtAll`</code></pre>
+            <p>As you can see, ThingsDB throws a <code class="inline">lookup_err</code> in all cases,
+                clearly indicating the invalid input.</p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch11_2_h" class="title">11.2 Enumerator Information</h3>
+        <p>ThingsDB offers <code class="inline">enums_info()</code> to explore all defined enumerators within a collection, returning a list
+            of information objects. Each object encapsulates details like its name, members, and methods.</p>
+        <p>For a specific enumerator, use <code class="inline">enum_info()</code>, which retrieves a single
+            information object. Remember that information methods like <code class="inline">enum_info()</code>
+            return "mpdata" requiring further processing. Utilize the <code class="inline">load()</code> method to
+            convert it into a usable structure where you can extract individual properties.</p>
+        <p>For instance, verifying the default member of the <code class="inline">Severity</code> enumerator involves:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">enum_info("Severity").load().default;</code>
+<code class="response">"Medium"</code></pre>
+        <p>This code retrieves the <code class="inline">Severity</code> information object, loads it,
+            and extracts the <code class="inline">default</code> property,
+            revealing the default member: <code class="inline">"Medium"</code>.</p>
+        <section class="sect2">
+            <h4 id="ch11_2_1_h" class="title">11.2.1 Enumerator Members</h4>
+            <p>Accessing an enumerator's member can be valuable for integrating with other platforms or systems.
+                Ideally, we want these members readily available as a single “thing” for simpler handling.</p>
+            <p>While <code class="inline">enum_info()</code> exposes members, processing them requires code to
+                convert the returned list of tuples into a desired format. Here's an example
+                using <code class="inline">reduce()</code>:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">enum_info("Severity").load().members.reduce(
+    |t, m| {t.set(m[0], m[1]); t;},
+    {}
+);</code>
+<code class="response">{"Low": 0, "Medium": 1, "High": 2}</code></pre>
+            <p>As you can see, this approach involves several steps and can be cumbersome.</p>
+            <p>Fortunately, ThingsDB provides a built-in solution: <code class="inline">enum_map()</code>.
+                This function directly returns the enumerator members as a convenient “thing”:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">enum_map("Severity");</code>
+<code class="response">{"Low": 0, "Medium": 1, "High": 2}</code></pre>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch11_3_h" class="title">11.3 Modifying Enumerators</h3>
+        <p>Need to modify an existing enumerator after its creation? Don't worry, the <code class="inline">mod_enum()</code>
+            function comes to the rescue! We previously saw it in action for setting the default member.
+            But its power extends beyond that. It offers a versatile suite of actions to tailor your
+            enumerators to your evolving needs.</p>
+        <p>Here's a quick reference table summarizing the available actions:</p>
+        <div class="table">
+            <h2 id="ta11_3"></h2>
+            <p class="title">Table 11.3 - Summary of mod_enum() actions</p>
+            <table>
+                <tr><th>Action</th><th>Description</th></tr>
+                <tr><td><code class="inline">"add"</code></td><td>Adds a new member or method to the enumerator</td></tr>
+                <tr><td><code class="inline">"def"</code></td><td>Sets the default member for the enumerator</td></tr>
+                <tr><td><code class="inline">"del"</code></td><td>Deletes a member or method from the enumerator</td></tr>
+                <tr><td><code class="inline">"mod"</code></td><td>Modifies a member value or method closure</td></tr>
+                <tr><td><code class="inline">"ren"</code></td><td>Renames a member or method</td></tr>
+            </table>
+        </div>
+    </section>
+    <section class="sect1">
+        <h3 id="ch11_4_h" class="title">11.4 Implementation and Other Enumerator Solutions</h3>
+        <p>While we've created a custom <code class="inline">Severity</code> enumerator, ThingsDB offers other
+            built-in solutions for common purposes. Let's briefly compare these options before proceeding.</p>
+        <section class="sect2">
+            <h4 id="ch11_4_1_h" class="title">11.4.1 Revisiting Range Definitions</h4>
+            <p>Recall that ThingsDB empowers you with precise control over integer values using range definitions.
+                Let's revisit how to implement this for the <code class="inline">severity</code> property within
+                the <code class="inline">Todo</code> type:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">mod_type("Todo", "add", "severity", "int&lt;0:2:1&gt;");</code>
+<code class="response">null</code></pre>
+            <p>This code snippet concisely bolsters data integrity within the <code class="inline">Todo</code> type
+                by introducing the <code class="inline">severity</code> property. This new property restricts
+                values to integers within the strict <code class="inline">0-2</code> range, effectively preventing
+                invalid input. Furthermore, a default value of <code class="inline">1</code> is established,
+                ensuring a meaningful starting point for both existing and new instances. Notably, this constraint
+                is retroactively applied to all existing <code class="inline">Todo</code> instances, guaranteeing
+                data integrity throughout the entire dataset.</p>
+            <p>Let's demonstrate the default value and error handling of the <code class="inline">severity</code> property:</p>
+            <p>Creating a <code class="inline">Todo</code> instance without specifying <code class="inline">severity</code> assigns the default value:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">Todo{}.severity;</code>
+<code class="response">1</code></pre>
+            <p>Attempting to create a <code class="inline">Todo</code> with an invalid severity triggers an error:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">Todo{severity: 99};</code>
+<code class="response">ValueError: mismatch in type `Todo`; property `severity` requires an integer value between 0 and 2 (both inclusive)</code></pre>
+        </section>
+        <section class="sect2">
+            <h4 id="ch11_4_2_h" class="title">11.4.2 Regular Expressions using Regex</h4>
+            <p>While enumerators offer a structured and type-safe approach to defining value sets, you can also
+                achieve similar results using regular expressions. ThingsDB supports regular expressions through
+                the "regex" data type.</p>
+            <p>Here's how to write a regular expression in ThingsDB:</p>
+<pre><code class="prompt">/pattern/flags</code></pre>
+            <p>Regular expressions in ThingsDB go beyond just validating strings. They act as powerful tools for
+                various string manipulation tasks. By using string methods like <code class="inline">replace()</code>
+                and <code class="inline">split()</code>, you can transform and extract portions of strings
+                based on defined patterns.</p>
+            <p>A key method for pattern matching is the regex method <code class="inline">test()</code>, which
+                returns <code class="inline">true</code> if a given string matches the pattern,
+                and <code class="inline">false</code> otherwise.</p>
+            <p>Let's see the <code class="inline">test()</code> method in action:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">/^(Low|Medium|High)$/.test("Low");</code>
+<code class="response">true</code>
+<code class="prompt">(//todos)&gt;</code> <code class="user">/^(Low|Medium|High)$/.test("MEDIUM");</code>
+<code class="response">false</code>
+<code class="prompt">(//todos)&gt;</code> <code class="user">/^(Low|Medium|High)$/i.test("LOW");</code> <code class="comment">// Case-insensitive matching</code>
+<code class="response">true</code></pre>
+            <p>While crafting regular expressions is beyond this book's scope, let's briefly break down the pattern used in the example:</p>
+            <ul>
+                <li><code class="inline">^</code>: Matches the beginning of the string.</li>
+                <li><code class="inline">(Low|Medium|High)</code>: Matches one of the listed options (<code class="inline">"Low"</code>, <code class="inline">"Medium"</code>, or <code class="inline">"High"</code>).</li>
+                <li><code class="inline">$</code>: Matches the end of the string.</li>
+                <li><code class="inline">i</code> flag: Enables case-insensitive matching.</li>
+            </ul>
+            <p>Leveraging the understanding of regular expressions, let's define the <code class="inline">severity</code>
+                property using a pattern-based approach. Remember, definitions in ThingsDB are always strings. We
+                encapsulate the regular expression within quotes and specify a default value. Crucially, this
+                default value must strictly adhere to the defined pattern for successful definition acceptance.</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">mod_type(
+    "Todo",
+    "mod",
+    "severity",
+    "/^(Low|Medium|High)$/&lt;Medium&gt;",
+    |this| ["Low", "Medium", "High"][this.severity],
+);</code>
+<code class="response">null</code></pre>
+            <p>Key Points:</p>
+            <ol>
+                <li><strong>Regex Definition:</strong> The code snippet utilizes a regex string (<code class="inline">/^(Low|Medium|High)$/</code>) to constrain valid severity values to <code class="inline">"Low"</code>, <code class="inline">"Medium"</code>, or <code class="inline">"High"</code>.</li>
+                <li><strong>Default Value:</strong> The <code class="inline">&lt;Medium&gt;</code> suffix sets the default value to <code class="inline">"Medium"</code>. Remember, default values must adhere to the defined pattern for acceptance.</li>
+                <li><strong>Migration Closure:</strong> This scenario necessitates a migration closure due to the incompatibility of the new regex with the previous integer range.</li>
+                <li><strong>Closure Functionality:</strong> The provided closure maps existing integer severity values (<code class="inline">0</code>, <code class="inline">1</code>, <code class="inline">2</code>) to their corresponding string equivalents (<code class="inline">"Low"</code>, <code class="inline">"Medium"</code>, <code class="inline">"High"</code>).</li>
+            </ol>
+            <p>Let's validate the default value and constraint for the string-based <code class="inline">severity</code> property:</p>
+            <p>Creating a new <code class="inline">Todo</code> without specifying <code class="inline">severity</code> assigns the default value:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">Todo{}.severity;</code>
+<code class="response">"Medium"</code></pre>
+            <p>Attempting to create a <code class="inline">Todo</code> with an invalid <code class="inline">severity</code> triggers an error:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">Todo{severity: "Unknown"};</code>
+<code class="response">ValueError: mismatch in type `Todo`; property `severity` has a requirement to match pattern /^(Low|Medium|High)$/</code></pre>
+        </section>
+        <section class="sect2">
+            <h4 id="ch11_4_3_h" class="title">11.4.3 Transitioning to the Enumerator</h4>
+            <p>Having explored both integer range and string-based solutions, let's migrate
+                the <code class="inline">severity</code> property to leverage our custom <code class="inline">Severity</code> enumerator:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">mod_type(
+    "Todo",
+    "mod",
+    "severity",
+    "Severity",
+    |this| Severity{||this.severity},
+);</code>
+<code class="response">"Medium"</code></pre>
+            <p>As before, a migration closure is necessary due to the change in data representation. This closure
+                translates existing string values (<code class="inline">"Low"</code>, <code class="inline">"Medium"</code>, <code class="inline">"High"</code>) to
+                their corresponding enumerator members (<code class="inline">Severity{Low}</code>, <code class="inline">Severity{Medium}</code>, <code class="inline">Severity{High}</code>).</p>
+            <p>To confirm successful migration, let's create a new <code class="inline">Todo</code> with default severity:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">Todo{}.severity.str();</code>
+<code class="response">"Medium (1)"</code></pre>
+            <p>Excellent! We can now leverage the <code class="inline">str()</code> method we defined, indicating that
+                the <code class="inline">severity</code> property is now strictly bound to the enumerator's members.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch11_4_4_h" class="title">11.4.4 Wrap-Only Types with Enumerators</h4>
+            <p>We can further elevate the <code class="inline">_Todo</code> wrap-only type by incorporating
+                the <code class="inline">severity</code> property. Additionally, ThingsDB offers the
+                optional <code class="inline">*</code> prefix flag to specify returning the enumerator
+                member's <em>name</em> instead of its <em>value</em>. Let's demonstrate this in action:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">mod_type("_Todo", "add", "severity", "*Severity");</code>
+<code class="response">null</code></pre>
+            <p>Now, let's test this modification on an empty <code class="inline">Todo</code>:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">Todo{}.wrap("_Todo");</code>
+<code class="response">{
+    "body": "-",
+    "done": false,
+    "severity": "Medium",
+    "user": null
+}</code></pre>
+            <p>As you can see, the <code class="inline">severity</code> property now displays the member
+                name <code class="inline">"Medium"</code> instead of its numerical
+                value (<code class="inline">1</code>).</p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch11_5_h" class="title">11.5 Understanding Flags</h3>
+        <p>Before we proceed with the quiz, let's explore a use case for flags in ThingsDB.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>Flags are a data structure used internally by ThingsDB and many other software to efficiently
+                    store access rights and other bitwise information. Recall how we granted
+                    the <code class="inline">RUN</code> and <code class="inline">CHANGE</code> access flags to
+                    our <code class="inline">"py"</code> user. These flags represent individual bits,
+                    specifically <code class="inline">16</code> (<code class="inline">10000</code>)
+                    for <code class="inline">RUN</code> and <code class="inline">2</code> (<code class="inline">00010</code>)
+                    for <code class="inline">CHANGE</code>. By granting both, we effectively stored the
+                    value <code class="inline">18</code> (<code class="inline">10010</code>) within a single
+                    integer property. Leveraging 64-bit integers, ThingsDB empowers you to store up to 64 flags
+                    within a single property, promoting data density and efficiency.</p>
+            </div>
+        </div>
+        <section class="sect2">
+            <h4 id="ch11_5_1_h" class="title">11.5.1 Using Enumerators to Store Flags</h4>
+            <p>Before utilizing flags, we need to establish them within your ThingsDB project. Enumerators
+                provide a convenient and safe approach for this task.</p>
+            <p>While it may seem unrelated to our to-do app, let's imagine Alice and Bob, with no more tasks
+                remaining, decide to play cards. We'll create a <code class="inline">Suits</code> enumerator
+                to represent the four card suits:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">set_enum("Suits", {</code>
+    <code class="user">Spades:   1&lt;&lt;0,</code>  <code class="comment">// 0b0001 (1)</code>
+    <code class="user">Clubs:    1&lt;&lt;1,</code>  <code class="comment">// 0b0010 (2)</code>
+    <code class="user">Diamonds: 1&lt;&lt;2,</code>  <code class="comment">// 0b0100 (4)</code>
+    <code class="user">Hearts:   1&lt;&lt;3,</code>  <code class="comment">// 0b1000 (8)</code>
+<code class="user">});</code>
+<code class="response">null</code></pre>
+            <p>We've used the bitwise left shift operator (<code class="inline">&lt;&lt;</code>) to assign
+                values to each suit. While not mandatory, this approach helps prevent errors during
+                flag definition, as it leverages the inherent binary representation of integers. Using
+                simple numbers (<code class="inline">1</code>, <code class="inline">2</code>,
+                <code class="inline">4</code>, <code class="inline">8</code>) would also work, but
+                bit shifting offers additional safety and clarity.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch11_5_2_h" class="title">11.5.2 Working with Flags</h4>
+            <p>Now that our <code class="inline">Suits</code> enumerator is defined, let's delve into how
+                to use these flags effectively in your code.</p>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>While this section delves into using flags in ThingsDB, the underlying bitwise
+                        operations are similar to those found in most programming languages. If you are
+                        comfortable with bitwise operators
+                        like <code class="inline">&lt;&lt;</code> and <code class="inline">&amp;</code>,
+                        you may find this section reinforces general concepts rather than ThingsDB-specific details.</p>
+                </div>
+            </div>
+            <p><strong>Bitwise OR (<code class="inline">|</code>) Operator:</strong> Combines multiple flags into a single variable:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="comment">// Sets both Spades and Hearts flags</code>
+<code class="user">my_suits = Suits{Spades}.value() | Suits{Hearts}.value();</code>
+<code class="response">9</code></pre>
+            <p><strong>Bitwise OR-Equals (<code class="inline">|=</code>) Operator:</strong> Adds a flag to an existing value:</p>
+<pre><code class="prompt">(//todos)&gt;</code>
+<code class="user">my_suits = Suits{Spades}.value();</code>  <code class="comment">// Initially set Spades flag</code>
+<code class="user">my_suits |= Suits{Hearts}.value();</code> <code class="comment">// Adds Hearts flag</code>
+<code class="response">9</code></pre>
+            <p><strong>Bitwise AND (<code class="inline">&amp;</code>) Operator:</strong> Checks if a specific flag is present:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">my_suits = Suits{Spades}.value() | Suits{Hearts}.value();</code>
+<code class="comment">// Test for Hearts flag</code>
+<code class="user">assert(bool(my_suits &amp; Suits{Hearts}.value()) == true);</code>
+
+<code class="comment">// Test for Diamonds flag</code>
+<code class="user">assert(bool(my_suits &amp; Suits{Diamonds}.value()) == false);</code>
+<code class="response">null</code></pre>
+            <p><strong>Bitwise NOT (<code class="inline">~</code>) Operator:</strong> Inverts all bits in a value, effectively removing a specific flag when combined with bitwise AND:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">my_suits = Suits{Spades}.value() | Suits{Hearts}.value();
+my_suits &amp;= ~Suits{Hearts}.value();</code>  <code class="comment">// Unsets the Hearts flag</code>
+<code class="response">1</code></pre>
+            <p><strong>Bitwise XOR (<code class="inline">^</code>) Operator:</strong> Flips the bits of a specified flag, switching its state on or off:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">my_suits = Suits{Spades}.value() | Suits{Hearts}.value();</code>
+<code class="user">my_suits ^= Suits{Hearts}.value();</code>   <code class="comment">// Toggles the Hearts flag</code>
+<code class="user">my_suits ^= Suits{Diamonds}.value();</code> <code class="comment">// Toggles the Diamonds flag</code>
+<code class="response">5</code></pre>
+            <p>Flags offer a powerful and compact way to store multiple boolean values within a single integer,
+                enhancing data efficiency and representation. This can be particularly advantageous for managing
+                access control, permissions, and various configuration settings.</p>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>When integrating ThingsDB with other languages, remember the <code class="inline">enum_map()</code> function.
+                        This function helps effortlessly translate between ThingsDB enumerators and their corresponding
+                        values in different languages, streamlining data exchange and interoperability.</p>
+                </div>
+            </div>
+            <p>Best of luck with the quiz! In the next chapter, we embark on the exciting journey of events and rooms
+                in ThingsDB, where you'll explore powerful mechanisms for real-time communication and data interactions
+                within your applications.</p>
+        </section>
+    </section>
 </section>
 </body>
 </html>

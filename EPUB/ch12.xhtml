@@ -8,6 +8,216 @@
 <body>
 <section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch12_h" id="_ch12">
     <h2 id="ch12_h" class="title">Chapter 12 - Real-Time Data Updates with Events and Rooms</h2>
+    <p>Imagine Alice and Bob want to build a live dashboard displaying the number of pending to-do’s for all users
+        in their to-do application. However, simply polling the collection every few seconds is inefficient and
+        creates unnecessary network traffic.</p>
+    <p>Enter the world of <em>Events</em> and <em>Rooms</em> in ThingsDB!</p>
+    <div class="note">
+        <img class="note" src="images/lightbulb.png" alt="Note" />
+        <div class="content">
+            <p>Remember from <a href="ch04.xhtml#ch04_4_h">Chapter 4</a> how we used <code class="inline">log()</code> to emit warning events to the client? Well, events are a much broader concept in ThingsDB, acting as messengers carrying information triggered by various actions. Besides warnings, ThingsDB, for example, also generates events for node status changes.</p>
+        </div>
+    </div>
+    <section class="sect1">
+        <h3 id="ch12_1_h" class="title">12.1 Rooms</h3>
+        <p>This chapter focuses on a specific type of event: those emitted to <em>rooms</em>.</p>
+        <p>Think of a room as a lightweight, dedicated communication channel within your collection.
+            Each room receives a unique ID when it is associated with the collection, similar to
+            individual things.</p>
+        <p>Creating a room is simple:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">room();</code>
+<code class="response">"room:nil"</code></pre>
+        <p>You’ll see <code class="inline">"room:nil"</code> because no ID has been assigned yet. Assigning the
+            room to the collection grants it an ID, just like how it works with things.</p>
+        <p>Since we converted the root of the collection to type <code class="inline">Root</code> back
+            in <a href="ch07.xhtml#ch07_2_h">Chapter 7</a>, modifying its structure requires
+            the <code class="inline">mod_type()</code> function. We'll add a property named <code class="inline">dashboard</code> of type
+            room to the <code class="inline">Root</code> type.</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">mod_type("Root", "add", "dashboard", "room");</code>
+<code class="response">null</code></pre>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>While assigning a separate room to each <code class="inline">Todo</code> might seem intuitive,
+                    it would not be efficient for a comprehensive dashboard that requires an overall view.</p>
+            </div>
+        </div>
+        <p>Let's verify if the room was created by accessing the <code class="inline">dashboard</code> property:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">.dashboard;</code>
+<code class="response">"room:12"</code></pre>
+        <p>You should see a unique room ID like <code class="inline">"room:12"</code>, indicating a successfully
+            created room associated with the collection.</p>
+        <p>We can retrieve the plain ID of the dashboard room using the <code class="inline">id()</code> method.
+            This method comes in handy when we later want to join the room for event listening.</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">.dashboard.id();</code>
+<code class="response">12</code></pre>
+        <section class="sect2">
+            <h4 id="ch12_1_1_h" class="title">12.1.1 Sending Your First Message via Events</h4>
+            <p>With the "dashboard" room in place, we're ready to emit our first event!</p>
+            <p>The process is simple: use the <code class="inline">emit()</code> method on your room object.
+                The first argument is the <em>event name</em>, a string between 1 and 255 characters.
+                You can optionally include additional arguments that will be sent along with the event.</p>
+            <p>Here's an example of sending a "chat-message" event:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">.dashboard.emit("chat-message", "Who's listening???");</code>
+<code class="response">null</code></pre>
+            <p>Remember, no one has joined the room yet. So, while the event was successfully emitted,
+                no one received the "chat-message".</p>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>While we emphasized the event name as the first argument for <code class="inline">emit()</code>,
+                        it can also accept an alternative <em>deep</em> value. Optionally, a second argument allows
+                        setting flags like <code class="inline">NO_IDS</code>. The actual event name and accompanying
+                        data always follow, regardless of these advanced options which are hardly ever required.</p>
+                    <p>For example: <code class="inline">room.emit(2, NO_IDS, "&lt;EVENT_NAME&gt;", …)</code></p>
+                </div>
+            </div>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch12_2_h" class="title">12.2 Listen for Events</h3>
+        <p>Just like before, we'll demonstrate using Python to create a listener for the "dashboard" room.
+            Remember, the concepts are transferable to other languages like C# or Go with minor adjustments.</p>
+        <p>Before proceeding, let's create a dedicated user for the dashboard. We can leverage the
+            same <code class="inline">new_todo_user()</code> procedure we established in <a href="ch06.xhtml#ch06_4_h">Chapter 6</a>:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">@t</code>
+<code class="prompt">(@t)&gt;</code> <code class="user">wse(); new_todo_user("dashboard", JOIN | RUN | QUERY);</code>
+<code class="response">"14VdoACr4WydUi/PEi1MV6"</code></pre>
+        <p>This grants the "dashboard" user:</p>
+        <ul>
+            <li><code class="inline">JOIN</code>: To subscribe to the room and receive events.</li>
+            <li><code class="inline">QUERY</code>: To retrieve the room ID (needed for joining).</li>
+            <li><code class="inline">RUN</code>: To execute a future procedure for grabbing the initial state.</li>
+        </ul>
+        <section class="sect2">
+            <h4 id="ch12_2_1_h" class="title">12.2.1 Creating Your Dashboard Listener</h4>
+            <p>Save the following code as <code class="inline">dashboard.py</code>:</p>
+<pre><code class="prompt">import asyncio
+from thingsdb.client import Client
+from thingsdb.room import Room, event
+
+class Dashboard(Room):
+
+    @event("chat-message")
+    def on_chat_message(self, message):
+        print(message)
+
+async def main():
+    client = Client()
+    client.set_default_scope('//todos')
+
+    room = Dashboard("""//ti
+        .dashboard.id();  </code><code class="comment">// This must return the room ID</code><code class="prompt">
+    """)  </code><code class="comment"># Fetch the dashboard room ID dynamically</code><code class="prompt">
+
+    await client.connect('localhost')  </code><code class="comment"># Replace with your address/port</code><code class="prompt">
+    try:
+        </code><code class="comment"># Authenticate with the dashboards user’s token</code><code class="prompt">
+        await client.authenticate('14VdoACr4WydUi/PEi1MV6')
+        await room.join(client)  </code><code class="comment"># Join the dashboard room</code><code class="prompt">
+        await asyncio.Future()  </code><code class="comment"># Run forever</code><code class="prompt">
+    finally:
+        client.close()
+        await client.wait_closed()
+
+asyncio.run(main())</code></pre>
+            <p>Open a terminal and run the script:</p>
+<pre><code class="prompt">$</code> <code class="user">python dashboard.py</code>
+<code class="response">…</code></pre>
+            <p>If successful, you'll see no immediate output. The listener is now actively waiting for
+                events in the background.</p>
+            <p>With the listener running, let's send a test message from the <code class="inline">//todos</code> scope:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">.dashboard.emit("chat-message", "Hello dear listeners");</code>
+<code class="response">null</code></pre>
+            <p>If everything is set up correctly, you should see the following output in the terminal
+                running your <code class="inline">dashboard.py</code> script:</p>
+<pre><code class="prompt">$ python dashboard.py</code>
+<code class="response">Hello dear listeners</code>
+<code class="response">…</code></pre>
+            <p>This confirms that your listener successfully received and printed the message!</p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch12_3_h" class="title">12.3 Retrieving Initial Dashboard State</h3>
+        <p>While sending chat messages is fun, our ultimate goal is to create a functional dashboard.
+            Like many real-world applications, the dashboard needs to fetch an initial state, in this case,
+            the current number of uncompleted tasks for each user.</p>
+        <p>First, we need a way to represent this information. Let's create a new wrap-only type named <code class="inline">_DashboardUser</code>:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">new_type("_DashboardUser", true);</code>
+<code class="response">"_DashboardUser"</code></pre>
+        <p>Next, we define the structure of <code class="inline">_DashboardUser</code>:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">set_type("_DashboardUser", {
+    id: "#",
+    name: "str",
+    count: |this| list(this.todos).count(|todo| is_nil(todo.completion)),
+});</code>
+<code class="response">null</code></pre>
+        <p>The <code class="inline">_DashboardUser</code> type defines three properties: <code class="inline">id</code> to
+            identify a user, <code class="inline">name</code> for retrieving user names and <code class="inline">count</code> for
+            calculating uncompleted to-do’s using a computed property.</p>
+        <p>Finally, we create a procedure named <code class="inline">get_dashboard_state</code> that retrieves and formats the initial data:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">new_procedure("get_dashboard_state", || {
+    .users.values().map_wrap("_DashboardUser");
+});</code>
+<code class="response">"get_dashboard_state"</code></pre>
+        <p>Let's check if it works:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">get_dashboard_state();</code>
+<code class="response">[
+    {"id": 10, "count": 2, "name": "Alice"},
+    {"id": 11, "count": 0, "name": "Bob"}
+]</code></pre>
+        <p>This confirms that the procedure successfully retrieves the desired initial state.</p>
+        <section class="sect2">
+            <h4 id="ch12_3_1_h" class="title">12.3.1 Integration of the Initial State</h4>
+            <p>Now that we have the <code class="inline">get_dashboard_state</code> procedure, let's integrate
+                it into the dashboard application:</p>
+<pre><code class="prompt">class Dashboard(Room):</code>
+<code class="user">    def on_init(self):
+        # Called only once
+        self.state = []
+
+    async def on_join(self):
+        # Called when joining the room
+        self.state = await self.client.run("get_dashboard_state")
+        self.print_state()
+
+    def print_state(self):
+        print('-' * 20)
+        for user in self.state:
+            name, count = user["name"], user["count"]
+            print(f"{name:&lt;15}{count:&gt;5}")</code></pre>
+        <ul>
+            <li><p><strong>Initial state in <code class="inline">on_init()</code>:</strong></p>
+                <p>The <code class="inline">on_init()</code> method, inherited from <code class="inline">Room</code>, is
+                    called once during room initialization. We use it to initialize an empty state.</p>
+            </li>
+            <li><p><strong>Updating state on join in <code class="inline">on_join()</code>:</strong></p>
+                <p>The asynchronous <code class="inline">on_join()</code> method, called when joining the room,
+                    retrieves the current state using <code class="inline">get_dashboard_state</code> and updates the state.
+                    It then calls <code class="inline">print_state</code> to display the information.</p>
+                <div class="note">
+                    <img class="note" src="images/lightbulb.png" alt="Note" />
+                    <div class="content">
+                        <p><strong>Important Note:</strong> Unlike <code class="inline">on_init()</code>,
+                            <code class="inline">on_join()</code> can be called multiple times due to reconnections.
+                            This ensures the dashboard retrieves the latest state after any disruptions.</p>
+                    </div>
+                </div>
+            </li>
+            <li><p><strong>Custom <code class="inline">print_state()</code> method:</strong></p>
+                <p>This custom method formats and prints the user names and uncompleted to-do counts from the state.</p>
+            </li>
+        </ul>
+        <p>Running <code class="inline">dashboard.py</code> again will now print the state:</p>
+<pre><code class="prompt">$</code> <code class="user">python dashboard.py</code>
+<code class="response">--------------------
+Alice              2
+Bob                0</code></pre>
+        </section>
+        <section class="sect2">
+            <h4 id="ch12_3_2_h" class="title">12.3.2 Implement Event Handlers</h4>
+        </section>
+    </section>
 </section>
 </body>
 </html>
