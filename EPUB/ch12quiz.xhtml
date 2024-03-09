@@ -9,7 +9,43 @@
 <section class="sect1">
     <h3 id="ch12_5_h" class="title">12.5 Quiz - Challenge Your Understanding</h3>
     <ol class="quiz">
-
+        <li><p>Who will receive the message <code class="inline">"Hello World"</code> in the following statement?</p>
+            <p class="quizcode"><code class="inline">room().emit("new-message", "Hello World");</code></p>
+            <p><em>Remember: Rooms must have an ID before they can be joined.</em></p>
+        </li>
+        <li><p>What access flag is required for a program to join a room in ThingsDB?</p>
+            <ol>
+                <li><code class="inline">QUERY</code></li>
+                <li><code class="inline">CHANGE</code></li>
+                <li><code class="inline">RUN</code></li>
+                <li><code class="inline">JOIN</code></li>
+            </ol>
+        </li>
+        <li><p>What method is available to get a room ID?</p></li>
+        <li><p>What is the most appropriate point to synchronize the state of a <em>Room</em> with the current state of the collection?</p>
+            <ol>
+                <li><code class="inline">on_init(..)</code> <em>(During room initialization)</em></li>
+                <li><code class="inline">on_join(..)</code> <em>(When joining the room)</em></li>
+                <li><code class="inline">on_emit(..)</code> <em>(When emitting an event)</em></li>
+            </ol>
+        </li>
+        <li><p>Which of the following are valid event names?</p>
+            <ol>
+                <li><code class="inline">"123"</code></li>
+                <li><code class="inline">"new-building"</code></li>
+                <li><code class="inline">"stop the program!"</code></li>
+                <li><code class="inline">""</code></li>
+                <li><code class="inline">"ADD_USER"</code></li>
+            </ol>
+        </li>
+        <li><p>Consider the following Python code snippet belonging to a <code class="inline">Room</code> class that listens to the <code class="inline">.math</code> room:</p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;&#xA0;&#xA0;@event("add-two-numbers")</code></p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;&#xA0;&#xA0;def on_add_two_numbers(self, a, b):</code></p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;print(f"{a} + {b} = {a + b}")</code></p>
+            <p>The observed output is:</p>
+            <p class="quizcode"><code class="inline">8 + 5 = 13</code></p>
+            <p>Can you write the ThingsDB code that could have triggered this event, resulting in the displayed response?</p>
+        </li>
     </ol>
 </section>
 </body>

@@ -216,7 +216,102 @@ Bob                0</code></pre>
         </section>
         <section class="sect2">
             <h4 id="ch12_3_2_h" class="title">12.3.2 Implement Event Handlers</h4>
+            <p>Now we need to handle events that indicate changes to the data, ensuring our dashboard reflects
+                the latest information.</p>
+            <p>Identifying state-changing procedures and methods:</p>
+            <ul>
+                <li><code class="inline">add_todo</code>: Adds a new task to a user's list.</li>
+                <li><code class="inline">add_user</code>: Creates a new user.</li>
+                <li><code class="inline">mark_as_done</code>: Marks a task as completed.</li>
+            </ul>
+            <p>Here's the code to update the procedures and methods:</p>
+<pre><code class="prompt">(//todos)&gt;</code>
+<code class="user">mod_procedure("add_todo", |name, body| {
+    "Adds a to-do to the list.";
+    todo = Todo{body:,};
+    .users[name.lower()].todos.add(todo);
+    .dashboard.emit("add-todo", todo.user.id());  </code><code class="comment">// New line</code><code class="user">
+    todo.id();
+});
+mod_procedure("add_user", |name| {
+    "Add a new to-do user.";
+    uid = name.lower();
+    assert(!.users.has(uid));
+    user = .users[uid] = User{name:,};
+    .dashboard.emit("add-user", user.wrap("_DashboardUser"));  </code><code class="comment">// New line</code><code class="user">
+    user.id();
+});
+mod_type("Todo", "mod", "mark_as_done", |this| {
+    .dashboard.emit("mark-as-done", this.user.id());  </code><code class="comment">// New line</code><code class="user">
+    this.completion = datetime();
+});</code>
+<code class="response">null</code></pre>
+            <p>Implementing the event handlers in <code class="inline">dashboard.py</code>:</p>
+<pre><code class="prompt">class Dashboard(Room):</code>
+<code class="user">    @event("add-todo")
+    def on_add_todo(self, user_id):
+        </code><code class="comment"># Update user's to-do count and display updated state</code><code class="user">
+        self.get_user(user_id)["count"] += 1
+        self.print_state()
+
+    @event("add-user")
+    def on_add_user(self, user):
+        </code><code class="comment"># Add user to state and display updated state</code><code class="user">
+        self.state.append(user)
+        self.print_state()
+
+    @event("mark-as-done")
+    def on_mark_as_done(self, user_id):
+        </code><code class="comment"># Update user's to-do count and display updated state</code><code class="user">
+        self.get_user(user_id)["count"] -= 1
+        self.print_state()
+
+    def get_user(self, user_id):
+        </code><code class="comment"># Find user object based on ID</code><code class="user">
+        for user in self.state:
+            if user["id"] == user_id:
+                return user
+
+    </code><code class="comment"># ... other methods</code></pre>
         </section>
+        <section class="sect2">
+            <h4 id="ch12_3_3_h" class="title">12.3.3 Test Your Dashboard in Action!</h4>
+            <p>Restart your <code class="inline">dashboard.py</code> script and have some fun:</p>
+            <ol>
+                <li><strong>Add new tasks:</strong> Create tasks for various users ("Alice", "Bob", or even a new user like "Charlie"). Observe how the dashboard automatically updates their to-do counts.</li>
+                <li><strong>Mark tasks done:</strong> Mark some tasks as completed and witness the immediate reflection in the dashboard's user counts.</li>
+                <li><strong>Add new users:</strong> Create additional users and see how they're automatically added to the dashboard.</li>
+            </ol>
+            <p><em>Example output:</em></p>
+<pre><code class="prompt">$</code> <code class="user">python dashboard.py</code>
+<code class="response">--------------------
+Alice              2
+Bob                0
+--------------------
+Alice              2
+Bob                1
+--------------------
+Alice              1
+Bob                1
+--------------------
+Alice              1
+Bob                1
+Charlie            0
+…</code></pre>
+            <p>As you interact, the dashboard dynamically updates the list, displaying the latest
+                to-do counts for each user in real-time. This demonstrates the power of event-driven
+                communication between your application and ThingsDB!</p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch12_4_h" class="title">12.4 Room for More</h3>
+        <p>We hope this chapter provided a solid foundation for using events and rooms in ThingsDB.
+            While it does not cover everything, it equips you to start building interactive applications.</p>
+        <p><strong>Expand your knowledge!</strong> For deeper insights into rooms and events,
+            explore the client website specific to your chosen language. This website likely contains
+            detailed information and examples beyond what is covered here. Do not miss
+            the <a href="ap02.xhtml#ap02_3_h">Connectors section</a> of this book for quick access to these
+            valuable resources.</p>
     </section>
 </section>
 </body>
