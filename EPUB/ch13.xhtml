@@ -8,6 +8,72 @@
 <body>
 <section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch13_h" id="_ch13">
     <h2 id="ch13_h" class="title">Chapter 13 - Futures and Modules</h2>
+    <p>Ready to push your ThingsDB projects further? This chapter dives into the world of <em>modules</em>,
+        unlocking a vast array of functionalities to extend your applications beyond the core features.</p>
+    <p>Imagine sending automated emails, interacting with external APIs, storing files in the cloud, or even
+        connecting to other databases – modules make these and more possible!</p>
+    <p>But before we explore the exciting world of modules, let's take a quick detour and understand a key
+        concept: <em>futures</em> in ThingsDB.</p>
+    <p>By understanding futures, you'll be well-equipped to harness the true power of modules and unlock the
+        full potential of your ThingsDB projects.</p>
+    <section class="sect1">
+        <h3 id="ch13_1_h" class="title">13.1 Demystifying Futures: Waiting with Purpose</h3>
+        <p>Think of futures as placeholders for tasks running in the background, allowing your code to continue
+            without getting stuck waiting.</p>
+        <p>We'll start by creating an "empty future", which doesn't have a specific task but still waits for a query to complete before executing asynchronously:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">future(nil);</code>
+<code class="response">[
+    null
+]</code></pre>
+        <p>This code creates a future without any specific task. It simply waits for the query to finish and
+            then executes asynchronously. The response you see (<code class="inline">[null]</code>) is the
+            result of the future task (which, in this case, is nothing).</p>
+        <section class="sect2">
+            <h4 id="ch13_1_1_h" class="title">13.1.1 Using the Future’s Task Result</h4>
+            <p>We have seen how futures hold the place for background tasks. But what if we want to do something
+                with the result of that task once it is finished? That is where the <code class="inline">then()</code>
+                method comes to the rescue!</p>
+            <p>Imagine you delegate a task to a friend. When they finish, they share the result.
+                The <code class="inline">then()</code> method acts like your friend, waiting for the future to finish and
+                then running a closure you provide with the result.</p>
+            <p>Here is an example:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">future(nil).then(|result| is_nil(result));</code>
+<code class="response">true</code></pre>
+            <p>As you can see, the query response now shows the outcome of the
+                closure (<code class="inline">true</code> in this case).</p>
+            <p>The closure provided to the <code class="inline">then()</code> method operates in a separate context
+                than your main code. It cannot directly access variables defined outside, like in this example:</p>
+<pre><code class="prompt">(//todos)&gt;</code>
+<code class="user">x = 10;
+future(nil).then(|| x + 10);</code>
+<code class="response">LookupError: variable `x` is undefined</code></pre>
+            <p>So, how do we use existing variables within a future's closure? We simply pass them along! Wrap them
+                up and send them together with the future using the <code class="inline">future()</code> function:</p>
+<pre><code class="prompt">(//todos)&gt;</code>
+<code class="user">x = 10;
+future(nil, x).then(|_, x| x + 10);</code>
+<code class="response">20</code></pre>
+            <p>Specifying <code class="inline">nil</code> as an argument and then ignoring it could get a bit tedious. Well, ThingsDB offers a handy shortcut!</p>
+            <p>Instead of <code class="inline">then()</code>, simply provide the closure as the first argument
+                to <code class="inline">future()</code>. This magical closure inherits variables from your main context,
+                eliminating the need to pass them explicitly:</p>
+<pre><code class="prompt">(//todos)&gt;</code>
+<code class="user">x = 5;
+future(|x| x + 10);</code>  <code class="comment">// No more `nil`s!</code>
+<code class="response">15</code></pre>
+            <p>As you noticed, the task result is not explicitly mentioned, but since it is an empty future,
+                we know it is <code class="inline">nil</code> anyway.</p>
+            <p>Do you want to pass the arguments explicitly to the closure? No problem! Wrap them in a list as
+                the second argument to <code class="inline">future()</code>:</p>
+<pre><code class="prompt">(//todos)&gt;</code>
+<code class="user">future(|x| x + 10, [8]);</code>  <code class="comment">// `x` is provided by the first item in the list</code>
+<code class="response">18</code></pre>
+            <p>By leveraging this simplified syntax, you can create and work with empty futures in a more concise and efficient way, making your asynchronous operations in ThingsDB cleaner and easier to manage.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch13_1_2_h" class="title">13.1.2 Empty Futures: Isolating Side Effects for Efficiency</h4>
+        </section>
+    </section>
 </section>
 </body>
 </html>
