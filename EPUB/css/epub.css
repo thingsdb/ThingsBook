@@ -195,6 +195,14 @@ div.orderedlistalpha {
   list-style-type: upper-alpha;
 }
 
+ul.nested {
+  list-style-type: circle;
+  margin-top: 8px !important;
+  margin-bottom: 8px !important;
+  margin-left: 0px !important;
+  padding-left: 20px !important;
+}
+
 table.simplelist {
   margin-left: 20px !important;
   margin-bottom: 10px;

@@ -211,17 +211,17 @@
             <p>Choosing the right method:</p>
             <ul>
                 <li><p><code class="inline">again_in()</code>:</p>
-                    <ul>
-                        <li>- Reschedules a task relative to its original execution time.</li>
-                        <li>- Is ideal for creating repeating tasks at specific intervals (e.g., daily, hourly).</li>
-                        <li>- Example: <code class="inline">task.again_in("days", 1)</code> reschedules the task to run in 1 day.</li>
+                    <ul class="nested">
+                        <li>Reschedules a task relative to its original execution time.</li>
+                        <li>Is ideal for creating repeating tasks at specific intervals (e.g., daily, hourly).</li>
+                        <li>Example: <code class="inline">task.again_in("days", 1)</code> reschedules the task to run in 1 day.</li>
                     </ul>
                 </li>
                 <li><p><code class="inline">again_at()</code>:</p>
-                    <ul>
-                        <li>- Reschedules a task to a specific new date and time.</li>
-                        <li>- Is useful for one-time adjustments or scheduling tasks for future deadlines.</li>
-                        <li>- Example: <code class="inline">task.again_at(datetime(2024, 02, 09, 10, 00))</code> reschedules the task for February 9th, 2024, at 10:00 AM.</li>
+                    <ul class="nested">
+                        <li>Reschedules a task to a specific new date and time.</li>
+                        <li>Is useful for one-time adjustments or scheduling tasks for future deadlines.</li>
+                        <li>Example: <code class="inline">task.again_at(datetime(2024, 02, 09, 10, 00))</code> reschedules the task for February 9th, 2024, at 10:00 AM.</li>
                     </ul>
                 </li>
             </ul>

@@ -73,7 +73,7 @@ You can use the following query to add this node:
             <p>In your <code class="inline">docker-compose.yml</code> file, find the "services" section and uncomment (or add) the following configuration for a second node:</p>
 <pre><code class="prompt">services:</code>
 <code class="user">  node1:
-  << : *ti
+  &lt;&lt; : *ti
   hostname: node1
   container_name: node1
   command: "--secret pass"
@@ -112,6 +112,316 @@ You can use the following query to add this node:
         </ol>
         <p>Switch to the <code class="inline">/thingsdb</code> scope in your client and paste
             the <code class="inline">new_node(..)</code> command as shown in the logs output.</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">new_node('pass', 'node1', 9220);</code>  <code class="comment">// Replace the arguments if needed</code>
+<code class="response">1</code></pre>
+        <p>The command will return the ID of the new node.</p>
+        <p>Allow approximately 20 seconds for the nodes to synchronize. This time may vary depending on your system load.
+            During this process, the first node might be temporarily unavailable as it handles the joining process.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>Only when adding a <strong>second node</strong> to your ThingsDB cluster, be aware of a temporary
+                    period of unavailability. This is because the existing node needs to perform synchronization to
+                    integrate the new node. This process typically takes around 20 seconds and might cause ThingsDB
+                    to seem unresponsive during this time.</p>
+                <p>Adding <strong>additional nodes</strong> does not experience this unavailability. With more nodes
+                    available, the synchronization process is distributed, ensuring continuous operation and request
+                    handling.</p>
+            </div>
+        </div>
+        <p>Once the wait is over, switch to a <code class="inline">/node</code> scope and run the <code class="inline">nodes_info()</code>
+            function to see information about all nodes.</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">@n</code>
+<code class="prompt">(@n)&gt;</code> <code class="user">nodes_info();</code>
+<code class="response">…</code></pre>
+        <p>You should see two nodes with status <code class="inline">"READY"</code>. If one of the nodes is currently
+            in <code class="inline">"AWAY"</code> mode, it means ThingsDB has chosen it for a specific task, temporarily
+            taking it out of the general cluster operations. This does not indicate an issue, and the node will
+            return to <code class="inline">"READY"</code> once its task is completed.</p>
+        <p>To scale your ThingsDB cluster, simply repeat the steps outlined in
+            sections <a href="ch15.xhtml#ch15_1_h">15.1</a> and <a href="ch15.xhtml#ch15_2_h">15.2</a> for each new node.
+            Remember to use unique data paths and ports to avoid conflicts.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch15_3_h" class="title">15.3 Node Counters</h3>
+        <p>ThingsDB tracks various counters to provide insights into a node's well-being. These counters start at zero
+            on node startup and can be manually reset with the <code class="inline">reset_counters()</code> function.</p>
+        <p>Start exploring counters by navigating to a node scope.</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">@ /node/0</code>
+<code class="prompt">(/node/0)&gt;</code></pre>
+        <p>Run the <code class="inline">counters()</code> function:</p>
+<pre><code class="prompt">(/node/0)&gt;</code> <code class="user">counters();</code>
+<code class="response">{
+    "average_change_duration": 0.0013940499503816795,
+    "average_query_duration": 0.0003048990412233053,
+    "changes_committed": 5262,
+    "changes_failed": 0,
+    "changes_killed": 0,
+    "changes_skipped": 0,
+    "changes_unaligned": 1,
+    "changes_with_gap": 0,
+    "garbage_collected": 1,
+    "largest_result_size": 400999,
+    "longest_change_duration": 0.002760923,
+    "longest_query_duration": 0.010911413,
+    "queries_from_cache": 235,
+    "queries_success": 355260,
+    "queries_with_error": 1499,
+    "quorum_lost": 1,
+    "started_at": 1709132982,
+    "tasks_success": 0,
+    "tasks_with_error": 0,
+    "wasted_cache": 4
+}</code></pre>
+        <p>While it may seem like a lot of information, let's break down the key metrics:</p>
+        <ul>
+            <li><strong>Performance:</strong>
+                <ul class="nested">
+                    <li><code class="inline">average_change_duration</code>, <code class="inline">average_query_duration</code>: Indicate average processing times for changes and queries (in seconds).</li>
+                    <li><code class="inline">queries_success</code>: Number of successful queries handled since the last reset.</li>
+                </ul>
+            </li>
+            <li><strong>Health Indicators:</strong>
+                <ul class="nested">
+                    <li><code class="inline">changes_failed</code>, <code class="inline">changes_killed</code>, <code class="inline">changes_skipped</code>, <code class="inline">changes_with_gap</code>: Must remain at zero as they indicate potential data corruption.</li>
+                    <li><code class="inline">changes_unaligned</code>, <code class="inline">quorum_lost</code>: Monitor these values. While slight increases are possible, significant growth suggests node collisions during change ID claiming.</li>
+                </ul>
+            </li>
+            <li><strong>Resource Management:</strong>
+                <ul class="nested">
+                    <li><code class="inline">garbage_collected</code>: Number of items cleaned up by garbage collection.</li>
+                    <li><code class="inline">queries_from_cache</code>, <code class="inline">wasted_cache</code>: Indicate cache utilization and potential optimization opportunities.</li>
+                </ul>
+            </li>
+        </ul>
+        <p>Remember:</p>
+        <ul>
+            <li><code class="inline">started_at</code>: Reflects the last counter reset time or node startup time if no reset occurred.</li>
+            <li>Queries and tasks with errors (<code class="inline">queries_with_error</code>, <code class="inline">tasks_with_error</code>)
+                are not inherently problematic. Some intentional actions might trigger them (e.g. <code class="inline">lookup_error</code> when
+                something is not found etc.).</li>
+            <li>By default, caching applies to queries exceeding 160 characters (adjustable via the environment
+                variable <code class="inline">THINGSDB_THRESHOLD_QUERY_CACHE</code>). Queries stay cached
+                for 15 minutes (adjustable via <code class="inline">THINGSDB_CACHE_EXPIRATION_TIME</code>).</li>
+        </ul>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>In rare cases, data corruption might be indicated by non-zero values in one or more of the
+                    critical counters (<code class="inline">changes_failed</code>, <code class="inline">changes_killed</code>,
+                    <code class="inline">changes_skipped</code> or <code class="inline">changes_with_gap</code>).
+                    While this is unlikely to occur in typical operation, it is essential to know how to recover
+                    from such situations.</p>
+                <p>ThingsDB provides the <code class="inline">--rebuild</code> command-line argument as a last
+                    resort option for recovering a single node. When used, this command will erase the node's
+                    local data entirely, ensuring a clean slate and then triggers a full synchronization with
+                    the remaining healthy nodes in the cluster, rebuilding its local data based on the latest
+                    state from its peers.</p>
+            </div>
+        </div>
+        <p>Analyzing node counters offers valuable insights into your ThingsDB cluster's health and performance.
+            Use this information to identify potential issues, optimize resource usage, and ensure your ThingsDB
+            setup runs smoothly.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch15_4_h" class="title">15.4 Diving Deeper with Node Information</h3>
+        <p>ThingsDB offers granular control over various aspects of node behavior through configuration options.
+            Let's explore how to access and manage these settings.</p>
+        <p>Similar to the query cache in the previous section, some options can be adjusted using environment variables.
+            It is crucial to <strong>maintain consistency</strong> across all nodes. For example,
+            if <code class="inline">THINGSDB_RESULT_SIZE_LIMIT</code> differs between nodes, the response size for
+            queries might vary depending on the responding node.</p>
+        <p>The <code class="inline">node_info()</code> function, introduced in the previous chapter, comes in handy
+            for reviewing configuration parameters and ensuring they match across your nodes. It also displays
+            the ThingsDB version and its dependent library versions. Aim for consistency in these versions,
+            except during controlled upgrades (performed one node at a time).</p>
+        <p><code class="inline">node_info()</code> also exposes the current log level for a node. You can set the
+            initial level using the command-line argument <code class="inline">--log-level {debug,info,warning,error,critical}</code> or
+            adjust it dynamically. Let's check the current level:</p>
+<pre><code class="prompt">(/node/0)&gt;</code> <code class="user">set_log_level(DEBUG);</code>  <code class="comment">// DEBUG, INFO, WARNING, ERROR, CRITICAL</code>
+<code class="response">null</code></pre>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>Command-line arguments for log levels use lowercase (<code class="inline">debug</code>,
+                    <code class="inline">info</code>, <code class="inline">warning</code>, <code class="inline">error</code>,
+                    <code class="inline">critical</code>),
+                    while ThingsDB internally defines them in uppercase (<code class="inline">DEBUG</code>,
+                    <code class="inline">INFO</code>, <code class="inline">WARNING</code>, <code class="inline">ERROR</code>,
+                    <code class="inline">CRITICAL</code>).</p>
+            </div>
+        </div>
+        <p>Check the terminal where the node with ID 0 is running (or use "<code class="inline">docker logs node0</code>"" if using Docker Compose).</p>
+        <p>Example output:</p>
+<pre><code class="prompt">…
+[D 2024-02-23 21:18:56] not going in away mode (no reason for going into away mode)
+[D 2024-02-23 21:18:59] not going in away mode (no reason for going into away mode)</code></pre>
+        <p>The <code class="inline">D</code> at the beginning of each line indicates a <code class="inline">DEBUG</code> log message.</p>
+        <p>Remember:</p>
+        <ul>
+            <li>Log levels (<code class="inline">DEBUG</code> and <code class="inline">INFO</code>) provide extensive details but can overwhelm your logs. Use them for troubleshooting or specific insights.</li>
+            <li>Levels (<code class="inline">WARNING</code>, <code class="inline">ERROR</code>, <code class="inline">CRITICAL</code>) offer concise information about potential issues.</li>
+            <li>Choose the log level that best suits your current needs and monitoring goals. Stick with <code class="inline">WARNING</code> for normal operation.</li>
+        </ul>
+    </section>
+    <section class="sect1">
+        <h3 id="ch15_5_h" class="title">15.5 New Version, Upgrade</h3>
+        <p>New ThingsDB versions bring exciting enhancements! Luckily, they're backwards compatible, meaning you can still access
+            data from the very first release (v0.7.5).</p>
+        <p><strong>Upgrading one at a time:</strong></p>
+        <p>For a smooth upgrade, follow a rolling update approach: update one node at a time while ensuring
+            full synchronization before moving on to the next. This prevents downtime during the process.</p>
+        <p><strong>Monitoring node readiness:</strong></p>
+        <p>To easily determine when a node is ready for upgrade, enable HTTP status ports for each node. You can check the current status with:</p>
+<pre><code class="prompt">(/node/0)&gt;</code> <code class="user">node_info().load().http_status_port;</code>
+<code class="response">8080</code></pre>
+        <p>This shows the port number (e.g., <code class="inline">8080</code>) or <code class="inline">"disabled"</code> if not configured.</p>
+        <p>To enable it, set the <code class="inline">THINGSDB_HTTP_STATUS_PORT</code> environment
+            variable to your desired port (e.g., <code class="inline">8080</code>) and restart the node.</p>
+        <section class="sect2">
+            <h4 id="ch15_5_1_h" class="title">15.5.1 Understanding the HTTP Status Port</h4>
+            <p>The enabled port offers three URLs:</p>
+            <ul>
+                <li><code class="inline">/ready</code>
+                    <p class="uname">Responds with <code class="inline">"200 OK"</code> if the node is in <code class="inline">READY</code>, <code class="inline">AWAY</code>, or <code class="inline">AWAY_SOON</code> status, indicating it is ready for the next upgrade. Any other status (e.g., <code class="inline">SYNCHRONIZING</code>) triggers a 503 Service Unavailable response.</p>
+                </li>
+                <li><code class="inline">/status</code>
+                    <p class="uname">Shows the current node status.</p>
+                </li>
+                <li><code class="inline">/health</code>
+                    <p class="uname">Always responds with <code class="inline">"200 OK"</code>, regardless of the node's state, indicating the node is responding.</p>
+                </li>
+            </ul>
+        </section>
+        <section class="sect2">
+            <h4 id="ch15_5_2_h" class="title">15.5.2 Using the /ready URL</h4>
+            <p>This URL plays a critical role in the cluster coordination process during node startup. It acts as a synchronization checkpoint, ensuring a node is fully operational before subsequent nodes initiate their own restarts.</p>
+            <p>Use the <code class="inline">curl</code> command (available on Windows, Mac, and most Linux systems)
+                to check the <code class="inline">/ready</code> status from the command line:</p>
+<pre><code class="prompt">$</code> <code class="user">curl http://localhost:8080/ready</code>
+<code class="response">OK</code></pre>
+            <p>A successful response of <code class="inline">OK</code> confirms that the node has completed its
+                synchronization process and is now fully operational. This ensures a stable starting point for
+                other nodes and allows them to proceed with their own restart or initialization safely.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch15_5_3_h" class="title">15.5.3 Liveness and Readiness</h4>
+            <p>In the realm of dynamic environments like Kubernetes, where containerized applications are subject
+                to frequent restarts and scaling operations, maintaining application health and availability becomes
+                a top priority. ThingsDB, with its powerful HTTP status port, and Kubernetes' built-in liveness
+                and readiness probes, form a combination to streamline upgrades and guarantee application
+                responsiveness throughout the process.</p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch15_6_h" class="title">15.6 Data Related Debugging</h3>
+        <p>While this chapter primarily explores node-related functionalities, ThingsDB also offers valuable
+            tools for data debugging.</p>
+        <section class="sect2">
+            <h4 id="ch15_6_1_h" class="title">15.6.1 Checking References</h4>
+            <p>In ThingsDB, everything is treated as an object. The <code class="inline">refs()</code> function
+                helps you determine the number of references an object has within the database. This information
+                can be crucial for understanding how data is stored and manipulated.</p>
+            <p>For example, check the references for <code class="inline">nil</code>:</p>
+<pre><code class="prompt">(/t)&gt;</code> <code class="user">refs(nil);</code>
+<code class="response">23</code></pre>
+            <p>While 23 references for <code class="inline">nil</code> might seem unexpected, this reflects
+                internal system references and the nature of immutable objects. Unlike mutable data,
+                immutable objects like <code class="inline">nil</code>, <code class="inline">true</code>,
+                <code class="inline">false</code>, strings, and numbers can be shared across scopes without
+                creating copies, potentially contributing to the reference count.</p>
+            <p>This example demonstrates how <code class="inline">refs()</code> can help verify list copying behavior:</p>
+<pre><code class="prompt">(/t)&gt;</code> <code class="user">A = []; B = A; refs(A);</code>
+<code class="response">3</code></pre>
+            <p>Here, we see three references:</p>
+            <ul>
+                <li>One for the original list <code class="inline">A</code>.</li>
+                <li>One for the reference held by variable <code class="inline">B</code>.</li>
+                <li>One temporary reference introduced by the <code class="inline">refs()</code> function.</li>
+            </ul>
+            <p>When interpreting <code class="inline">refs()</code> results, remember to account for the additional
+                reference introduced by the function itself.</p>
+<pre><code class="prompt">(/t)&gt;</code> <code class="user">A = []; B = [A]; refs(A);</code>
+<code class="response">2</code></pre>
+            <p>This output (2 references) confirms that adding a list to another list creates a copy.
+                The original list <code class="inline">A</code> only has two references:</p>
+            <ul>
+                <li>One for itself, <code class="inline">A</code>.</li>
+                <li>One from the <code class="inline">refs()</code> function call.</li>
+            </ul>
+            <p>The list within <code class="inline">B</code> is a separate copy and does not hold a reference to
+                the original <code class="inline">A</code>.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch15_6_2_h" class="title">15.6.2 Finding Things</h4>
+            <p>The <code class="inline">search()</code> method, available on all <em>“thing”</em> instances,
+                offers a valuable tool for debugging purposes. It enables you to search for a specific <em>“thing”</em>
+                within their properties.</p>
+            <p>The <code class="inline">search()</code> method accepts two arguments:</p>
+            <ol>
+                <li>The “thing” you are searching for.</li>
+                <li>An optional thing with configuration settings:
+                    <ul>
+                        <li><code class="inline">deep</code>: Controls the maximum depth of the search (defaults to 1).</li>
+                        <li><code class="inline">limit</code>: Restricts the number of returned results (defaults to 1).</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>Imagine you have a <code class="inline">Todo</code> object with ID 2 in the <code class="inline">//todos</code> scope but
+                are unsure of its location within the collection. Here's how to use <code class="inline">search()</code> to
+                locate it:</p>
+<pre><code class="prompt">(/t)&gt;</code> <code class="user">@ //todos</code>
+<code class="prompt">(//todos)&gt;</code> <code class="user">.search(Todo(2), {deep: 3, limit: 1});</code>
+<code class="response">[
+    {
+        "key": "todos",
+        "key_type": "set",
+        "parent": {"#": 10},
+        "parent_type": "User"
+    }
+]</code></pre>
+            <p>This output indicates that the first occurrence of the <code class="inline">Todo</code> with ID 2 is
+                found within the <code class="inline">todos</code> property of a <code class="inline">User</code> object
+                with ID 10.</p>
+            <p>While <code class="inline">search()</code> is valuable for debugging, its potential performance
+                impact makes it unsuitable for most production queries. Exercise caution when increasing the
+                deep argument, as higher values can significantly slow down the search process.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch15_6_3_h" class="title">15.6.3 Profiling Code Performance</h4>
+            <p>Optimize your ThingsDB queries and identify potential bottlenecks with
+                the <code class="inline">timeit()</code> function. This handy tool measures the
+                execution time of code blocks, providing valuable insights for performance tuning.</p>
+            <p>To use it, simply enclose the code you want to evaluate within the <code class="inline">timeit()</code>
+                function. Once executed, <code class="inline">timeit()</code> returns a new object containing
+                two key properties:</p>
+            <ul>
+                <li><code class="inline">data</code>: This property stores the result of the executed code itself.</li>
+                <li><code class="inline">time</code>: This property records the execution time in seconds, providing valuable insights into the performance of your code.</li>
+            </ul>
+            <p>Let's explore how to use <code class="inline">timeit()</code> to compare the performance of two
+                approaches for calculating the sum of a large list.</p>
+            <p>Using <code class="inline">reduce()</code>:</p>
+<pre><code class="prompt">(/t)&gt;</code> <code class="user">r = range(50000); timeit({
+    r.reduce(|t, x| t += x, 0);
+});</code>
+<code class="response">{
+    "data": 1249975000,
+    "time": 0.009375523
+}</code></pre>
+            <p>Using the built-in <code class="inline">sum()</code>:</p>
+<pre><code class="prompt">(/t)&gt;</code> <code class="user">r = range(50000); timeit({
+    r.sum();
+});</code>
+<code class="response">{
+    "data": 1249975000,
+    "time": 0.000410818
+}</code></pre>
+            <p>The results clearly demonstrate that the native <code class="inline">sum()</code> method is
+                significantly faster than the <code class="inline">reduce()</code> approach in this case.
+                The function <code class="inline">timeit()</code> empowers you to make decisions about query
+                optimization, enhancing the overall performance of your ThingsDB applications.</p>
+        </section>
     </section>
 </section>
 </body>
