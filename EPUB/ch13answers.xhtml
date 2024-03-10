@@ -9,7 +9,38 @@
 <section class="sect2">
     <h4 id="ch13_4_1_h" class="title">13.4.1 Quiz - Answers</h4>
     <ol class="quiz">
-
+        <li><p>ThingsDB offers a clever feature to create futures without an actual task. This allows you to directly combine argument unpacking with future creation, eliminating the need for an empty placeholder. Here is the code:</p>
+            <p class="quizcode"><code class="inline">future(|a, b| a * b, [6, 7]);</code></p>
+            <p>This code accomplishes the identical multiplication as the original, but leverages a more concise and efficient syntax.</p>
+        </li>
+        <li><p>While futures offer flexibility, directly returning two futures in a single response is not possible. Remember, a future can only be assigned to a variable. Assigning it to a list, for example, would simply store <code class="inline">nil</code> instead of the actual future.</p>
+            <p>But wait! There is a workaround! While returning two direct futures is not possible, you can achieve similar behavior by chaining futures using the <code class="inline">then()</code> method. The first future's result can be passed to the second future, effectively creating a chained execution. One more workaround is to parse them as arguments to an empty future:</p>
+            <p class="quizcode"><code class="inline">future(nil, future(|| 2+2), future(|| 3*3));  // response: [nil, 4, 9]</code></p>
+        </li>
+        <li><p>Answer “b” is correct. When set to <code class="inline">true</code>, it instructs ThingsDB to automatically
+            deserialize the response from the method call, making it readily accessible for further processing or
+            manipulation. However, if you set the <code class="inline">load</code> property to <code class="inline">false</code>
+            (the default), the method returns the response as "mpdata". This option is particularly useful when you do not need
+            to use the data within your ThingsDB application or when you plan to send it directly to a client.
+            In these cases, deserializing and then serializing it again would be unnecessary and potentially slow down your
+            application.</p></li>
+        <li><p>Answer “d” is the correct answer. The <code class="inline">argmap</code> property set to <code class="inline">["*"]</code>
+            signifies that the <code class="inline">bar()</code> method can accept a single
+            argument (<code class="inline">nil</code> or a thing). In this case, you are providing nil as the argument.
+            Additional arguments (like the <code class="inline">42</code> in the code snippet) won't be processed by the
+            module itself. Instead, they'll be passed directly to the <code class="inline">then()</code> or <code class="inline">else()</code>
+            callbacks making <code class="inline">B</code> or <code class="inline">D</code> equal to <code class="inline">42</code>
+            depending on success or failure. This allows you to parse data to your callback logic.</p></li>
+        <li><p>Option “c” offers the most effective path to diagnosis. Use <code class="inline">module_info()</code> to
+            get its <code class="inline">config</code> and <code class="inline">status</code>, plus check the node
+            console logs for clues. These steps unlock insights into the issue, paving the way for a fix.
+            Remember, understanding the root cause is key!</p></li>
+        <li><p>When seeking precise control over module updates, leverage the <code class="inline">deploy_module()</code>
+            function. This tool empowers you to define the new source for the update, replacing any pinned version
+            tags with the desired reference (e.g., <code class="inline">@v0.3.0</code> instead
+            of <code class="inline">@v0.2.1</code>). Remember to prioritize testing updates in a non-production
+            environment before deploying them to ensure compatibility and smooth operation.
+            While <code class="inline">refresh_module()</code> can also update modules, it respects pinned versions.</p></li>
     </ol>
 </section>
 </body>

@@ -9,7 +9,39 @@
 <section class="sect1">
     <h3 id="ch14_7_h" class="title">14.7 Quiz - Challenge Your Understanding</h3>
     <ol class="quiz">
-
+        <li><p>Which approach is more suitable for safeguarding your ThingsDB data?: backups or exports?</p>
+            <ol>
+                <li>Backups</li>
+                <li>Exports</li>
+                <li>Both, depending on the situation</li>
+            </ol>
+        </li>
+        <li><p>For disaster recovery, what is the recommended scope for creating a backup using the <code class="inline">new_backup()</code> function?</p>
+            <ol>
+                <li>A collection scope, like: <code class="inline">//stuff</code> or <code class="inline">//todos</code></li>
+                <li>The client connection node scope: <code class="inline">/n</code></li>
+                <li>ThingsDB scope: <code class="inline">/thingsdb</code></li>
+                <li>A specific node scope like: <code class="inline">/n/0</code> or <code class="inline">/n/1</code></li>
+            </ol>
+        </li>
+        <li><p>Disaster strikes! You accidentally forget your password and lose access to your ThingsDB instance.
+            Thankfully, you have a recent backup. What is the best way to regain access to your data?</p>
+            <ol>
+                <li>Restore the backup without any additional options and hope for the best.</li>
+                <li>Restore the backup using <code class="inline">restore()</code> and manually grant yourself access to each individual scope.</li>
+                <li>Restore the backup using <code class="inline">restore()</code> with the <code class="inline">take_access: true</code> property, regaining access to all restored scopes automatically.</li>
+                <li>There is no way to recover access without knowing the password.</li>
+            </ol>
+        </li>
+        <li><p>How can you verify that your ThingsDB backups are functioning as intended?</p></li>
+        <li><p>Consider the behavior of tasks during imports and restores: By default, they are not included. Why do you think this happens, and what are the potential implications?</p>
+            <ol>
+                <li>To prevent unintended execution and potential data loss.</li>
+                <li>To reduce the file size of the import or restore.</li>
+                <li>To allow users to selectively restore or import specific tasks.</li>
+                <li>Because tasks are not considered part of the core data structure.</li>
+            </ol>
+        </li>
     </ol>
 </section>
 </body>

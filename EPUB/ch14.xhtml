@@ -2,12 +2,349 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
 <head>
-<title>Chapter 14 - Safeguarding Your Data: Backup, Restore, Export and Import</title>
+<title>Chapter 14 - Safeguarding Your Data</title>
 <link rel="stylesheet" type="text/css" href="css/epub.css" />
 </head>
 <body>
 <section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch14_h" id="_ch14">
     <h2 id="ch14_h" class="title">Chapter 14 - Safeguarding Your Data: Backup, Restore, Export and Import</h2>
+    <p>Now that you have explored the power of ThingsDB, it is crucial to consider data protection. While ThingsDB
+        is designed for minimal downtime by scaling across multiple nodes, accidents or unforeseen events can still
+        occur, potentially leading to data loss. Here's where backups come in!</p>
+    <p>The good news is, ThingsDB offers scheduled backups without impacting ongoing operations. Unlike some solutions
+        that lock access during backup creation, ThingsDB seamlessly handles this on <em>multi-node</em> setups.</p>
+    <p>Later in this chapter we will also look at single collection exports and how to import them when required.
+        This is also useful for development as it allows you to quickly load another collection on your local
+        development machine without disrupting other collections you might be working on.</p>
+    <section class="sect1">
+        <h3 id="ch14_1_h" class="title">14.1 Node Scopes for Backups</h3>
+        <p>So far, we have used the <code class="inline">/thingsdb</code> scope for managing user accounts and
+            collections, and collection scopes for interacting with data. Now, for backups, we need a new scope:
+            node scopes.</p>
+        <p>Unlike the previous scopes, backups are node-specific. While each node eventually stores the same data,
+            you tell ThingsDB which node should create a backup.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p><strong>Production-Ready Backup Strategy</strong></p>
+                <p>For reliable data protection, consider using at least two different nodes for backups. This ensures backups continue even if one node fails. Creating backups on all nodes is generally not required.</p>
+            </div>
+        </div>
+        <p>Before scheduling a backup, we need to identify the node responsible for creating it.</p>
+        <p>Access the node scope by typing <code class="inline">/node</code> (<code class="inline">@n</code> or <code class="inline">/n</code> for short) in the prompt:</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">@ /node</code>
+<code class="prompt">(/node)&gt;</code></pre>
+        <p>When you do not specify a node ID in the scope, ThingsDB automatically uses the node you are currently
+            connected to. To check which node this is, use the <code class="inline">node_info()</code> function
+            and extract the <code class="inline">node_id</code> property using the following command:</p>
+<pre><code class="prompt">(/node)&gt;</code> <code class="user">node_info().load().node_id;</code>
+<code class="response">0</code></pre>
+        <p>The output <code class="inline">0</code> signifies you are currently connected to the node with ID 0.</p>
+        <p>The <code class="inline">nodes_info()</code> function displays all nodes within your ThingsDB setup,
+            providing valuable information like their IDs, names, and statuses:</p>
+<pre><code class="prompt">(/node)&gt;</code> <code class="user">nodes_info();</code>
+<code class="response">[
+    {
+        "committed_change_id": 1,
+        "node_id": 0,
+        "node_name": "node0",
+        "port": 9220,
+        "status": "READY",
+        "stored_change_id": 1,
+        "stream": null,
+        "syntax_version": "v1",
+        "zone": 0
+    }
+]</code></pre>
+        <p>In this set-up, we only have one node with ID 0, explaining the current connection.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>Wonder why <code class="inline">node_info()</code> offers more detailed information
+                    compared to <code class="inline">nodes_info()</code>? Both commands are executed
+                    on a specific node, meaning you receive information based on that node's knowledge
+                    about itself and other nodes.</p>
+            </div>
+        </div>
+        <p>However, if you have a multi-node setup, specifying the node ID is crucial for targeted operations.
+            To force a query on a specific node, simply include its ID within the scope like this:</p>
+<pre><code class="prompt">(/node)&gt;</code> <code class="user">@ /node/0</code>
+<code class="prompt">(/node/0)&gt;</code></pre>
+        <p>Now that you have selected the right scope, let's create your first ThingsDB backup!</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch14_2_h" class="title">14.2 Your First Backup</h3>
+        <p>To create a backup, use the <code class="inline">new_backup()</code> function. It requires at
+            least one argument: the target filename. Backup filenames must end
+            with <code class="inline">".tar.gz"</code>. This ensures consistency and helps you understand
+            the format of the saved data.</p>
+        <p>ThingsDB offers handy template variables you can embed in your filename. These variables get
+            automatically filled when the backup is created, making it easier to organize and identify
+            your backups.</p>
+        <div class="table">
+            <h2 id="ta14_2"></h2>
+            <p class="title">Table 14.2 - Summarizing backup template variable</p>
+            <table>
+                <tr><th>Variable</th><th>Description</th><th>Example</th></tr>
+                <tr><td><code class="inline">{DATE}</code></td><td>Current date (YYYYMMDD format)</td><td><code class="inline">20240221</code></td></tr>
+                <tr><td><code class="inline">{TIME}</code></td><td>Current time (HHMMSS format)</td><td><code class="inline">092713</code></td></tr>
+                <tr><td><code class="inline">{CHANGE_ID}</code></td><td>Last committed change ID</td><td><code class="inline">123456</code></td></tr>
+            </table>
+        </div>
+        <p>Here's a code snippet that creates a backup named <code class="inline">"/tmp/ti-backup-{DATE}-{TIME}.tar.gz"</code>.</p>
+        <p><strong>Note:</strong> If you are using <a href="docker.xhtml">Docker Compose</a> as described in this book,
+            remember to adjust <code class="inline">/tmp</code> to <code class="inline">/dump</code>
+            (which is volume-mounted to your local disk).</p>
+<pre><code class="prompt">(/node/0)&gt;</code> <code class="user">new_backup("/tmp/ti-backup-{DATE}-{TIME}.tar.gz");</code>
+<code class="response">0</code></pre>
+        <p>The return value (<code class="inline">0</code> in this case) is a unique backup ID assigned within that specific node.</p>
+        <p>Now that you have the backup ID, let's check its status using the <code class="inline">backup_info()</code> function:</p>
+<pre><code class="prompt">(/node/0)&gt;</code> <code class="user">backup_info(0);</code>  <code class="comment">// Use the backup ID (0 in our example)</code>
+<code class="response">{
+    "created_at": 1708507632,
+    "file_template": "/tmp/ti-backup-{DATE}-{TIME}.tar.gz",
+    "files": [
+        "/tmp/ti-backup-20240221-092713.tar.gz"
+    ],
+    "id": 0,
+    "result_code": 0,
+    "result_message": "success - 2024-02-21 09:27:13Z"
+}</code></pre>
+        <p>In this example, the <code class="inline">result_code</code> is <code class="inline">0</code>, indicating a
+            successful backup. Additionally, the <code class="inline">result_message</code> confirms this
+            with <code class="inline">"success - 2024-02-21 09:27:13Z"</code>. In case of issues, the result message
+            offers further information or troubleshooting guidance.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p><strong>Production-Ready Backup Strategy</strong></p>
+                <p>During backup creation, the node enters a temporary mode called <code class="inline">AWAY_MODE</code>.
+                    This mode ensures data consistency by temporarily suspending regular queries while the backup process
+                    takes place. However, queries specifically directed to that node using the node scope are still
+                    accepted and handled normally.</p>
+                <p>For multi-node setups, this temporary unavailability goes unnoticed by clients as queries are
+                    automatically forwarded to other available nodes. ThingsDB ensures only one node
+                    enters <code class="inline">AWAY_MODE</code> at a time, guaranteeing uninterrupted service while
+                    maintaining data integrity.</p>
+            </div>
+        </div>
+    </section>
+    <section class="sect1">
+        <h3 id="ch14_3_h" class="title">14.3 Restoring Your Data</h3>
+        <p>Having created a backup, let's discuss restoring it. For full backups like the one we made earlier,
+            a comprehensive restore is the only option. To ensure a smooth restoration process, ThingsDB performs
+            some essential pre-checks:</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p><strong>Production-Ready Backup Strategy</strong></p>
+                <p>Instead of directly restoring onto your primary ThingsDB, consider a safe testing approach using
+                    separate storage paths. Set temporary environment variables for <code class="inline">THINGSDB_STORAGE_PATH</code>
+                    and <code class="inline">THINGSDB_MODULES_PATH</code> pointing to dedicated directories.
+                    This allows you to run ThingsDB using this alternate location leaving your primary data intact.</p>
+            </div>
+        </div>
+        <p><strong>User Permissions:</strong></p>
+        <ul>
+            <li>The user initiating the restore must possess <code class="inline">FULL</code> privileges on the <code class="inline">/thingsdb</code> scope.</li>
+        </ul>
+        <p><strong>Data Presence:</strong></p>
+        <ul>
+            <li>No existing collections: Verify this using <code class="inline">collections_info()</code> and, if necessary, remove them with <code class="inline">del_collection()</code>. <em>(Note: empty collections may exist and are ignored)</em></li>
+            <li>No existing modules: Use <code class="inline">modules_info()</code> to check and <code class="inline">del_module()</code> to remove any modules if needed.</li>
+            <li>No tasks: Check for tasks in the <code class="inline">/thingsdb</code> scope using the <code class="inline">tasks()</code> function and remove them if necessary. </li>
+        </ul>
+        <p><strong>Node Status:</strong></p>
+        <ul>
+            <li>All nodes must be online and ready: If not, either remove the problematic node or wait for it to be ready. Use <code class="inline">nodes_info()</code> to monitor node status.</li>
+            <li>Multi-node setups: All committed changes must be stored on all nodes. <code class="inline">nodes_info()</code> displays both <code class="inline">committed_change_id</code> and <code class="inline">stored_change_id</code> for each node. This check is not required for single-node setups.</li>
+        </ul>
+        <p>Initiate the restore process using the <code class="inline">restore()</code> function within
+            the <code class="inline">/thingsdb</code> scope. This function requires the filename of the backup you
+            want to restore. Additionally, you can provide an optional thing argument containing extra restore options
+            for further customization.</p>
+        <p>Here's an example using restore options:</p>
+<pre><code class="prompt">(/t)&gt;</code> <code class="user">restore("/tmp/ti-backup-20240221-092713.tar.gz", {
+    take_access: true,
+    restore_tasks: true,
+});</code>
+<code class="response">0</code></pre>
+        <p>In the provided example, the two key restore options are:</p>
+        <ul>
+            <li><p><code class="inline">take_access: true</code></p>
+                <p class="uname">This grants full access to all restored scopes only to the user performing the restore. If you keep this option as the default <code class="inline">false</code>, access will be restored based on the original user permissions associated with each scope.</p>
+            </li>
+            <li><p><code class="inline">restore_tasks: true</code></p>
+                <p class="uname">This includes scheduled tasks in the restoration process. However, keep in mind that tasks might automatically trigger based on their schedules once restored. This could be undesirable if you need time to adjust the environment after the restore. The default <code class="inline">false</code> setting prevents task execution.</p>
+            </li>
+        </ul>
+        <p>After completing the restore, even with <code class="inline">take_access: true</code>, re-authenticate by signing out and signing in again due to potential user ID changes.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>While most modules function after a ThingsDB restore, some may need a nudge. Check their status with
+                    <code class="inline">modules_info()</code>. If any are not working properly,
+                    use <code class="inline">refresh_module()</code> to reload their configuration and state.
+                    Alternatively, restarting the node(s) will also refresh all modules.</p>
+            </div>
+        </div>
+        <section class="sect2">
+            <h4 id="ch14_3_1_h" class="title">14.3.1 Restoring Data from a Multi-Node Setup</h4>
+            <p>When restoring data from a backup created in a multi-node ThingsDB setup, you might encounter
+                unintended behavior on single-node environments like your development machine. During the restore
+                process, ThingsDB attempts to contact other nodes based on the information stored in the backup,
+                which can be disruptive in this context.</p>
+            <p>To prevent this unnecessary search for non-existent nodes, simply restart your ThingsDB instance
+                after the restore is complete using the <code class="inline">--forget-nodes</code> command-line
+                argument. This instructs ThingsDB to disregard any stored node information and operate as a
+                single-node setup, aligning with your development environment.</p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch14_4_h" class="title">14.4 Automating Your Backups</h3>
+        <p>ThingsDB empowers you to schedule automatic backups, ensuring regular data protection without manual
+            intervention. Let's explore how to set up scheduled backups:</p>
+        <p>The <code class="inline">new_backup()</code> function offers three additional arguments for scheduling:</p>
+        <ul>
+            <li><p><code class="inline">start_ts</code></p>
+                <p class="uname">Define the <strong>start date and time</strong> for the initial backup. If omitted, the backup starts immediately.</p>
+            </li>
+            <li><p><code class="inline">repeat</code></p>
+                <p class="uname">Set the <strong>repetition interval</strong> in seconds. For daily backups, use <code class="inline">24 * 3600</code>. Leaving this blank creates a one-time backup.</p>
+            </li>
+            <li><p><code class="inline">max_files</code></p>
+                <p class="uname">Determine the <strong>maximum number of backup files</strong> to retain. When this limit is reached, the oldest backup is automatically removed. The default is <code class="inline">7</code>.</p>
+            </li>
+        </ul>
+        <p>Let's schedule a daily backup at 22 PM Kyiv time, keeping up to 14 backup files:</p>
+<pre><code class="prompt">(/t)&gt;</code> <code class="user">@ /node/0</code>
+<code class="prompt">(/node/0)&gt;</code> <code class="user">new_backup(
+    "/tmp/daily-{DATE}-{TIME}.tar.gz",
+    datetime().to("Europe/Kyiv").replace({hour: 22, minute: 0, second: 0}),
+    24*3600,</code>  <code class="comment">// Repeat every 24 hours</code><code class="user">
+    14,</code>  <code class="comment">// Keep 14 backup files</code><code class="user">
+);</code>
+<code class="response">1</code></pre>
+        <p>This starts a backup immediately as we start with a time in the past,
+            the next one 24 hours later relative to the given start time.</p>
+        <p>Use <code class="inline">backup_info()</code> and the backup ID (<code class="inline">1</code>)
+            to confirm the schedule:</p>
+<pre><code class="prompt">(/node/0)&gt;</code> <code class="user">backup_info(1);</code>
+<code class="response">{
+    "created_at": 1708624740,
+    "file_template": "/tmp/daily-{DATE}-{TIME}.tar.gz",
+    "files": [],
+    "id": 1,
+    "max_files": 14,
+    "next_run": "2024-02-22 20:00:00Z",
+    "repeat": 86400
+}</code></pre>
+        <p>This shows details of your backup schedule, including the next run at 22:00 PM Kyiv time
+            (<code class="inline">2024-02-22 20:00:00Z</code>), repeat interval, and maximum file count.</p>
+        <section class="sect2">
+            <h4 id="ch14_4_1_h" class="title">14.4.1 Ensuring Backup Health</h4>
+            <p>ThingsDB offers a convenient function called <code class="inline">backups_ok()</code> to quickly
+                check the overall health of your backup system. It returns a simple <code class="inline">true</code>
+                or <code class="inline">false</code> value, making it easy to monitor if all backups are
+                running as planned.</p>
+            <ul>
+                <li><code class="inline">true</code>: All scheduled backups are successful or have not yet started.</li>
+                <li><code class="inline">false</code>: At least one backup has failed.</li>
+            </ul>
+<pre><code class="prompt">(/node/0)&gt;</code> <code class="user">ackups_ok();</code>
+<code class="response">true</code></pre>
+            <p>This response indicates that all your scheduled backups are currently successful or
+                have not started yet.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch14_4_2_h" class="title">14.4.2 Google Cloud Storage</h4>
+            <p>Looking to run ThingsDB on Google Cloud Platform (GCP)? We’ve got you covered! ThingsDB offers
+                specialized Docker images for GCP, enabling you to write backups directly to a storage bucket.</p>
+            <p>While we do not delve into the complete workflow here, we want you to be aware of this powerful option.
+                More cloud platforms might be supported in future releases, so stay tuned to the documentation for updates.</p>
+            <p>For GCP users, the ThingsDB GitHub repository provides a detailed guide for setting up backups on the GKE platform:</p>
+            <ul><li>GitHub Link: <a href="https://github.com/thingsdb/ThingsDB/tree/main/gke#readme">https://github.com/thingsdb/ThingsDB/tree/main/gke#readme</a></li></ul>
+            <p>What you will find:</p>
+            <ul>
+                <li>Step-by-step instructions for configuring ThingsDB on GKE with Google Cloud Storage integration.</li>
+                <li>Guidance on utilizing the <code class="inline">new_backup()</code> function to write backups to your storage bucket.</li>
+                <li>Essential considerations for managing and monitoring your backups.</li>
+            </ul>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch14_5_h" class="title">14.5 Exporting and Importing Collections</h3>
+        <p>While backups are crucial for disaster recovery, sometimes you need to work with specific collections or
+            data subsets. ThingsDB's <code class="inline">export()</code> function provides flexibility for
+            these scenarios.</p>
+        <p><strong>Collection Schemas</strong></p>
+        <p>Run <code class="inline">export()</code> without arguments to retrieve the collection schema
+            definition in a readable format. This includes enumerators, types, and procedures, but not the actual data.</p>
+        <p><strong>Exporting Everything</strong></p>
+        <p>Call <code class="inline">export()</code> with a "thing" argument containing a <code class="inline">dump</code>
+            property set to <code class="inline">true</code>. This exports the entire collection, including data and
+            tasks (if any), in MessagePack format. You can then use the <code class="inline">import()</code> function
+            to restore this data.</p>
+        <p>ThingsDB Prompt simplifies the export/import process by letting you directly invoke <code class="inline">export()</code> and <code class="inline">import()</code> functions
+            from the command line, eliminating the need for manual file handling.</p>
+        <p>Use <code class="inline">export</code> as an argument to write an export to a file. The default
+            for <code class="inline">things-prompt</code> is to export everything:</p>
+<pre><code class="prompt">$</code> <code class="user">things-prompt -u admin -p pass -s //todos export /tmp/dump.mp</code></pre>
+        <p>Use <code class="inline">import</code> as an argument to import the exported data into a new collection:</p>
+<pre><code class="prompt">$</code> <code class="user">things-prompt -u admin -p pass -s //dev import /tmp/dump.mp</code></pre>
+        <p>This creates a new collection <em>"dev"</em> with data identical to the original <em>"todos"</em> collection.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p><strong>Production-Ready Backup Strategy</strong></p>
+                <p>Tasks are not automatically imported during collection imports to prevent unintended immediate
+                    execution. If your exported collection contains tasks and you want them imported, use
+                    the <code class="inline">--tasks</code> flag with the <code class="inline">import</code> command.</p>
+            </div>
+        </div>
+        <section class="sect2">
+            <h4 id="ch14_5_1_h" class="title">14.5.1 Exporting Collection Schemas</h4>
+            <p>You can also export just the collection's definition (enumerators, types, procedures) for future
+                reference or sharing. This exported schema is in a readable ThingsDB code format.</p>
+            <p>Include the <code class="inline">--structure-only</code> flag with the <code class="inline">export</code> command:</p>
+<pre><code class="prompt">$</code> <code class="user">things-prompt \
+    -u admin -p pass -s //todos export /tmp/dump.ti --structure-only</code></pre>
+            <p>This creates a pain text file <code class="inline">/tmp/dump.ti</code> containing the collection's code,
+                including enum definitions like:</p>
+<pre><code class="prompt">// Enums
+set_enum('Severity', {
+        Medium: 1,
+        Low: 0,
+        High: 2,
+        str: |this| `{this.name()} ({this.value()})`,
+});
+// … more lines</code></pre>
+            <p>As before, use <code class="inline">import</code> to import the exported schema into a (new) collection.</p>
+<pre><code class="prompt">$</code> <code class="user">things-prompt -u admin -p pass -s //schema import /tmp/dump.ti</code></pre>
+            <p>This creates a new collection “schema” with the same enumerators, types and procedures as the original,
+                but without any data.</p>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>Importing full collections with data can only be done into new or empty collections. This prevents
+                        accidental data overwrites.</p>
+                    <p>However, plain text imports (like created by a <code class="inline">--structure-only</code> export)
+                        treat the imported code as a regular ThingsDB query and can apply it to any existing collection.
+                        This means it directly executes the provided code within that collection, potentially modifying
+                        data or creating new entities.</p>
+                </div>
+            </div>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch14_6_h" class="title">14.6 Choosing Your Tool: Backups vs. Exports</h3>
+        <p>n conclusion, exports and backups are both valuable tools, but serve distinct purposes:</p>
+        <ul>
+            <li><strong>Exports:</strong> Ideal for development environments. They provide an easy way to extract specific collections or their structures for testing, sharing data subsets, or migrating between instances.</li>
+            <li><strong>Backups:</strong> Essential for disaster recovery and protecting production data. They create complete copies at specific points in time, ensuring you can recover from unexpected events without impacting your ThingsDB operations. Backups are non-intrusive and run seamlessly in the background, safeguarding your data without disrupting your workflow.</li>
+        </ul>
+        <p>Good luck with the quiz, and see you in the next chapter on adding nodes to your ThingsDB set-up!</p>
+    </section>
 </section>
 </body>
 </html>

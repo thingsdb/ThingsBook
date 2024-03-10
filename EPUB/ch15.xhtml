@@ -8,6 +8,111 @@
 <body>
 <section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch15_h" id="_ch15">
     <h2 id="ch15_h" class="title">Chapter 15 - Multiple Nodes and Debugging</h2>
+    <p>Ready to unleash the full potential of your ThingsDB setup? This chapter dives into two essential topics:</p>
+    <p>First, we'll guide you through the process of integrating additional nodes. Next, we'll equip you with
+        valuable troubleshooting tools, from identifying bottlenecks to analyzing data flow, ensuring your
+        ThingsDB runs smoothly and efficiently.</p>
+    <p>Not interested in exploring multiple nodes for development? Feel free to skip the next sections and
+        continue at <a href="ch15.xhtml#ch15_3_h">15.3 - Node Counters</a>.</p>
+    <section class="sect1">
+        <h3 id="ch15_1_h" class="title">15.1 Scaling Up: Adding Nodes</h3>
+        <p>In this section, we shall guide you through two options for adding nodes:</p>
+        <ul>
+            <li><a href="ch15.xhtml#ch15_1_1_h">ThingsDB from Source</a>: We'll provide step-by-step instructions for starting a new node in this scenario.</li>
+            <li><a href="ch15.xhtml#ch15_1_2_h">Using Docker Compose</a>: If you followed the Docker installation instructions, we'll explain how to add another node using Docker Compose.</li>
+        </ul>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p><strong>Real-world deployments:</strong> While this section focuses on testing with multiple nodes
+                    on a single machine for development purposes, remember that in production environments, you would
+                    typically run each node on a separate machine or leverage a container orchestration platform like
+                    Kubernetes.</p>
+            </div>
+        </div>
+        <section class="sect2">
+            <h4 id="ch15_1_1_h" class="title">15.1.1 ThingsDB from Source</h4>
+            <p>Ready to test multiple ThingsDB nodes on a single machine? Let's explore how to achieve this when you
+                have built ThingsDB from source.</p>
+            <p>Each node requires unique TCP ports and data storage paths. You can configure them through environment
+                variables or a configuration file.</p>
+            <p><a href="ch15.xhtml#ta15_1_1">Table 15.1.1</a> summarizes the essential variables for setting up multiple nodes. For a full list of configuration options, refer to the documentation: <a href="https://docs.thingsdb.io/v1/getting-started/configuration/">https://docs.thingsdb.io/v1/getting-started/configuration/</a></p>
+            <div class="table">
+                <h2 id="ta15_1_1"></h2>
+                <p class="title">Table 15.1.1 - Relevant environment variables for multiple nodes</p>
+                <table>
+                    <tr><th>Variable</th><th>Description</th></tr>
+                    <tr><td><code class="inline">THINGSDB_LISTEN_CLIENT_PORT</code></td><td>Listen to this TCP port for client socket connections.</td></tr>
+                    <tr><td><code class="inline">THINGSDB_LISTEN_NODE_PORT</code></td><td>Listen to this TCP port for node connections.</td></tr>
+                    <tr><td><code class="inline">THINGSDB_HTTP_API_PORT</code></td><td>(Optional) Listen to this TCP port for HTTP API requests.</td></tr>
+                    <tr><td><code class="inline">THINGSDB_HTTP_STATUS_PORT</code></td><td>(Optional) Listen to this TCP port for HTTP status requests.</td></tr>
+                    <tr><td><code class="inline">THINGSDB_MODULES_PATH</code></td><td>Path where ThingsDB modules are stored.</td></tr>
+                    <tr><td><code class="inline">THINGSDB_STORAGE_PATH</code></td><td>Location to store ThingsDB data.</td></tr>
+                </table>
+            </div>
+            <p>Create a separate directory: (we use “node1” and consider the first one as “node0”)</p>
+<pre><code class="prompt">$</code> <code class="user">mkdir ~/node1</code></pre>
+            <p>Start the node with unique port numbers and data paths:</p>
+<pre><code class="prompt">$</code> <code class="user">THINGSDB_LISTEN_CLIENT_PORT=9201 \
+  THINGSDB_LISTEN_NODE_PORT=9221 \
+  THINGSDB_HTTP_API_PORT=9211 \
+  THINGSDB_HTTP_STATUS_PORT=8081 \
+  THINGSDB_MODULES_PATH=~/node1/modules \
+  THINGSDB_STORAGE_PATH=~/node1/data \
+  thingsdb --secret pass</code>
+<code class="response">…
+Waiting for an invite from a node to join ThingsDB...
+
+You can use the following query to add this node:
+
+    new_node('pass', 'mylaptop', 9221);</code></pre>
+            <p>With the node waiting for an invite, skip the next section and jump to <a href="ch15.xhtml#ch15_2_h">15.2 - Invite the New Node</a>.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch15_1_2_h" class="title">15.1.2 Using Docker Compose</h4>
+            <p>In your <code class="inline">docker-compose.yml</code> file, find the "services" section and uncomment (or add) the following configuration for a second node:</p>
+<pre><code class="prompt">services:</code>
+<code class="user">  node1:
+  << : *ti
+  hostname: node1
+  container_name: node1
+  command: "--secret pass"
+  ports:
+    - 8081:8080
+  volumes:
+    - ./node1/data:/data/
+    - ./node1/modules:/modules/
+    - ./node1/dump:/dump/</code></pre>
+            <p>Navigate to the directory containing your <code class="inline">docker-compose.yml</code> file and run:</p>
+<pre><code class="prompt">$</code> <code class="user">docker compose up -d</code>
+<code class="response">[+] Running 2/2
+ ✔ Container node1  Started
+ ✔ Container node0  Running</code></pre>
+            <p>Verify the new node is running by checking the container logs:</p>
+<pre><code class="prompt">$</code> <code class="user">docker logs node1</code>
+<code class="response">…
+Waiting for an invite from a node to join ThingsDB...
+
+You can use the following query to add this node:
+
+    new_node('pass', 'node1', 9220);</code></pre>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch15_2_h" class="title">15.2 Invite the New Node</h3>
+        <p>Now that your new node is waiting for an invitation (as mentioned in the previous section),
+            it is time to officially welcome it to your ThingsDB cluster.</p>
+        <p>ThingsDB conveniently provides the invitation command directly in the logs. It typically looks like this:</p>
+<pre><code class="response">new_node('pass', 'node1', 9220);</code></pre>
+        <p>The <code class="inline">new_node()</code> function takes three arguments:</p>
+        <ol>
+            <li><strong>Secret Password:</strong> This is the one-time password you used when starting the node (e.g., <code class="inline">--secret pass</code>). It ensures only authorized nodes can join.</li>
+            <li><strong>Hostname or IP Address:</strong> Identify the new node by its hostname (e.g., <code class="inline">node1</code>) or IP address if your DNS isn't working perfectly.</li>
+            <li><strong>Node Port:</strong> This is the port number the new node listens on for communication with other nodes (e.g., <code class="inline">9220</code>) (do not confuse it with the client port).</li>
+        </ol>
+        <p>Switch to the <code class="inline">/thingsdb</code> scope in your client and paste
+            the <code class="inline">new_node(..)</code> command as shown in the logs output.</p>
+    </section>
 </section>
 </body>
 </html>
