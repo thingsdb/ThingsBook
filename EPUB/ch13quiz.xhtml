@@ -9,7 +9,39 @@
 <section class="sect1">
     <h3 id="ch13_4_h" class="title">13.4 Quiz - Challenge Your Understanding</h3>
     <ol class="quiz">
-
+        <li><p>Can you simplify the following code while preserving its functionality and using a future?</p>
+            <p class="quizcode"><code class="inline">future(nil, 6, 7).then(|_, a, b| a * b);</code></p>
+        </li>
+        <li><p>Can you answer this tricky question: Is it possible to directly return <em>two futures</em> in a single query result in ThingsDB?</p></li>
+        <li><p>You encounter an exposed method within a module, and its <code class="inline">load</code> property has a default value of <code class="inline">true</code>. What does this imply?</p>
+            <ol>
+                <li>The module automatically loads into memory upon usage.</li>
+                <li>The method's response will be deserialized.</li>
+                <li>The property indicates the method is ready for use.</li>
+                <li>The property has no effect on the method's behavior.</li>
+            </ol>
+        </li>
+        <li><p>You are working with a ThingsDB module named <code class="inline">foo</code>. Its exposed method <code class="inline">bar()</code> has an intriguing <code class="inline">argmap</code> property set to <code class="inline">["*"]</code>. Consider the following code snippet:</p>
+            <p class="quizcode"><code class="inline">foo.bar(nil, 42).then(|A, B| nil).else(|C, D| nil);</code></p>
+            <p>Choose the most accurate statement about this call to the <code class="inline">bar()</code> method:</p>
+            <ol>
+                <li>Both <code class="inline">A</code> and <code class="inline">D</code> will be nil regardless of success or failure.</li>
+                <li>On success, <code class="inline">A</code> will be <code class="inline">nil</code> and <code class="inline">B</code> will contain the method's response.</li>
+                <li>On success, <code class="inline">B</code> will be <code class="inline">42</code> and on failure, <code class="inline">C</code> will be <code class="inline">42</code>.</li>
+                <li>On success, <code class="inline">A</code> will contain the response and on failure, <code class="inline">C</code> will hold the error.</li>
+            </ol>
+            <p><strong>Important:</strong> The <code class="inline">"*"</code> in an <code class="inline">argmap</code> signifies a single, unnamed argument that can hold either <code class="inline">nil</code> or a thing</p>
+        </li>
+        <li><p>Uh oh! A module in your ThingsDB application isn't behaving as expected. What steps can you take to diagnose the issue and get it back on track?</p>
+            <p>Choose the most effective troubleshooting approach from the following:</p>
+            <ol>
+                <li>Restart the node and hope for the best.</li>
+                <li>Reinstall the module without checking anything else.</li>
+                <li>Use the <code class="inline">module_info()</code> function to gather information and check the node console logs.</li>
+                <li>Ignore the issue and hope it fixes itself eventually.</li>
+            </ol>
+        </li>
+        <li><p>Scenario: You have a module pinned to version <code class="inline">v0.2.1</code> using the <code class="inline">@</code> notation. Now, a newer version (<code class="inline">v0.3.0</code>) with exciting features is available. How can you seamlessly update the module to tap into these enhancements?</p></li>
     </ol>
 </section>
 </body>

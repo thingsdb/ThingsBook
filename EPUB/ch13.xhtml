@@ -72,6 +72,288 @@ future(|x| x + 10);</code>  <code class="comment">// No more `nil`s!</code>
         </section>
         <section class="sect2">
             <h4 id="ch13_1_2_h" class="title">13.1.2 Empty Futures: Isolating Side Effects for Efficiency</h4>
+            <p>You might wonder, "Why bother with empty futures?" The key lies in their ability to create separate contexts for closures, unlocking hidden potential.</p>
+            <p>Imagine this scenario in our to-do application: we need a procedure to retrieve or create a user and then grab their ID (or other information, but let's focus on ID for now).</p>
+            <p>One way to tackle this challenge is the following implementation:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">new_procedure("get_or_create_user_id", |name| {
+    user = .users.get(name.lower());
+    if (is_nil(user)) {
+        wse();  </code><code class="comment">// Enforced Side effect for the add_user() call</code><code class="user">
+        return add_user(name);
+    };
+    user.id();
+});</code>
+<code class="response">"get_or_create_user_id"</code></pre>
+            <p>While this works for both existing and new users, it has a flaw: it triggers side effects even when a user already exists. This can be inefficient, especially if the procedure is called frequently.</p>
+            <p>Here's how we can use an empty future to isolate side effects and improve efficiency:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">mod_procedure("get_or_create_user_id", |name| {
+    user = .users.get(name.lower());
+    if (is_nil(user)) {
+        return future(|name| {
+            wse();</code><code class="comment">// Side effect now contained within the future</code><code class="user">
+            add_user(name);
+        });
+    };
+    user.id();
+});</code>
+<code class="response">null</code></pre>
+            <p>Now, the main branch retrieves the existing user ID without causing a change. If a new user needs to be created, the future's closure handles it asynchronously, ensuring updates only happen when necessary.</p>
+            <p>Remember from <a href="ch06.xhtml#ch06_3_h">Chapter 6</a> that we can verify if a procedure triggers
+                side effects by checking the <code class="inline">with_side_effects</code> property. Let's confirm
+                that our modified <code class="inline">get_or_create_user_id</code> procedure is truly free of them:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">procedure_info("get_or_create_user_id").load().with_side_effects;</code>
+<code class="response">false</code></pre>
+            <p>The value <code class="inline">false</code> indicates no side effects are detected within the main logic of the procedure.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch13_1_3_h" class="title">13.1.3 Caution! Futures Don't Always Behave Like Values</h4>
+            <p>Before you store a future in your ThingsDB project, it is crucial to understand a key
+                quirk: <strong>futures store their current state, not the eventual result</strong>. Just assigning a future
+                to a variable works as expected, but attempting to store it in collections or object properties can
+                lead to unexpected results.</p>
+            <p>Let's explore the scenario:</p>
+            <p>Imagine you create a future that calculates <code class="inline">2 + 2</code> and store it in a list:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">[future(|| 2 + 2)];</code>
+<code class="response">[
+    null
+]</code></pre>
+            <p>You might expect the list to contain <code class="inline">[4]</code>. However, the actual result
+                is <code class="inline">[null]</code>. Why? Because you are not storing the future itself,
+                but rather its <em>initial</em> state, which is <code class="inline">nil</code> before the calculation finishes.</p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch13_2_h" class="title">13.2 Enhance Your ThingsDB with Modules</h3>
+        <p>Now that you are familiar with futures, let's explore modules, which can significantly expand ThingsDB's capabilities. Modules can unlock various features like sending emails, connecting to diverse databases, or making HTTP(S) requests.</p>
+        <p>Module Types:</p>
+        <ul>
+            <li><strong>Python Modules:</strong> Python modules offer a familiar language option for future potential customization.</li>
+            <li><strong>Binary Modules:</strong> ThingsDB utilizes pre-written binary modules, providing various functionalities. Writing your own modules in a language like Go is possible but beyond this book's scope.</li>
+        </ul>
+        <p>For this book, we'll focus on pre-built binary modules, readily available and requiring no additional coding on your part.</p>
+        <div class="note">
+            <img class="note" src="images/lightbulb.png" alt="Note" />
+            <div class="content">
+                <p>To install official modules, you'll need Internet access as they are downloaded
+                    directly from GitHub repositories.</p>
+            </div>
+        </div>
+        <section class="sect2">
+            <h4 id="ch13_2_1_h" class="title">13.2.1 Install The Demo Module</h4>
+            <p>Module installation in ThingsDB happens smoothly within the <code class="inline">/thingsdb</code> scope
+                using the <code class="inline">new_module()</code> function. Just give your module a friendly alias
+                (like <code class="inline">"demo"</code>), then provide the corresponding GitHub repository URL where
+                it resides.</p>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>Want a specific version? Simply add <code class="inline">@v0.1.0</code> (or similar) alongside
+                        the URL, and you're good to go!</p>
+                </div>
+            </div>
+            <p>Switch to the <code class="inline">/thingsdb</code> scope and install the <code class="inline">demo</code> module:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">@t</code>
+<code class="prompt">(@t)&gt;</code> <code class="user">new_module('demo', 'github.com/thingsdb/module-go-demo');</code>
+<code class="response">null</code></pre>
+            <p>Once you have installed the module, use the <code class="inline">module_info()</code> function to
+                confirm its success.</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">module_info("demo");</code>
+<code class="response">{
+    "conf": null,
+    "created_at": 1707931759,
+    "doc": "https://github.com/thingsdb/module-go-demo#readme",
+    "exposes": {
+        "echo": {
+            "argmap": ["message"],
+            "defaults": {"load": true},
+            "doc": "Echo message"
+        }
+    },
+    "file": "/usr/lib/thingsdb-modules/demo/bin/demo_linux_amd64.bin",
+    "github_owner": "thingsdb",
+    "github_ref": "default",
+    "github_repo": "module-go-demo",
+    "github_with_token": false,
+    "name": "demo",
+    "scope": null,
+    "status": "running",
+    "version": "0.1.0"
+}</code></pre>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>If the status is still <code class="inline">"installing module..."</code>, wait a few seconds
+                        longer for the installation to complete.</p>
+                </div>
+            </div>
+            <p>Now that the <code class="inline">demo</code> module is installed, let's explore how to use its capabilities
+                by understanding the methods it is exposing.</p>
+<pre><code class="response">"echo": {
+    "argmap": ["message"],
+    "defaults": {"load": true},
+    "doc": "Echo message"
+}</code></pre>
+            <p>Every module exposes specific methods. For <code class="inline">demo</code>, it is the <code class="inline">echo()</code> method.
+                This method takes a single argument, a <code class="inline">message</code>, and echoes it back.
+                The <code class="inline">load</code> attribute being set to <code class="inline">true</code> means the
+                echoed message will be loaded directly into ThingsDB, making it readily accessible.</p>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>By setting <code class="inline">load</code> to <code class="inline">false</code> (the default),
+                        you can unlock a special response format called "mpdata". This is ideal for modules that
+                        fetch data from external sources where you do not need to store it in ThingsDB. Instead,
+                        the data gets delivered directly to the client, avoiding unnecessary unpacking and repackaging
+                        steps. This significantly reduces processing overhead, making your application more efficient.</p>
+                </div>
+            </div>
+            <p>Let’s test the <code class="inline">echo()</code> method:</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">demo.echo("Hello Module!");</code>
+<code class="response">[
+    "Hello Module!"
+]</code></pre>
+            <p>As you see, the result is a list containing the echoed message. This is because calling a module
+                method ultimately returns a future, similar to our previous future examples. However, in this case,
+                the future holds the actual result (the echoed message) instead of being empty.</p>
+            <p>We can use the familiar <code class="inline">then()</code> method to capture and manipulate the echoed message:</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">demo.echo("Hello Module!").then(|result| result.upper());</code>
+<code class="response">"HELLO MODULE!"</code></pre>
+            <p>Here, <code class="inline">then()</code> grabs the echoed message (<code class="inline">"Hello Module!"</code>),
+                converts it to uppercase, and returns the result.</p>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p>All exposed methods accept a <em>fixed amount</em> of arguments, specified in
+                        the <code class="inline">argmap</code> property. Any arguments exceeding this limit will not be
+                        passed to the module's task itself. Instead, they will be parsed to the
+                        subsequent <code class="inline">then()</code> or <code class="inline">else()</code> callback methods
+                        you might use for handling results or errors.</p>
+                </div>
+            </div>
+        </section>
+        <section class="sect2">
+            <h4 id="ch13_2_3_h" class="title">13.2.3 Sending NTFYs with the HTTP(S) Request Module</h4>
+            <p>This section demonstrates another powerful module: the HTTP(S) request module. It allows you to seamlessly
+                interact with other web services and APIs.</p>
+            <div class="note">
+                <img class="note" src="images/lightbulb.png" alt="Note" />
+                <div class="content">
+                    <p><strong>Install the "ntfy" app:</strong> Download the app on your phone
+                        (<a href="https://ntfy.sh/">https://ntfy.sh/</a>) and subscribe to
+                        the <code class="inline">"ThingsDB_Book"</code> topic (or create your own).</p>
+                </div>
+            </div>
+            <p>Install the <code class="inline">requests</code> module using this code:</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">new_module("requests", "github.com/thingsdb/module-go-requests");</code>
+<code class="response">null</code></pre>
+            <p>Verify the installation:</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">module_info("requests").load().status;</code>
+<code class="response">"running"</code></pre>
+            <p>The <code class="inline">requests</code> module boasts a powerful <code class="inline">post_json()</code> method.
+                Watch how it sends a message to your NTFY app:</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">requests.post("https://ntfy.sh/", json_dump({
+    topic: "ThingsDB_Book",
+    message: "This book is fantastic!"
+})).then(|| "OK").else(|err| err.msg());</code>
+<code class="response">"OK"</code></pre>
+            <p>Check your NTFY app – you should see the <code class="inline">"This book is fantastic!"</code> message.</p>
+            <p>Just like <code class="inline">then()</code>, <code class="inline">else()</code> is available for all
+                futures and plays a crucial role in error handling. It defines what happens when a request or task
+                encounters an error.</p>
+            <p>While <code class="inline">else()</code> is not needed for simple futures that always resolve successfully,
+                it becomes essential when dealing with external sources like NTFY. These external systems can potentially
+                fail due to network issues, server errors, or other unforeseen circumstances.
+                If both <code class="inline">else()</code> and <code class="inline">then()</code> are defined, only one
+                will be called based on the outcome (success or error).</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch13_2_4_h" class="title">13.2.4 Talking to Yourself: Connecting ThingsDB Scopes</h4>
+            <p>While the modules we have seen so far work out-of-the-box, others require configuration for specific tasks.
+                Let's explore the <code class="inline">thingsdb</code> module, which allows communication across
+                different ThingsDB scopes.</p>
+            <p>You might think, <em>"We're already in ThingsDB, why connect to it again?"</em>. This module unlocks the
+                ability to communicate between different scopes within the same ThingsDB node or even connect to
+                separate ThingsDB clusters. Imagine you have data stored in a different scope that you need in your
+                current scope, or you want to trigger actions across multiple clusters. This module makes it possible!</p>
+            <p>As always, installation comes first:</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">new_module("thingsdb", "github.com/thingsdb/module-go-thingsdb");</code>
+<code class="response">null</code></pre>
+            <p>ThingsDB requires proper authentication. To grant the module access, let's create a dedicated user.
+                We can leverage the same <code class="inline">new_todo_user()</code> procedure we established
+                in <a href="ch06.xhtml#ch06_4_h">Chapter 6</a>:</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">wse(); new_todo_user("module", RUN);</code>
+<code class="response">"1w1WtiUZqSpCEX+B3p/Dtq"</code></pre>
+            <p>With the token in hand, we'll configure the module using <code class="inline">set_module_conf()</code>.</p>
+            <p>Here's how:</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">set_module_conf("thingsdb", {
+    token: "1w1WtiUZqSpCEX+B3p/Dtq",  </code><code class="comment">// Replace with your token</code><code class="user">
+    host: "localhost",
+});</code>
+<code class="response">null</code></pre>
+            <p>The function <code class="inline">set_module_conf()</code> operates asynchronously, meaning it initiates
+                the configuration process in the background and returns <code class="inline">nil</code> immediately.</p>
+            <p>To confirm successful configuration, always use <code class="inline">module_info()</code>:</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">module_info("thingsdb");</code>
+<code class="response">{
+    "conf": {
+        "host": "localhost",
+        "token": "1w1WtiUZqSpCEX+B3p/Dtq"
+    },
+    "status": "running",
+    </code><code class="comment">…  // – other information</code><code class="response">
+}</code></pre>
+            <p>Look for a status of <code class="inline">"running"</code> and correct configuration in
+                the <code class="inline">conf</code> section.</p>
+            <p>Troubleshooting:</p>
+            <ul>
+                <li><strong>Error Messages:</strong> If the <code class="inline">status</code> shows an error, carefully examine the message for guidance.</li>
+                <li><strong>Detailed Logging:</strong> Set the log level to <code class="inline">DEBUG</code> for more information in the node console <em>(see <a href="ch15.xhtml#ch15_4_h">Chapter 15</a> on how to enable debug logging)</em>.</li>
+                <li><strong>Node specific:</strong> For deeper troubleshooting, utilize <code class="inline">module_info()</code> within a node scope. This unlocks the number of active <code class="inline">tasks</code> and <code class="inline">restarts</code>. Active tasks reveal current workload on that node, potentially indicating bottlenecks. Restarts provide insight into module stability, highlighting frequent restarts as potential red flags.</li>
+            </ul>
+            <p>Now that the ThingsDB module is configured, let's put its cross-scope communication power to the test!</p>
+            <p>We'll use the <code class="inline">search_todos()</code> procedure to find to-do’s, even though we're currently in the <code class="inline">/thingsdb</code> scope:</p>
+<pre><code class="prompt">(@t)&gt;</code> <code class="user">thingsdb.run("//todos", "search_todos", ["book"]).then(|res| res);</code>
+<code class="response">[
+    {
+        "body": "Read a book",
+        "done": true,
+        "id": 2,
+        "severity": "Medium",
+        "user": {"name": "Alice"}
+    }
+]</code></pre>
+            <p>As you can see, we successfully retrieved a to-do containing <code class="inline">"book"</code> from the <code class="inline">//todos</code> scope! This demonstrates the magic of cross-scope communication enabled by the ThingsDB module.</p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch13_3_h" class="title">13.3 Managing Your Modules: Access, Updates, and More</h3>
+        <section class="sect2">
+            <h4 id="ch13_3_1_h" class="title">13.3.1 Controlling Module Access</h4>
+            <p>By default, all installed modules are accessible by any scope. This is indicated
+                by a <code class="inline">nil</code> value in the <code class="inline">scope</code> property
+                of the module information.</p>
+            <p>To limit a module's accessibility to a specific scope, use the <code class="inline">set_module_scope()</code> function.
+                Remember, each module can only have one assigned scope at a time, making it either globally accessible or
+                scoped to a single entity.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch13_3_2_h" class="title">13.3.2 Multiple Configurations, Multiple Installations</h4>
+            <p>If you need the same module with different configurations, or with access restrictions to different scopes,
+                consider installing it multiple times with different names. This allows you to tailor each instance to
+                its specific needs.</p>
+            <p>For example: Imagine connecting to different ThingsDB clusters. Install the <code class="inline">thingsdb</code> module twice with
+                unique names, each configured to access a different cluster.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch13_3_3_h" class="title">13.3.3 Keeping Your Modules Up-to-Date</h4>
+            <p>Modules are constantly evolving, so you might need to update them to benefit from new features and
+                bug fixes. The <code class="inline">refresh_module()</code> function helps you out here. It stops the
+                module, checks for available updates, performs the update if necessary, and restarts the module.</p>
+            <p>For granular control over module source updates, leverage the <code class="inline">deploy_module()</code> function.
+                While sharing similarities with <code class="inline">refresh_module()</code>, it offers the crucial
+                capability to specify a new source for the module. This empowers you to, for instance, "pin" the module to a
+                specific version, ensuring a stable and predictable environment. This is particularly valuable when working
+                with dependencies or critical modules where consistent behavior is paramount.</p>
         </section>
     </section>
 </section>
