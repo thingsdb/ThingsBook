@@ -90,7 +90,7 @@ future(|x| x + 10);</code>  <code class="comment">// No more `nil`s!</code>
     user = .users.get(name.lower());
     if (is_nil(user)) {
         return future(|name| {
-            wse();</code><code class="comment">// Side effect now contained within the future</code><code class="user">
+            wse();</code>  <code class="comment">// Side effect now contained within the future</code><code class="user">
             add_user(name);
         });
     };
