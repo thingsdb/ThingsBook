@@ -9,7 +9,50 @@
 <section class="sect1">
     <h3 id="ch16_5_h" class="title">16.5 Quiz - Challenge Your Understanding</h3>
     <ol class="quiz">
-
+        <li><p>Which of the following security practices are NOT recommended for securing a ThingsDB production environment?</p>
+            <ol>
+                <li>Rename the admin user and change the password.</li>
+                <li>Remove the admin password and switch to token authentication.</li>
+                <li>Use dedicated accounts with limited privileges for specific tasks.</li>
+                <li>Leave the default admin account credentials unchanged.</li>
+            </ol>
+        </li>
+        <li><p>ThingsDB is working on my computer but I cannot connect to the HTTP API. The error
+            message states <em>“Failed to connect to localhost port 9210”</em>. Which of the following
+            is most likely the reason?</p>
+            <ol>
+                <li>The account does not have the appropriate access rights.</li>
+                <li>The API request is invalid.</li>
+                <li>The API is not enabled on port 9210.</li>
+                <li>Connecting to the API on localhost is not possible.</li>
+            </ol>
+        </li>
+        <li><p>Which of the following URLs are valid to perform a query in the “foo” collection?</p>
+            <ol>
+                <li><code class="inline">http://thingsdb/foo</code></li>
+                <li><code class="inline">http://thingsdb/collection/foo</code></li>
+                <li><code class="inline">http://thingsdb//foo</code></li>
+                <li><code class="inline">http://thingsdb/foo/collection</code></li>
+                <li>The collection must be provided with the body, not the URL.</li>
+            </ol>
+        </li>
+        <li><p>The procedure <code class="inline">get_score</code> exists in the <code class="inline">//game</code> scope. Fix the
+            following API request to retrieve the score for a user with ID 123:</p>
+            <p class="quizcode"><code class="inline">GET http://thingsdb//game</code></p>
+            <p class="quizcode"><code class="inline">{</code></p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;"type": "procedure",</code></p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;"name": "get_score",</code></p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;"args": [{"user_id": 123}]</code></p>
+            <p class="quizcode"><code class="inline">}</code></p>
+        </li>
+        <li><p>Which of the following Media Types are supported by the ThingsDB HTTP API for data exchange?</p>
+            <ol>
+                <li>application/json</li>
+                <li>application/xml</li>
+                <li>text/csv</li>
+                <li>application/msgpack</li>
+            </ol>
+        </li>
     </ol>
 </section>
 </body>

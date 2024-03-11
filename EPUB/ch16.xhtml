@@ -24,6 +24,195 @@
     </ul>
     <section class="sect1">
         <h3 id="ch16_1_h" class="title">16.1 Enabling the API</h3>
+        <p>By default, the HTTP API is disabled for security reasons. To activate it, you need to configure the API port using the <code class="inline">THINGSDB_HTTP_API_PORT</code> environment variable:</p>
+        <ul>
+            <li><strong>Docker Compose:</strong> If you are using Docker Compose, this variable is already included in the provided <code class="inline">docker-compose.yml</code> file.</li>
+            <li><strong>Manual Startup:</strong> For manual node startup, set the environment variable before launching the node process.</li>
+        </ul>
+        <p>Once configured, you can verify if the API is enabled and determine its listening port using the following command within the node scope:</p>
+<pre><code class="prompt">(/node/0)&gt;</code> <code class="user">node_info().load().http_api_port;</code>
+<code class="response">9210</code></pre>
+        <p>Remember, the API needs to be enabled individually on each node. You can either check each
+            node or target the specific node you intend to interact with.</p>
+        <p>With the API up and running, the next sections will equip you with the knowledge to harness
+            its full potential. We'll explore various API endpoints, authentication mechanisms,
+            and practical use cases, empowering you to unlock new possibilities for managing and
+            interacting with your ThingsDB data.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch16_2_h" class="title">16.2 Exploring Your First API Call</h3>
+        <p>Authorization is crucial for safeguarding your ThingsDB data. This section delves into basic
+            authentication using a username and password.</p>
+        <p>Let's leverage curl to execute our first API call, utilizing the default credentials <code class="inline">admin</code> and <code class="inline">pass</code>:</p>
+<pre><code class="prompt">$</code> <code class="user">curl --location --request POST 'http://localhost:9210//todos' \
+--header 'Content-Type: application/json' \
+--user admin:pass \
+--data-raw '{
+    "type": "query",
+    "code": "a * b;",
+    "vars": {"a": 6, "b": 7}
+}'</code>
+<code class="response">42</code></pre>
+        <p>Breaking down the steps:</p>
+        <ol>
+            <li><strong>Endpoint:</strong> <code class="inline">http://localhost:9210//todos</code>
+                <p class="uname">This specifies the target endpoint for our API call. The //todos part is the scope. You can also use the full scope name /collection/todos in case you do not like the two slashes.</p>
+            </li>
+            <li><strong>Method:</strong> <code class="inline">POST</code>
+                <p class="uname">This indicates that we are sending data to the server.</p>
+            </li>
+            <li><strong>Content-Type:</strong> <code class="inline">application/json</code>
+                <p class="uname">This informs the server that we are sending JSON data.</p>
+            </li>
+            <li><strong>Authentication:</strong> <code class="inline">--user admin:pass</code>
+                <p class="uname">This provides the username and password for basic authentication.</p>
+            </li>
+            <li><strong>Data:</strong> <code class="inline">--data-raw</code>
+                <p class="uname">This specifies the raw JSON data containing the query information.</p>
+            </li>
+            <li><strong>JSON data:</strong>
+                <p class="uname">The request body containing the query details:</p>
+                <ol>
+                    <li><code class="inline">"type": "query"</code>: Specifies the request type as a query.</li>
+                    <li><code class="inline">"code": "a * b;"</code>: Defines the query code to be executed.</li>
+                    <li><code class="inline">"vars": {"a": 6, "b": 7}</code>: Provides variables used within the query code.</li>
+                </ol>
+            </li>
+        </ol>
+        <section class="sect2">
+            <h4 id="ch16_2_1_h" class="title">16.2.1 Securing Admin Credentials</h4>
+            <p>The previous example highlights the crucial importance of implementing secure
+                authentication practices in production environments. Here are two recommended approaches:</p>
+            <p><strong>Change default credentials</strong></p>
+            <p>Replace the default username and password for the administrator account with strong,
+                unique credentials. This prevents unauthorized access using well-known default values.</p>
+            <p><strong>Token-based authentication</strong></p>
+            <p>Create a token for the admin account and remove its password entirely:</p>
+<pre><code class="prompt">(/t)&gt;</code> <code class="user">token = new_token("admin");
+set_password("admin", nil);</code>  <code class="comment">// Remove the password</code>
+<code class="user">token;</code>  <code class="comment">// Return the new token</code>
+<code class="response">"7vXo2vgtnyaWsQ1LKw9CkI"</code></pre>
+            <p>Carefully safeguard the generated token. <strong>Losing the token means losing access to the admin account</strong>, as there is no password to fall back on.</p>
+        </section>
+        <section class="sect2">
+            <h4 id="ch16_2_2_h" class="title">16.2.2 Token Authentication</h4>
+            <p>Before we continue exploring API calls, let's create a new user account and grant it some
+                basic permissions for exploration. While we could utilize the API itself for this process,
+                we'll demonstrate using the <code class="inline">things-prompt</code>:</p>
+<pre><code class="prompt">(/t)&gt;</code> <code class="comment">// Use the /thingsdb scope</code>
+<code class="comment">// Create the user “web”</code>
+<code class="user">user = new_user("web");</code>
+
+<code class="comment">// Grant access to the specified scopes</code>
+<code class="user">grant("/node", user, QUERY);</code>
+<code class="user">grant("/thingsdb", user, QUERY);</code>
+<code class="user">grant("//todos", user, QUERY | RUN);</code>
+
+<code class="comment">// Generate a new token for user “web”</code>
+<code class="user">new_token(user);</code>
+<code class="response">"qOeH6Mny1jLgc6WRGujk5x"</code></pre>
+            <p>With the generated token, we can now perform queries through the API:</p>
+<pre><code class="prompt">$</code> <code class="user">curl --location --request POST 'http://localhost:9210/node/0' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer qOeH6Mny1jLgc6WRGujk5x' \
+--data-raw '{
+    "type": "query",
+    "code": "node_info().load().version;"
+}'</code>
+<code class="response">"1.5.1"</code></pre>
+            <p>As you can see, the response <code class="inline">"1.5.1"</code> confirms the successful
+                execution of the query through the API using the generated token and specified user
+                permissions. Notice the scope (<code class="inline">/node/0</code>) specified in the URL,
+                effectively targeting the node with ID 0. We also replaced
+                the <code class="inline">--user</code> argument which we previously used for username and
+                password authentication, with an <code class="inline">Authorization</code> header containing
+                the <code class="inline">Bearer</code> prefix and the generated token.</p>
+        </section>
+    </section>
+    <section class="sect1">
+        <h3 id="ch16_3_h" class="title">16.3 Running Procedures with the API</h3>
+        <p>The ThingsDB API extends beyond queries and allows you to execute procedures as well.</p>
+        <p>Invoking procedures:</p>
+        <ol>
+            <li>In the JSON data body, ensure the <code class="inline">"type"</code> field is set to <code class="inline">"run"</code> to indicate procedure execution.</li>
+            <li>Include a <code class="inline">"name"</code> field within the data body, specifying the name of the procedure you wish to call. This name corresponds to the procedure defined within the scope provided in the URL.</li>
+            <li>If the procedure requires arguments, include an <code class="inline">"args"</code> field. This field can be formatted in two ways:
+                <ul>
+                    <li>Positional arguments (array): Represent arguments as an array, with each element corresponding to the expected argument order in the procedure definition.</li>
+                    <li>Key-value pairs (object): Employ an object to explicitly define arguments by their respective names. Each key-value pair associates a name with its corresponding argument value.</li>
+                </ul>
+            </li>
+        </ol>
+        <p>Let's revisit the previously created <code class="inline">search_todos</code> procedure within the <code class="inline">//todos</code> scope. Here's how to execute it with positional arguments using <code class="inline">curl</code>:</p>
+<pre><code class="prompt">$</code> <code class="user">curl --location --request POST 'http://localhost:9210//todos' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer qOeH6Mny1jLgc6WRGujk5x' \
+--data-raw '{
+    "type": "run",
+    "name": "search_todos",
+    "args": ["book"]
+}'</code>
+<code class="response">[{"id":2,"body":"Read a book","user":{"name":"Alice"},"severity":"Medium","done":true}]</code></pre>
+        <p>Here's an alternative way to call the same procedure using key-value arguments:</p>
+<pre><code class="prompt">$</code> <code class="user">curl --location --request POST 'http://localhost:9210//todos' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer qOeH6Mny1jLgc6WRGujk5x' \
+--data-raw '{
+    "type": "run",
+    "name": "search_todos",
+    "args": {"needle": "teeth"}
+}'</code>
+<code class="response">[{"id":3,"body":"Brush your teeth","user":{"name":"Alice"},"severity":"Medium","done":false}]</code></pre>
+        <p>By understanding these concepts, you can effectively invoke procedures through the ThingsDB API to execute various functionalities within your applications.</p>
+    </section>
+    <section class="sect1">
+        <h3 id="ch16_4_h" class="title">16.4 MessagePack vs JSON for the API</h3>
+        <p>While JSON is the most common data format used with the ThingsDB API, it has limitations
+            when handling binary data. Attempting to send binary data directly within a JSON request
+            will result in an error, as demonstrated in the following example:</p>
+<pre><code class="prompt">$</code> <code class="user">curl --location --request POST 'http://localhost:9210/thingsdb' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer qOeH6Mny1jLgc6WRGujk5x' \
+--data-raw '{
+    "type": "query",
+    "code": "bytes(\"Not supported by JSON\");"
+}'</code>
+<code class="response">type `bytes` is not JSON serializable (-61)</code></pre>
+        <p>One approach to solve this issue involves <strong>base64 encoding</strong> the binary
+            data before including it in a JSON request. However, this adds an extra step of encoding and decoding, potentially impacting performance and code readability. The following example demonstrates this approach using the <code class="inline">base64_encode()</code> function:</p>
+<pre><code class="prompt">$</code> <code class="user">curl --location --request POST 'http://localhost:9210/thingsdb' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer qOeH6Mny1jLgc6WRGujk5x' \
+--data-raw '{
+    "type": "query",
+    "code": "base64_encode(bytes(\"Conversion works!\"));"
+}'</code>
+<code class="response">"Q29udmVyc2lvbiB3b3JrcyE="</code></pre>
+        <p>ThingsDB offers <strong>MessagePack</strong> as a more efficient alternative. It is
+            specifically designed for binary data exchange and provides a more compact and efficient
+            way to transmit information compared to JSON.</p>
+        <p>While directly utilizing MessagePack with <code class="inline">curl</code> might involve additional tools, here's a
+            simple Python example showcasing its usage:</p>
+<pre><code class="prompt">import requests
+import msgpack</code>
+
+<code class="comment"># Prepare data in MessagePack format</code>
+<code class="prompt">data = msgpack.packb({
+    "type": "query",
+    "code": "bytes('Works without conversion!');"
+})</code>
+<code class="comment"># Send request with appropriate headers</code>
+<code class="prompt">response = requests.post('http://localhost:9210//todos', data, headers={
+    "Content-Type": "application/msgpack",
+    "Authorization": "Bearer qOeH6Mny1jLgc6WRGujk5x"
+})</code>
+<code class="comment"># Unpack response and print the result</code>
+<code class="prompt">result = msgpack.unpackb(response.content)
+print(result)</code>  <code class="comment"># Prints: b'Works without conversion!'</code></pre>
+        <p>For most situations, JSON remains the preferred choice due to its widespread adoption
+            and ease of use. However, for performance-critical scenarios with substantial binary
+            data exchange, consider MessagePack. Being ThingsDB's internal format, data is already
+            optimized for MessagePack, minimizing the need for conversions compared to using JSON.</p>
     </section>
 </section>
 </body>

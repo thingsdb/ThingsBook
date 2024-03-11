@@ -9,7 +9,38 @@
 <section class="sect2">
     <h4 id="ch16_5_1_h" class="title">16.5.1 Quiz - Answers</h4>
     <ol class="quiz">
-
+        <li><p>Option “d”, “leave the default admin account credentials unchanged” is the least secure practice among the choices. Using the default credentials increases the risk of unauthorized access, as they are widely known and easily guessable.</p></li>
+        <li><p>Answer “c”. The most likely reason is that the API is not enabled on port 9210.</p>
+            <p>Use the <code class="inline">node_info().load().http_api_port;</code> query in the node scope to confirm the currently configured port for the HTTP API.</p>
+            <p>If the API is disabled or the desired port is not 9210, start ThingsDB with the environment
+            variable <code class="inline">THINGSDB_HTTP_API_PORT=9210</code>. This will enable the API on port 9210.</p></li>
+        <li><p>Both “b” (<code class="inline">../collection/foo</code>) and “c” (<code class="inline">..//foo</code>) are valid options, as ThingsDB allows shortening the 'collection' term in the URL.</p></li>
+        <li><p>Fix the request:</p>
+            <ol>
+                <li>Change method to <code class="inline">POST</code>.</li>
+                <li>Set type to <code class="inline">"run"</code> (indicating a procedure call).</li>
+                <li>Use either:
+                    <ol>
+                        <li>Positional args (e.g., <code class="inline">[123]</code>).</li>
+                        <li>Keywords (e.g., <code class="inline">{"user_id": 123}</code>).</li>
+                    </ol>
+                </li>
+            </ol>
+            <p>Here's the corrected request:</p>
+            <p class="quizcode"><code class="inline">POST http://thingsdb//game</code></p>
+            <p class="quizcode"><code class="inline">{</code></p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;"type": "run",</code></p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;"name": "get_score",</code></p>
+            <p class="quizcode"><code class="inline">&#xA0;&#xA0;"args": {"user_id": 123}  // or [123]</code></p>
+            <p class="quizcode"><code class="inline">}</code></p>
+        </li>
+        <li><p>Both “a” and “d”. The supported Media Types for the HTTP API are:</p>
+            <ul>
+                <li>application/json</li>
+                <li>application/msgpack</li>
+            </ul>
+            <p>Both JSON and MessagePack are efficient formats for transmitting data over the API. While JSON is the most commonly used option due to its widespread adoption, MessagePack offers advantages in terms of compactness and efficiency, especially when dealing with binary data.</p>
+        </li>
     </ol>
 </section>
 </body>
