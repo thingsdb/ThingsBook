@@ -125,7 +125,7 @@ code.prompt { color: #3a5985; }
 code.user { color: #c65102; }
 code.response { color: #618fca; }
 code.comment { color: #3b853a; }
-code.inline { color: #777; white-space: nowrap; font-size: 0.9em; }
+code.inline { color: #555; white-space: nowrap; font-size: 0.9em; }
 span.user { color:#c65102; white-space: nowrap; }
 
 section.dedication p {

@@ -15,7 +15,7 @@
     <div class="note">
         <img class="note" src="images/lightbulb.png" alt="Note" />
         <div class="content">
-            <p>Remember from <a href="ch04.xhtml#ch04_4_h">Chapter 4</a> how we used <code class="inline">log()</code> to emit warning events to the client? Well, events are a much broader concept in ThingsDB, acting as messengers carrying information triggered by various actions. Besides warnings, ThingsDB, for example, also generates events for node status changes.</p>
+            <p>Remember from <a href="ch04.xhtml#ch04_4_h">Chapter 4.4</a> how we used <code class="inline">log()</code> to emit warning events to the client? Well, events are a much broader concept in ThingsDB, acting as messengers carrying information triggered by various actions. Besides warnings, ThingsDB, for example, also generates events for node status changes.</p>
         </div>
     </div>
     <section class="sect1">
@@ -30,7 +30,7 @@
         <p>You'll see <code class="inline">"room:nil"</code> because no ID has been assigned yet. Assigning the
             room to the collection grants it an ID, just like how it works with things.</p>
         <p>Since we converted the root of the collection to type <code class="inline">Root</code> back
-            in <a href="ch07.xhtml#ch07_2_h">Chapter 7</a>, modifying its structure requires
+            in <a href="ch07.xhtml#ch07_2_h">Chapter 7.2</a>, modifying its structure requires
             the <code class="inline">mod_type()</code> function. We'll add a property named <code class="inline">dashboard</code> of type
             room to the <code class="inline">Root</code> type.</p>
 <pre><code class="prompt">(//todos)&gt;</code> <code class="user">mod_type("Root", "add", "dashboard", "room");</code>
@@ -79,7 +79,7 @@
         <p>Just like before, we'll demonstrate using Python to create a listener for the "dashboard" room.
             Remember, the concepts are transferable to other languages like C# or Go with minor adjustments.</p>
         <p>Before proceeding, let's create a dedicated user for the dashboard. We can leverage the
-            same <code class="inline">new_todo_user()</code> procedure we established in <a href="ch06.xhtml#ch06_4_h">Chapter 6</a>:</p>
+            same <code class="inline">new_todo_user()</code> procedure we established in <a href="ch06.xhtml#ch06_4_h">Chapter 6.4</a>:</p>
 <pre><code class="prompt">(//todos)&gt;</code> <code class="user">@t</code>
 <code class="prompt">(@t)&gt;</code> <code class="user">wse(); new_todo_user("dashboard", JOIN | RUN | QUERY);</code>
 <code class="response">"14VdoACr4WydUi/PEi1MV6"</code></pre>

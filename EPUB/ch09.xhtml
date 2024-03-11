@@ -271,7 +271,7 @@ set_type("Person", {friends: "{Person}"});</code>
         <p>In this example, we attempt to link a <code class="inline">Todo</code> and a <code class="inline">User</code>
             by adding the <code class="inline">Todo</code> object to the user's <code class="inline">todos</code> property.
             However, the <code class="inline">User</code> object lacks an ID, which is essential for establishing the
-            relation. Remember from <a href="ch04.xhtml#ch04_2_h">Chapter 4</a> that things only get IDs when they are
+            relation. Remember from <a href="ch04.xhtml#ch04_2_h">Chapter 4.2</a> that things only get IDs when they are
             assigned to a collection.</p>
         <p>To correctly create the relation, first assign the <code class="inline">User</code> to the collection before
             adding the <code class="inline">Todo</code>. This will grant them IDs, enabling ThingsDB to establish the

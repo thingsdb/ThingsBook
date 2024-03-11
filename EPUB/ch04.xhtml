@@ -9,7 +9,7 @@
 <section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch04_h" id="_ch04">
     <h2 id="ch04_h" class="title">Chapter 4 - Things</h2>
     <p>Let's start this chapter with a new collection named "chapter4" and switch to its scope.
-        If you are unsure of the process, revisit the end of <a href="ch01.xhtml#ch01_6_h">Chapter 1</a> for a refresher.</p>
+        If you are unsure of the process, revisit the end of <a href="ch01.xhtml#ch01_6_h">Chapter 1.6</a> for a refresher.</p>
     <p>Why is this programming language named ThingsDB?</p>
     <p>In ThingsDB, data is organized and stored within things, which are essentially objects with properties.
         Every collection starts with an empty root "thing" and you can create new things within the collection by
@@ -55,7 +55,7 @@
         the need to repeat variable names.</p>
     <section class="sect1">
         <h3 id="ch04_1_h" class="title">4.1 Things for Descriptive Multi-Value Returns</h3>
-        <p>While lists, as shown in <a href="ch03.xhtml#ch03_5_h">Chapter 3</a>, provide a simple way to return
+        <p>While lists, as shown in <a href="ch03.xhtml#ch03_5_h">Chapter 3.5</a>, provide a simple way to return
             multiple values, things provide a more descriptive alternative. They allow assigning meaningful names to
             each value, enhancing clarity and reducing reliance on positional interpretation. This structure improves
             readability and understanding, but comes at a slight network bandwidth cost compared to lists.</p>
@@ -82,7 +82,7 @@
     <section class="sect1">
         <h3 id="ch04_2_h" class="title">4.2 Thing IDs</h3>
         <p>Once a thing is stored, meaning it is connected to the collection root, it is assigned a unique identifier or ID.
-            Back in <a href="ch01.xhtml#ch01_1_h">Chapter 1</a> we already saw that our root thing had an ID and that we
+            Back in <a href="ch01.xhtml#ch01_1_h">Chapter 1.1</a> we already saw that our root thing had an ID and that we
             could ask for this ID using the <code class="inline">id()</code> method.</p>
 <pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">.id();</code>  <code class="comment">// ID for the collection root</code>
 <code class="response">1</code>
@@ -175,7 +175,7 @@
     <section class="sect1">
         <h3 id="ch04_3_h" class="title">4.3 Control Response with return Statement</h3>
         <p>To address the issue of returning only <em>one level</em> deep, we can utilize the <code class="inline">return</code>
-            keyword, which was introduced in <a href="ch01.xhtml#ch01_5_h">Chapter 1</a>. This statement accepts a
+            keyword, which was introduced in <a href="ch01.xhtml#ch01_5_h">Chapter 1.5</a>. This statement accepts a
             second argument that specifies the deep level:</p>
 <pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">return root(), 3;</code>
 <code class="response">{

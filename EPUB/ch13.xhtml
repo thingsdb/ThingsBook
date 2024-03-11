@@ -98,7 +98,7 @@ future(|x| x + 10);</code>  <code class="comment">// No more `nil`s!</code>
 });</code>
 <code class="response">null</code></pre>
             <p>Now, the main branch retrieves the existing user ID without causing a change. If a new user needs to be created, the future's closure handles it asynchronously, ensuring updates only happen when necessary.</p>
-            <p>Remember from <a href="ch06.xhtml#ch06_3_h">Chapter 6</a> that we can verify if a procedure triggers
+            <p>Remember from <a href="ch06.xhtml#ch06_3_h">Chapter 6.3</a> that we can verify if a procedure triggers
                 side effects by checking the <code class="inline">with_side_effects</code> property. Let's confirm
                 that our modified <code class="inline">get_or_create_user_id</code> procedure is truly free of them:</p>
 <pre><code class="prompt">(//todos)&gt;</code> <code class="user">procedure_info("get_or_create_user_id").load().with_side_effects;</code>
@@ -280,7 +280,7 @@ future(|x| x + 10);</code>  <code class="comment">// No more `nil`s!</code>
 <code class="response">null</code></pre>
             <p>ThingsDB requires proper authentication. To grant the module access, let's create a dedicated user.
                 We can leverage the same <code class="inline">new_todo_user()</code> procedure we established
-                in <a href="ch06.xhtml#ch06_4_h">Chapter 6</a>:</p>
+                in <a href="ch06.xhtml#ch06_4_h">Chapter 6.4</a>:</p>
 <pre><code class="prompt">(@t)&gt;</code> <code class="user">wse(); new_todo_user("module", RUN);</code>
 <code class="response">"1w1WtiUZqSpCEX+B3p/Dtq"</code></pre>
             <p>With the token in hand, we'll configure the module using <code class="inline">set_module_conf()</code>.</p>
@@ -307,7 +307,7 @@ future(|x| x + 10);</code>  <code class="comment">// No more `nil`s!</code>
             <p>Troubleshooting:</p>
             <ul>
                 <li><strong>Error Messages:</strong> If the <code class="inline">status</code> shows an error, carefully examine the message for guidance.</li>
-                <li><strong>Detailed Logging:</strong> Set the log level to <code class="inline">DEBUG</code> for more information in the node console <em>(see <a href="ch15.xhtml#ch15_4_h">Chapter 15</a> on how to enable debug logging)</em>.</li>
+                <li><strong>Detailed Logging:</strong> Set the log level to <code class="inline">DEBUG</code> for more information in the node console <em>(see <a href="ch15.xhtml#ch15_4_h">Chapter 15.4</a> on how to enable debug logging)</em>.</li>
                 <li><strong>Node specific:</strong> For deeper troubleshooting, utilize <code class="inline">module_info()</code> within a node scope. This unlocks the number of active <code class="inline">tasks</code> and <code class="inline">restarts</code>. Active tasks reveal current workload on that node, potentially indicating bottlenecks. Restarts provide insight into module stability, highlighting frequent restarts as potential red flags.</li>
             </ul>
             <p>Now that the ThingsDB module is configured, let's put its cross-scope communication power to the test!</p>
