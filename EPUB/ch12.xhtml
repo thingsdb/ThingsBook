@@ -8,7 +8,7 @@
 <body>
 <section class="chapter" epub:type="chapter" role="doc-chapter" aria-labelledby="ch12_h" id="_ch12">
     <h2 id="ch12_h" class="title">Chapter 12 - Real-Time Data Updates with Events and Rooms</h2>
-    <p>Imagine Alice and Bob want to build a live dashboard displaying the number of pending to-do’s for all users
+    <p>Imagine Alice and Bob want to build a live dashboard displaying the number of pending to-do's for all users
         in their to-do application. However, simply polling the collection every few seconds is inefficient and
         creates unnecessary network traffic.</p>
     <p>Enter the world of <em>Events</em> and <em>Rooms</em> in ThingsDB!</p>
@@ -27,7 +27,7 @@
         <p>Creating a room is simple:</p>
 <pre><code class="prompt">(//todos)&gt;</code> <code class="user">room();</code>
 <code class="response">"room:nil"</code></pre>
-        <p>You’ll see <code class="inline">"room:nil"</code> because no ID has been assigned yet. Assigning the
+        <p>You'll see <code class="inline">"room:nil"</code> because no ID has been assigned yet. Assigning the
             room to the collection grants it an ID, just like how it works with things.</p>
         <p>Since we converted the root of the collection to type <code class="inline">Root</code> back
             in <a href="ch07.xhtml#ch07_2_h">Chapter 7</a>, modifying its structure requires
@@ -112,7 +112,7 @@ async def main():
 
     await client.connect('localhost')  </code><code class="comment"># Replace with your address/port</code><code class="prompt">
     try:
-        </code><code class="comment"># Authenticate with the dashboards user’s token</code><code class="prompt">
+        </code><code class="comment"># Authenticate with the dashboards user's token</code><code class="prompt">
         await client.authenticate('14VdoACr4WydUi/PEi1MV6')
         await room.join(client)  </code><code class="comment"># Join the dashboard room</code><code class="prompt">
         await asyncio.Future()  </code><code class="comment"># Run forever</code><code class="prompt">
@@ -154,7 +154,7 @@ asyncio.run(main())</code></pre>
 <code class="response">null</code></pre>
         <p>The <code class="inline">_DashboardUser</code> type defines three properties: <code class="inline">id</code> to
             identify a user, <code class="inline">name</code> for retrieving user names and <code class="inline">count</code> for
-            calculating uncompleted to-do’s using a computed property.</p>
+            calculating uncompleted to-do's using a computed property.</p>
         <p>Finally, we create a procedure named <code class="inline">get_dashboard_state</code> that retrieves and formats the initial data:</p>
 <pre><code class="prompt">(//todos)&gt;</code> <code class="user">new_procedure("get_dashboard_state", || {
     .users.values().map_wrap("_DashboardUser");

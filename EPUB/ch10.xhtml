@@ -29,7 +29,7 @@
         <p>While code manipulation can achieve this, ThingsDB offers a more efficient approach: Wrap-Only types.
             These types act as templates defining how to present existing data. They can't be directly created,
             but they can "wrap" other types, transforming their output.</p>
-        <p>Let's dive into defining our wrap-only type for to-do’s.</p>
+        <p>Let's dive into defining our wrap-only type for to-do's.</p>
 <pre><code class="prompt">(//todos)&gt;</code> <code class="user">new_type("_Todo", true);</code>
 <code class="response">"_Todo"</code></pre>
         <p>The name we choose for our wrap-only type plays a role. While not strictly required, many developers
@@ -136,7 +136,7 @@
     </section>
     <section class="sect1">
         <h3 id="ch10_2_h" class="title">10.2 Update Search Todos</h3>
-        <p>Now that we have a robust wrap-only type for to-do’s, let's adapt the <code class="inline">search_todos</code>
+        <p>Now that we have a robust wrap-only type for to-do's, let's adapt the <code class="inline">search_todos</code>
             procedure to leverage its functionality.</p>
         <p>Initially, we could employ the familiar <code class="inline">map()</code> method to wrap each filtered <code class="inline">Todo</code> instance:</p>
 <pre><code class="user">.users.values().reduce(|total, user| {
@@ -147,7 +147,7 @@
             the <code class="inline">map_wrap()</code> method.</p>
         <p>Update the the <code class="inline">search_todos</code> procedure by incorporating the <code class="inline">map_wrap()</code> method:</p>
 <pre><code class="prompt">(//todos)&gt;</code> <code class="user">mod_procedure("search_todos", |needle| {
-    "Search for to-do’s";
+    "Search for to-do's";
     .users.values().reduce(|total, user| {
         total |= user.todos.filter(|todo| todo.body.contains(needle));
         total;

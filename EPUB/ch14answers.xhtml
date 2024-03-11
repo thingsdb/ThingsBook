@@ -9,17 +9,17 @@
 <section class="sect2">
     <h4 id="ch14_7_1_h" class="title">14.7.1 Quiz - Answers</h4>
     <ol class="quiz">
-        <li><p>Answer “a” is correct. Backups are your data's safety net. They create complete copies at specific points in time, ensuring you can recover from disasters like hardware failures or accidental deletion. These backups run silently in the background on designated nodes and can be scheduled for automatic execution, safeguarding your data without disrupting your ThingsDB operations.</p>
+        <li><p>Answer "a" is correct. Backups are your data's safety net. They create complete copies at specific points in time, ensuring you can recover from disasters like hardware failures or accidental deletion. These backups run silently in the background on designated nodes and can be scheduled for automatic execution, safeguarding your data without disrupting your ThingsDB operations.</p>
             <p>Exports on the other hand allow you to extract specific collections or structures for development purposes. This makes them ideal for creating testing environments, sharing data subsets, or migrating data between instances.</p>
         </li>
-        <li><p>The correct answer is “d”. While both <code class="inline">/n</code> and <code class="inline">/n/0</code> are technically valid scopes for creating a backup, using an explicit node scope like <code class="inline">/n/0</code> is recommended as it explicitly specifies the node on which the backup will be scheduled, eliminating ambiguity and potential confusion.</p></li>
-        <li><p>The correct answer is “c”. Restore the backup using <code class="inline">restore()</code> with the <code class="inline">take_access: true</code> property. This efficiently restores your data and automatically grants you access to all restored scopes, ensuring a smooth recovery process.</p>
+        <li><p>The correct answer is "d". While both <code class="inline">/n</code> and <code class="inline">/n/0</code> are technically valid scopes for creating a backup, using an explicit node scope like <code class="inline">/n/0</code> is recommended as it explicitly specifies the node on which the backup will be scheduled, eliminating ambiguity and potential confusion.</p></li>
+        <li><p>The correct answer is "c". Restore the backup using <code class="inline">restore()</code> with the <code class="inline">take_access: true</code> property. This efficiently restores your data and automatically grants you access to all restored scopes, ensuring a smooth recovery process.</p>
             <p><em>(Once the restore is completed, always <strong>re-authenticate</strong> due to possible user ID changes!!)</em></p>
         </li>
         <li>The <code class="inline">backups_ok()</code> function provides a convenient boolean answer on backup success,
             but it does not give you the "why" behind failures. For that, you need the <code class="inline">backups_info()</code> function,
             which goes beyond a simple <code class="inline">true</code> / <code class="inline">false</code> by providing a result message, often pinpointing the exact issue or offering clues for troubleshooting.</li>
-        <li><p>Including tasks in imports or restores can lead to unexpected behavior and potential data manipulation if not carefully considered. If, for example, a task is scheduled for a specific date in the past, restoring it might trigger immediate execution, potentially causing issues with outdated data or unintended consequences. Therefore, answer “a” is correct.</p></li>
+        <li><p>Including tasks in imports or restores can lead to unexpected behavior and potential data manipulation if not carefully considered. If, for example, a task is scheduled for a specific date in the past, restoring it might trigger immediate execution, potentially causing issues with outdated data or unintended consequences. Therefore, answer "a" is correct.</p></li>
     </ol>
 </section>
 </body>

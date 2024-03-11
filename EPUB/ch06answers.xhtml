@@ -15,7 +15,7 @@
             <ul>
                 <li>You can simply include the procedure's name in your query, and ThingsDB will execute the procedure and return the result.</li>
                 <li>The ThingsDB protocol allows you to make a direct call to a procedure without invoking a query. Native clients for popular programming languages, including Python, C#, and Go, provide built-in support for this direct procedure invocation.</li>
-                <li>If you have enabled the HTTP API, you can also use it to call procedures. This can be a good option if you want to call procedures from a web application or other client that does not support the ThingsDB protocol. We’ll explore the HTTP API in more detail in <a href="ch16.xhtml#ch16_h">Chapter 16</a>.</li>
+                <li>If you have enabled the HTTP API, you can also use it to call procedures. This can be a good option if you want to call procedures from a web application or other client that does not support the ThingsDB protocol. We'll explore the HTTP API in more detail in <a href="ch16.xhtml#ch16_h">Chapter 16</a>.</li>
             </ul>
         </li>
         <li><p>While the client response for <code class="inline">procedure_info()</code> might initially seem to imply that the return value is a <em>thing</em>, it is actually an instance of <em>mpdata</em>, a specialized data type that represents serialized MessagePack data. To convert mpdata, you can call the <code class="inline">load()</code> method on the mpdata object. This will effectively de-serialize the MessagePack data and return the corresponding thing instance.</p></li>

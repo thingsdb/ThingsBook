@@ -100,7 +100,7 @@ set_password("admin", nil);</code>  <code class="comment">// Remove the password
                 basic permissions for exploration. While we could utilize the API itself for this process,
                 we'll demonstrate using the <code class="inline">things-prompt</code>:</p>
 <pre><code class="prompt">(/t)&gt;</code> <code class="comment">// Use the /thingsdb scope</code>
-<code class="comment">// Create the user “web”</code>
+<code class="comment">// Create the user "web"</code>
 <code class="user">user = new_user("web");</code>
 
 <code class="comment">// Grant access to the specified scopes</code>
@@ -108,7 +108,7 @@ set_password("admin", nil);</code>  <code class="comment">// Remove the password
 <code class="user">grant("/thingsdb", user, QUERY);</code>
 <code class="user">grant("//todos", user, QUERY | RUN);</code>
 
-<code class="comment">// Generate a new token for user “web”</code>
+<code class="comment">// Generate a new token for user "web"</code>
 <code class="user">new_token(user);</code>
 <code class="response">"qOeH6Mny1jLgc6WRGujk5x"</code></pre>
             <p>With the generated token, we can now perform queries through the API:</p>

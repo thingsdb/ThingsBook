@@ -65,7 +65,7 @@ set_type("Todo", {
             <h4 id="ch07_1_1_h" class="title">7.1.1 Enhancing the Todo Type using mod_type()</h4>
             <p>We defined the <code class="inline">Todo</code> type to accept empty strings for the
                 <code class="inline">body</code> property. However, this is not ideal, as we want to ensure that
-                to-do’s always have a meaningful description. To address this, we can utilize property definitions
+                to-do's always have a meaningful description. To address this, we can utilize property definitions
                 to impose stricter constraints on the <code class="inline">body</code> property.</p>
             <p>Instead of simply <code class="inline">"str"</code>, we can specify a range condition
                 using <code class="inline">"str&lt;1:&gt;"</code>. This indicates that the body must be at least
@@ -336,7 +336,7 @@ set_type("Root", {
     </section>
     <section class="sect1">
         <h3 id="ch07_7_h" class="title">7.7 More Definitions</h3>
-        <p>In this book we’ll explore more definitions than discussed so far. We already used a definition
+        <p>In this book we'll explore more definitions than discussed so far. We already used a definition
             to specify a string with a range, a boolean and a list restricted to a specific data type.</p>
         <p>As always, use the documentation page for a full description of all the type property definitions
             which can be found here: <a href="https://docs.thingsdb.io/v1/overview/type/">https://docs.thingsdb.io/v1/overview/type/</a>

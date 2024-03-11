@@ -109,11 +109,11 @@
 <pre><code class="prompt">(//todos)&gt;</code> <code class="user">mod_type("Todo", "add", "creation", "datetime");</code>
 <code class="response">null</code></pre>
         <p>This command seamlessly integrates the <code class="inline">creation</code> property into the <code class="inline">Todo</code> type.
-            However, since we don't possess historical data about the exact creation dates of existing to-do’s,
+            However, since we don't possess historical data about the exact creation dates of existing to-do's,
             the system automatically assigns the current date and time to them. This ensures consistency while
             acknowledging the limitations of our historical data.</p>
         <p>Next, we want to record the moment when a <code class="inline">Todo</code> item is marked as completed.
-            But here's a twist: not all to-do’s might be completed yet. For this, we'll introduce a property
+            But here's a twist: not all to-do's might be completed yet. For this, we'll introduce a property
             named completion, but with the <code class="inline">"datetime?"</code> definition. The question
             mark (<code class="inline">?</code>) signifies that this property is optional, allowing it to hold
             either a datetime value (representing the completion time) or <code class="inline">nil</code> (indicating
@@ -131,7 +131,7 @@
 });</code>
 <code class="response">null</code></pre>
         <p>This code snippet does more than simply adding the property. It also defines a closure to initialize
-            the <code class="inline">completion</code> value appropriately for existing to-do’s and it also fixes
+            the <code class="inline">completion</code> value appropriately for existing to-do's and it also fixes
             the <code class="inline">mark_as_done</code> method to set the <code class="inline">completion</code> value
             after the to-do will be marked as done.</p>
     </section>
@@ -262,7 +262,7 @@
     </section>
     <section class="sect1">
         <h3 id="ch08_4_h" class="title">8.4 Farewell, done Property</h3>
-        <p>Remember the <code class="inline">done</code> property for marking completed to-do’s?
+        <p>Remember the <code class="inline">done</code> property for marking completed to-do's?
             We can actually remove it! The <code class="inline">completion</code> property serves this purpose perfectly.</p>
         <p>Here's how we clean up the data model:</p>
 <pre><code class="prompt">(//todos)&gt;</code>

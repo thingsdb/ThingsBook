@@ -336,7 +336,7 @@ NameError: name value is not defined</code></pre>
                     the logging level for a node.</p>
             </div>
         </div>
-        <p>Let’s switch the prompt to the <code class="inline">@thingsdb</code> scope:</p>
+        <p>Let's switch the prompt to the <code class="inline">@thingsdb</code> scope:</p>
         <pre><code class="prompt">(//stuff)&gt;</code> <code class="user">@t</code>
 <code class="prompt">(@t)&gt;</code></pre>
         <p>We see that we switched to another scope. The <code class="inline">@thingsdb</code> scope is not able to store
@@ -345,7 +345,7 @@ NameError: name value is not defined</code></pre>
 <code class="response">LookupError: the `root` of the `@thingsdb` scope is inaccessible; you might want to query a `@collection` scope?</code></pre>
         <p>Instead, we use the <code class="inline">@thingsdb</code> scope to manage users, access rights, collections,
             modules, nodes and more.</p>
-        <p>For now we don't go into details but we create a new empty collection using
+        <p>For now we do not go into details but we create a new empty collection using
             the <code class="inline">new_collection()</code> function which is available in
             the <code class="inline">@thingsdb</code> scope.</p>
         <pre><code class="prompt">(@t)&gt;</code> <code class="user">new_collection('chapter2');</code>

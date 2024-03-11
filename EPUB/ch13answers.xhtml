@@ -17,21 +17,21 @@
             <p>But wait! There is a workaround! While returning two direct futures is not possible, you can achieve similar behavior by chaining futures using the <code class="inline">then()</code> method. The first future's result can be passed to the second future, effectively creating a chained execution. One more workaround is to parse them as arguments to an empty future:</p>
             <p class="quizcode"><code class="inline">future(nil, future(|| 2+2), future(|| 3*3));  // response: [nil, 4, 9]</code></p>
         </li>
-        <li><p>Answer “b” is correct. When set to <code class="inline">true</code>, it instructs ThingsDB to automatically
+        <li><p>Answer "b" is correct. When set to <code class="inline">true</code>, it instructs ThingsDB to automatically
             deserialize the response from the method call, making it readily accessible for further processing or
             manipulation. However, if you set the <code class="inline">load</code> property to <code class="inline">false</code>
             (the default), the method returns the response as "mpdata". This option is particularly useful when you do not need
             to use the data within your ThingsDB application or when you plan to send it directly to a client.
             In these cases, deserializing and then serializing it again would be unnecessary and potentially slow down your
             application.</p></li>
-        <li><p>Answer “d” is the correct answer. The <code class="inline">argmap</code> property set to <code class="inline">["*"]</code>
+        <li><p>Answer "d" is the correct answer. The <code class="inline">argmap</code> property set to <code class="inline">["*"]</code>
             signifies that the <code class="inline">bar()</code> method can accept a single
             argument (<code class="inline">nil</code> or a thing). In this case, you are providing nil as the argument.
             Additional arguments (like the <code class="inline">42</code> in the code snippet) won't be processed by the
             module itself. Instead, they'll be passed directly to the <code class="inline">then()</code> or <code class="inline">else()</code>
             callbacks making <code class="inline">B</code> or <code class="inline">D</code> equal to <code class="inline">42</code>
             depending on success or failure. This allows you to parse data to your callback logic.</p></li>
-        <li><p>Option “c” offers the most effective path to diagnosis. Use <code class="inline">module_info()</code> to
+        <li><p>Option "c" offers the most effective path to diagnosis. Use <code class="inline">module_info()</code> to
             get its <code class="inline">config</code> and <code class="inline">status</code>, plus check the node
             console logs for clues. These steps unlock insights into the issue, paving the way for a fix.
             Remember, understanding the root cause is key!</p></li>

@@ -29,7 +29,7 @@
             then executes asynchronously. The response you see (<code class="inline">[null]</code>) is the
             result of the future task (which, in this case, is nothing).</p>
         <section class="sect2">
-            <h4 id="ch13_1_1_h" class="title">13.1.1 Using the Future’s Task Result</h4>
+            <h4 id="ch13_1_1_h" class="title">13.1.1 Using the Future's Task Result</h4>
             <p>We have seen how futures hold the place for background tasks. But what if we want to do something
                 with the result of that task once it is finished? That is where the <code class="inline">then()</code>
                 method comes to the rescue!</p>
@@ -207,7 +207,7 @@ future(|x| x + 10);</code>  <code class="comment">// No more `nil`s!</code>
                         steps. This significantly reduces processing overhead, making your application more efficient.</p>
                 </div>
             </div>
-            <p>Let’s test the <code class="inline">echo()</code> method:</p>
+            <p>Let's test the <code class="inline">echo()</code> method:</p>
 <pre><code class="prompt">(@t)&gt;</code> <code class="user">demo.echo("Hello Module!");</code>
 <code class="response">[
     "Hello Module!"
@@ -311,7 +311,7 @@ future(|x| x + 10);</code>  <code class="comment">// No more `nil`s!</code>
                 <li><strong>Node specific:</strong> For deeper troubleshooting, utilize <code class="inline">module_info()</code> within a node scope. This unlocks the number of active <code class="inline">tasks</code> and <code class="inline">restarts</code>. Active tasks reveal current workload on that node, potentially indicating bottlenecks. Restarts provide insight into module stability, highlighting frequent restarts as potential red flags.</li>
             </ul>
             <p>Now that the ThingsDB module is configured, let's put its cross-scope communication power to the test!</p>
-            <p>We'll use the <code class="inline">search_todos()</code> procedure to find to-do’s, even though we're currently in the <code class="inline">/thingsdb</code> scope:</p>
+            <p>We'll use the <code class="inline">search_todos()</code> procedure to find to-do's, even though we're currently in the <code class="inline">/thingsdb</code> scope:</p>
 <pre><code class="prompt">(@t)&gt;</code> <code class="user">thingsdb.run("//todos", "search_todos", ["book"]).then(|res| res);</code>
 <code class="response">[
     {

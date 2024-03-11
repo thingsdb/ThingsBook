@@ -118,7 +118,7 @@
         <section class="sect2">
             <h4 id="ch11_2_1_h" class="title">11.2.1 Enumerator Members</h4>
             <p>Accessing an enumerator's member can be valuable for integrating with other platforms or systems.
-                Ideally, we want these members readily available as a single “thing” for simpler handling.</p>
+                Ideally, we want these members readily available as a single "thing" for simpler handling.</p>
             <p>While <code class="inline">enum_info()</code> exposes members, processing them requires code to
                 convert the returned list of tuples into a desired format. Here's an example
                 using <code class="inline">reduce()</code>:</p>
@@ -129,7 +129,7 @@
 <code class="response">{"Low": 0, "Medium": 1, "High": 2}</code></pre>
             <p>As you can see, this approach involves several steps and can be cumbersome.</p>
             <p>Fortunately, ThingsDB provides a built-in solution: <code class="inline">enum_map()</code>.
-                This function directly returns the enumerator members as a convenient “thing”:</p>
+                This function directly returns the enumerator members as a convenient "thing":</p>
 <pre><code class="prompt">(//todos)&gt;</code> <code class="user">enum_map("Severity");</code>
 <code class="response">{"Low": 0, "Medium": 1, "High": 2}</code></pre>
         </section>

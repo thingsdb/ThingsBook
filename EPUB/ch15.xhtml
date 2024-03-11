@@ -50,7 +50,7 @@
                     <tr><td><code class="inline">THINGSDB_STORAGE_PATH</code></td><td>Location to store ThingsDB data.</td></tr>
                 </table>
             </div>
-            <p>Create a separate directory: (we use “node1” and consider the first one as “node0”)</p>
+            <p>Create a separate directory: (we use "node1" and consider the first one as "node0")</p>
 <pre><code class="prompt">$</code> <code class="user">mkdir ~/node1</code></pre>
             <p>Start the node with unique port numbers and data paths:</p>
 <pre><code class="prompt">$</code> <code class="user">THINGSDB_LISTEN_CLIENT_PORT=9201 \
@@ -354,12 +354,12 @@ You can use the following query to add this node:
         </section>
         <section class="sect2">
             <h4 id="ch15_6_2_h" class="title">15.6.2 Finding Things</h4>
-            <p>The <code class="inline">search()</code> method, available on all <em>“thing”</em> instances,
-                offers a valuable tool for debugging purposes. It enables you to search for a specific <em>“thing”</em>
+            <p>The <code class="inline">search()</code> method, available on all <em>"thing"</em> instances,
+                offers a valuable tool for debugging purposes. It enables you to search for a specific <em>"thing"</em>
                 within their properties.</p>
             <p>The <code class="inline">search()</code> method accepts two arguments:</p>
             <ol>
-                <li>The “thing” you are searching for.</li>
+                <li>The "thing" you are searching for.</li>
                 <li>An optional thing with configuration settings:
                     <ul>
                         <li><code class="inline">deep</code>: Controls the maximum depth of the search (defaults to 1).</li>
