@@ -9,7 +9,35 @@
 <section class="sect1">
     <h3 id="ch15_7_h" class="title">15.7 Quiz - Challenge Your Understanding</h3>
     <ol class="quiz">
-
+        <li><p>When adding a new node to a ThingsDB cluster, under what circumstances and for what reason might you need to wait before proceeding with further actions?</p></li>
+        <li><p>Which command-line argument is only required once when starting a new node to enable it to join an existing ThingsDB cluster?</p></li>
+        <li><p>In a multi-node ThingsDB setup, which of the following practices are considered essential for ensuring optimal performance and stability?</p>
+            <ol>
+                <li>Use the same ThingsDB version across all nodes.</li>
+                <li>Ensure consistent library versions across all nodes.</li>
+                <li>Maintain identical configuration settings for options that control query behavior (e.g., <code class="inline">THINGSDB_RESULT_SIZE_LIMIT</code>).</li>
+                <li>Regularly monitor counter metrics using the <code class="inline">counters()</code> method on each node to assess cluster health.</li>
+                <li>All of the above.</li>
+            </ol>
+        </li>
+        <li><p>Which methods allow you to modify the log level of a ThingsDB node, enabling you to control the verbosity of its output?</p>
+            <ol>
+                <li><code class="inline">--log-level</code> command-line argument.</li>
+                <li><code class="inline">set_log_level()</code> function within the node scope.</li>
+                <li>Both of the above methods.</li>
+                <li>Controlling the log level is not possible.</li>
+            </ol>
+        </li>
+        <li><p>You’re planning to implement liveness and readiness probes for ThingsDB nodes, but
+            the <code class="inline">node_info().load().http_status_port;</code> command
+            returns <code class="inline">"disabled"</code>, signaling a crucial feature is not yet active.
+            What specific steps must be taken to successfully enable the HTTP status port for these nodes,
+            allowing for effective health checks?</p></li>
+        <li><p>Predict the reference count and explain the reasoning behind your answer for the following code snippet:</p>
+            <p class="quizcode"><code class="inline">t = {};</code></p>
+            <p class="quizcode"><code class="inline">refs(t);  // ???</code></p>
+        </li>
+        <li><p>Consider a multi-node setup. You set a property <code class="inline">.x</code> in one query and then immediately try to read its value in a subsequent query. However, you do not get the expected result. Why might this occur?</p></li>
     </ol>
 </section>
 </body>
