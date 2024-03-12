@@ -94,6 +94,12 @@
         <section class="sect2">
             <h4 id="ch08_1_1_h" class="title">8.1.1 Bridging the Gap Between Datetime and Timestamp</h4>
             <p>Converting a datetime object to a timestamp can be achieved effortlessly by casting it as an integer.</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">int(datetime("2024-02-06T09:26:09Z"));</code>
+<code class="response">1707211569</code></pre>
+            <p>ThingsDB also offers a data type called <em>timeval</em>. While functionally equivalent to <em>datetime</em>,
+                it has a key difference: instead of returning an ISO 8601 formatted string, timeval returns a raw UTC
+                timestamp integer in its responses. Think of it as a more compact and optimized version of datetime for
+                timestamp-related tasks.</p>
 <pre><code class="prompt">(//todos)&gt;</code> <code class="user">timeval("2024-02-06T09:26:09Z");</code>
 <code class="response">1707211569</code></pre>
         </section>
