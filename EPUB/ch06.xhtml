@@ -336,7 +336,7 @@ asyncio.run(main())</code></pre>
         <p>Instead of creating users manually, we can create a procedure to automate the process. This will make
             it easier to manage users and create new ones as needed.</p>
         <p>Let's create a procedure called <code class="inline">new_todo_user</code> in the
-            <code class="inline">/thingsdb</code> scope that takes a user name as input and generates a unique
+            <code class="inline">/thingsdb</code> scope that takes a user name and access flags as input and generates a unique
             token for authentication.</p>
 <pre><code class="prompt">(//todos)&gt;</code> <code class="user">@ /t;</code>  <code class="comment">// Switch to the /thingsdb scope</code>
 <code class="prompt">(/t)&gt;</code> <code class="user">new_procedure("new_todo_user", |name, access| {
