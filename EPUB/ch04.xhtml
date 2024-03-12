@@ -12,8 +12,8 @@
         If you are unsure of the process, revisit the end of <a href="ch01.xhtml#ch01_6_h">Chapter 1.6</a> for a refresher.</p>
     <p>Why is this programming language named ThingsDB?</p>
     <p>In ThingsDB, data is organized and stored within things, which are essentially objects with properties.
-        Every collection starts with an empty root "thing" and you can create new things within the collection by
-        assigning properties to them. To create a new thing, you can use the <code class="inline">thing()</code> function
+        Every collection starts with an empty root "thing". New "things" can be created
+        by using the <code class="inline">thing()</code> function
         without arguments, or, more commonly, you can use curly braces <code class="inline">{}</code>:</p>
 <pre><code class="prompt">(//chapter4)&gt;</code> <code class="user">t = {};</code>  <code class="comment">// Create an empty thing</code>
 <code class="user">t.x = 4;</code>  <code class="comment">// Assign property "x" with value 4 to "t"</code>
