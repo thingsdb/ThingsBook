@@ -16,9 +16,9 @@
         <li><p>The correct answer is "c". Restore the backup using <code class="inline">restore()</code> with the <code class="inline">take_access: true</code> property. This efficiently restores your data and automatically grants you access to all restored scopes, ensuring a smooth recovery process.</p>
             <p><em>(Once the restore is completed, always <strong>re-authenticate</strong> due to possible user ID changes!!)</em></p>
         </li>
-        <li>The <code class="inline">backups_ok()</code> function provides a convenient boolean answer on backup success,
+        <li><p>The <code class="inline">backups_ok()</code> function provides a convenient boolean answer on backup success,
             but it does not give you the "why" behind failures. For that, you need the <code class="inline">backups_info()</code> function,
-            which goes beyond a simple <code class="inline">true</code> / <code class="inline">false</code> by providing a result message, often pinpointing the exact issue or offering clues for troubleshooting.</li>
+            which goes beyond a simple <code class="inline">true</code> / <code class="inline">false</code> by providing a result message, often pinpointing the exact issue or offering clues for troubleshooting.</p></li>
         <li><p>Including tasks in imports or restores can lead to unexpected behavior and potential data manipulation if not carefully considered. If, for example, a task is scheduled for a specific date in the past, restoring it might trigger immediate execution, potentially causing issues with outdated data or unintended consequences. Therefore, answer "a" is correct.</p></li>
     </ol>
 </section>
