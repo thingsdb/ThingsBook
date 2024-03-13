@@ -238,6 +238,10 @@ You can use the following query to add this node:
         <p><code class="inline">node_info()</code> also exposes the current log level for a node. You can set the
             initial level using the command-line argument <code class="inline">--log-level {debug,info,warning,error,critical}</code> or
             adjust it dynamically. Let's check the current level:</p>
+<pre><code class="prompt">(/node/0)&gt;</code> <code class="user">node_info().load().log_level;</code>
+<code class="response">"WARNING"</code></pre>
+            <p>A default setting should display <code class="inline">"WARNING"</code>.</p>
+            <p>Need more detailed insights into your node's activities? ThingsDB allows you to dynamically adjust the log level using the <code class="inline">set_log_level()</code> function.</p>
 <pre><code class="prompt">(/node/0)&gt;</code> <code class="user">set_log_level(DEBUG);</code>  <code class="comment">// DEBUG, INFO, WARNING, ERROR, CRITICAL</code>
 <code class="response">null</code></pre>
         <div class="note">
