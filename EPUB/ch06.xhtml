@@ -220,8 +220,8 @@ asyncio.run(main())</code></pre>
             <p>To enhance code organization, we'll migrate the <em>"search_todos"</em> query to a reusable procedure.
                 This approach encapsulates the search logic and makes it easily accessible from multiple parts of the
                 application.</p>
-            <p>Create the procedure in the <em>things-prompt</em>:</p>
-<pre><code class="prompt">(//todos)&gt;</code> <code class="user">new_procedure("search_todos", |needle| {
+            <p>Create the procedure in a tool like <em>things-prompt</em> or <em>ThingsGUI</em>. Having explored code-based query execution, you might even prefer to use Python or some other language for code execution. In this book we'll stick with the <em>things-prompt</em> for simple code snippets:</p>
+<pre><code class="prompt">(//todos)&gt;</code> <code class="user">new_procedure("search_todos", |needle| {i
     "Search for todo's";
     .todos.filter(|todo| todo.contains(needle));
 });</code>
