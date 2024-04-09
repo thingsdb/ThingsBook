@@ -37,28 +37,28 @@
     libpcre2-dev \
     libyajl-dev \
     libcurl4-nss-dev \
-    build-essential</code>
+    build-essential \
+    cmake</code>
 <code class="response">…</code></pre>
             <p><strong>Step 3: Clone and Build ThingsDB</strong></p>
             <p>Clone the ThingsDB repository:</p>
             <pre><code class="prompt">ti@LAPTOP:~$</code> <code class="user">git clone https://github.com/thingsdb/ThingsDB.git</code>
 <code class="response">…</code></pre>
-            <p>Navigate to the <code class="inline">ThingsDB/Release</code> directory and build ThingsDB:</p>
-            <pre><code class="prompt">ti@LAPTOP:~$</code> <code class="user">cd ThingsDB/Release</code>
-<code class="prompt">ti@LAPTOP:~/ThingsDB/Release$</code> <code class="user">make clean &amp;&amp; make</code>
+            <p>Build ThingsDB:</p>
+            <pre><code class="prompt">ti@LAPTOP:~$</code> <code class="user">./ThingsDB/release-build.sh</code>
 <code class="response">…</code></pre>
             <p><strong>Step 4: Create a Symlink (Optional)</strong></p>
             <p>To easily start ThingsDB from any directory, create a symlink:</p>
-            <pre><code class="prompt">ti@LAPTOP:~/ThingsDB/Release$</code> <code class="user">sudo ln -sr ./thingsdb /usr/bin/thingsdb</code></pre>
+            <pre><code class="prompt">ti@LAPTOP:~$</code> <code class="user">sudo ln -sr ./ThingsDB/thingsdb /usr/bin/thingsdb</code></pre>
             <p><strong>Step 5: Verify Installation</strong></p>
             <p>Check if ThingsDB is installed correctly:</p>
 <pre><code class="prompt">ti@LAPTOP:~$</code> <code class="user">thingsdb --version</code>
 <code class="response">   _____ _   _             ____  _____
   |_   _| |_|_|___ ___ ___|    \| __  |
     | | |   | |   | . |_ -|  |  | __ -|
-    |_| |_|_|_|_|_|_  |___|____/|_____|   version: 1.5.2
+    |_| |_|_|_|_|_|_  |___|____/|_____|   version: 1.5.3
                   |___|
-ThingsDB Node 1.5.2
+ThingsDB Node 1.5.3
 Maintainer: Jeroen van der Heijden &lt;jeroen@cesbit.com&gt;
 Home-page: https://thingsdb.io</code></pre>
             <p><strong>Next Steps:</strong></p>
