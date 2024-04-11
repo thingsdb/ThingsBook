@@ -46,6 +46,7 @@
                     <tr><td><code class="inline">THINGSDB_LISTEN_NODE_PORT</code></td><td>Listen to this TCP port for node connections.</td></tr>
                     <tr><td><code class="inline">THINGSDB_HTTP_API_PORT</code></td><td>(Optional) Listen to this TCP port for HTTP API requests.</td></tr>
                     <tr><td><code class="inline">THINGSDB_HTTP_STATUS_PORT</code></td><td>(Optional) Listen to this TCP port for HTTP status requests.</td></tr>
+                    <tr><td><code class="inline">THINGSDB_WS_PORT</code></td><td>(Optional) Listen to this TCP port for WebSocket requests.</td></tr>
                     <tr><td><code class="inline">THINGSDB_MODULES_PATH</code></td><td>Path where ThingsDB modules are stored.</td></tr>
                     <tr><td><code class="inline">THINGSDB_STORAGE_PATH</code></td><td>Location to store ThingsDB data.</td></tr>
                 </table>
@@ -57,6 +58,7 @@
   THINGSDB_LISTEN_NODE_PORT=9221 \
   THINGSDB_HTTP_API_PORT=9211 \
   THINGSDB_HTTP_STATUS_PORT=8081 \
+  THINGSDB_WS_PORT=9271 \
   THINGSDB_MODULES_PATH=~/node1/modules \
   THINGSDB_STORAGE_PATH=~/node1/data \
   thingsdb --secret pass</code>

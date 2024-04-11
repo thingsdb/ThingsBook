@@ -41,6 +41,7 @@
     - THINGSDB_BIND_NODE_ADDR = '::'
     - THINGSDB_HTTP_API_PORT = 9210
     - THINGSDB_HTTP_STATUS_PORT = 8080
+    - THINGSDB_WS_PORT=9270
     - THINGSDB_MODULES_PATH = /modules/
     - THINGSDB_STORAGE_PATH = /data/
 services:
@@ -52,6 +53,7 @@ services:
     ports:
       - 9200:9200
       - 9210:9210
+      - 9270:9270
       - 8080:8080
     volumes:
       - ./node0/data:/data/
