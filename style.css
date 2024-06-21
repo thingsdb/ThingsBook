@@ -17,9 +17,11 @@
     }
 body {
     background-color: #2f3035;
-    background-image: url('images/logo_on_dark.svg');
+    background-image: url(images/logo_on_dark.svg);
     background-repeat: no-repeat;
-    background-size: 110%;
+    background-size: 1800px;
+    background-position-x: center;
+    background-position-y: -100px;
     background-attachment: fixed;
 }
 .wrapper {
