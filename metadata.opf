@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id" version="2.0">
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+        <dc:identifier opf:scheme="thingsdb" id="thingsdb_id">e9a83951-fa11-4074-a5d2-d3e1f7aa5f08</dc:identifier>
+        <dc:identifier opf:scheme="uuid" id="uuid_id">e9a83951-fa11-4074-a5d2-d3e1f7aa5f08</dc:identifier>
+        <dc:title>Data as Code - The ThingsDB Book</dc:title>
+        <dc:creator opf:file-as="Heijden, Jeroen van der" opf:role="aut">Jeroen van der Heijden</dc:creator>
+        <dc:contributor opf:file-as="thingsdb" opf:role="bkp">thingsdb (7.12.0) [https://thingsdb-ebook.com]</dc:contributor>
+        <dc:date>2024-03-06T00:00:00+00:00</dc:date>
+        <dc:publisher>Jeroen van der Heijden</dc:publisher>
+        <dc:language>en</dc:language>
+    </metadata>
+    <guide>
+        <reference type="cover" title="Cover" href="cover.jpg"/>
+    </guide>
+</package>
