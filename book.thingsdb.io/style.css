@@ -16,7 +16,11 @@
     src: url(fonts/RobotoMono-VariableFont_wght.ttf)
     }
 body {
-    background-color: #465871;
+    background-color: #2f3035;
+    background-image: url('images/logo_on_dark.svg');
+    background-repeat: no-repeat;
+    background-size: 110%;
+    background-attachment: fixed;
 }
 .wrapper {
     max-width: 800px;
