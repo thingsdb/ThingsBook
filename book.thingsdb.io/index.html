@@ -8,12 +8,12 @@
 <body>
 <div class="wrapper">
 
-<div class="cover" id="thingsdb_link-235">
+<div class="cover" id="cover">
     <img role="doc-cover" src="images/00001.jpeg" alt="Data as Code - The ThingsDB Book - Jeroen van der Heijden - First Edition" class="cover-img" />
 </div>
 
-<div class="thingsdb3" id="thingsdb_link-258">
-    <section id="thingsdb_link-272">
+<div class="thingsdb3" id="header-id">
+    <section id="header-id-sub">
         <h1 class="title">Data as Code - The ThingsDB Book</h1>
         <div class="author">
             <p class="label">Author</p>
@@ -33,24 +33,24 @@
     </section>
 </div>
 
-<div class="thingsdb3" id="thingsdb_link-249">
-		<section type="dedication" role="doc-dedication" id="thingsdb_link-273">
+<div class="thingsdb3" id="header-doc-id">
+		<section type="dedication" role="doc-dedication" id="header-doc-link-id">
 			<p class="thingsdb6">"I extend my heartfelt gratitude to Rik, Anja, Koos, Sasha and Iris for their invaluable
 				contributions to the creation of this book."</p>
 		</section>
 	</div>
 
 
-<div class="thingsdb3" id="thingsdb_link-41">
-		<nav type="toc" id="thingsdb_link-274" role="doc-toc">
+<div class="thingsdb3" id="toc">
+		<nav type="toc" id="nav" role="doc-toc">
 			<h2 class="thingsdb7">Table of Contents</h2>
 			<ol class="thingsdb8">
-				<li class="thingsdb9"><a href="#thingsdb_link-40" class="thingsdb10">Preface</a></li>
-				<li class="thingsdb9"><a href="#thingsdb_link-2" class="thingsdb10">Installation</a>
+				<li class="thingsdb9"><a href="#preface" class="thingsdb10">Preface</a></li>
+				<li class="thingsdb9"><a href="#installation" class="thingsdb10">Installation</a>
 					<ol class="thingsdb11">
-						<li class="thingsdb9"><a href="#thingsdb_link-3" class="thingsdb10">Installation - Node</a>
+						<li class="thingsdb9"><a href="#installation-node" class="thingsdb10">Installation - Node</a>
 							<ol class="thingsdb11">
-								<li class="thingsdb9"><a href="#thingsdb_link-42" class="thingsdb10">Docker</a></li>
+								<li class="thingsdb9"><a href="#installation-docker" class="thingsdb10">Docker</a></li>
 								<li class="thingsdb9"><a href="#thingsdb_link-31" class="thingsdb10">Linux</a></li>
 								<li class="thingsdb9"><a href="#thingsdb_link-5" class="thingsdb10">Mac</a></li>
 								<li class="thingsdb9"><a href="#thingsdb_link-30" class="thingsdb10">Windows (WSL)</a></li>
@@ -426,13 +426,13 @@
 		<nav type="landmarks" id="thingsdb_link-275" hidden="">
 			<h2 class="thingsdb7">Landmarks</h2>
 			<ol class="thingsdb12">
-				<li class="thingsdb13"><a type="cover" href="#thingsdb_link-235" class="thingsdb14">cover</a></li>
+				<li class="thingsdb13"><a type="cover" href="#cover" class="thingsdb14">cover</a></li>
 			</ol>
 		</nav>
 	</div>
 
 
-<div class="thingsdb3" id="thingsdb_link-40">
+<div class="thingsdb3" id="preface">
         <section type="preface" role="doc-preface" aria-labelledby="preface_h" id="thingsdb_link-276">
             <h2 id="thingsdb_link-277" class="thingsdb7">Preface</h2>
             <p class="copyright1">The primary objective of this book is to equip readers with a comprehensive
@@ -465,7 +465,7 @@
     </div>
 
 
-<div class="thingsdb3" id="thingsdb_link-2">
+<div class="thingsdb3" id="installation">
         <section type="installation" role="doc-installation" aria-labelledby="installation_h" id="thingsdb_link-278">
             <h2 id="thingsdb_link-279" class="thingsdb7">Installation</h2>
             <p class="copyright1">Like with learning any programming language, ThingsDB requires a setup to
@@ -484,7 +484,7 @@
     </div>
 
 
-<div class="thingsdb3" id="thingsdb_link-3">
+<div class="thingsdb3" id="installation-node">
         <section type="installation" role="doc-installation" aria-labelledby="installation_node_h" id="thingsdb_link-280">
             <h3 id="thingsdb_link-281" class="title1">Installation - Node</h3>
             <p class="copyright1">The process running ThingsDB is called a node. ThingsDB is built to run across
@@ -505,7 +505,7 @@
     </div>
 
 
-<div class="thingsdb3" id="thingsdb_link-42">
+<div class="thingsdb3" id="installation-docker">
         <section type="installation" role="doc-installation" aria-labelledby="docker_h" id="thingsdb_link-282">
             <h4 id="thingsdb_link-283" class="title2">Docker</h4>
             <p class="copyright1">This guide will walk you through installing and running ThingsDB using Docker Compose,
@@ -838,7 +838,7 @@ Home-page: https://thingsdb.io</code></pre>
             <div class="note">
                 <img class="note1" src="images/000000.png" alt="Note" />
                 <div class="content">
-                    <p class="author1">If you are using Docker Compose as described in the <a href="#thingsdb_link-42" class="thingsdb14">Docker</a>
+                    <p class="author1">If you are using Docker Compose as described in the <a href="#installation-docker" class="thingsdb14">Docker</a>
                         installation section, navigate to your <code class="inline1">docker-compose.yml</code>
                         directory and run: <code class="inline1">docker compose up -d</code></p>
                     <p class="author1">This starts ThingsDB in the background, automatically initializing it with the
@@ -6095,7 +6095,7 @@ future(|x| x + 10);</code>  <code class="comment">// No more `nil`s!</code>
             </table>
         </div>
         <p class="copyright1">Here's a code snippet that creates a backup named <code class="inline">"/tmp/ti-backup-{DATE}-{TIME}.tar.gz"</code>.</p>
-        <p class="copyright1"><strong class="thingsdb17">Note:</strong> If you are using <a href="#thingsdb_link-42" class="thingsdb14">Docker Compose</a> as described in this book,
+        <p class="copyright1"><strong class="thingsdb17">Note:</strong> If you are using <a href="#installation-docker" class="thingsdb14">Docker Compose</a> as described in this book,
             remember to adjust <code class="inline">/tmp</code> to <code class="inline">/dump</code>
             (which is volume-mounted to your local disk).</p>
 <pre class="thingsdb16"><code class="prompt">(/node/0)&gt;</code> <code class="user">new_backup("/tmp/ti-backup-{DATE}-{TIME}.tar.gz");</code>
