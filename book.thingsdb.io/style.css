@@ -9,11 +9,11 @@
     }
 @font-face {
     font-family: "Oswald Bold";
-    src: url(EPUB/fonts/Oswald-Bold.ttf)
+    src: url(fonts/Oswald-Bold.ttf)
     }
 @font-face {
     font-family: "Roboto Mono";
-    src: url(EPUB/fonts/RobotoMono-VariableFont_wght.ttf)
+    src: url(fonts/RobotoMono-VariableFont_wght.ttf)
     }
 body {
     background-color: #465871;
