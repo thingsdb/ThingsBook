@@ -535,13 +535,13 @@
   image: ghcr.io/thingsdb/node
   restart: unless-stopped
   environment:
-    - THINGSDB_BIND_CLIENT_ADDR = '::'
-    - THINGSDB_BIND_NODE_ADDR = '::'
-    - THINGSDB_HTTP_API_PORT = 9210
-    - THINGSDB_HTTP_STATUS_PORT = 8080
+    - THINGSDB_BIND_CLIENT_ADDR=::
+    - THINGSDB_BIND_NODE_ADDR=::
+    - THINGSDB_HTTP_API_PORT=9210
+    - THINGSDB_HTTP_STATUS_PORT=8080
     - THINGSDB_WS_PORT=9270
-    - THINGSDB_MODULES_PATH = /modules/
-    - THINGSDB_STORAGE_PATH = /data/
+    - THINGSDB_MODULES_PATH=/modules/
+    - THINGSDB_STORAGE_PATH=/data/
 services:
   node0:
     &lt;&lt; : *ti
